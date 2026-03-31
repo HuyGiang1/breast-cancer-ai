@@ -1,0 +1,34 @@
+{
+  "timestamp": "2026-03-28T10:55:33.991193",
+  "model": "Custom CNN v2 (Fine-tuned on ROI-cropped images)",
+  "preprocessing": "ROI extraction + thresholding + margin=20px",
+  "finetuning": {
+    "epochs": 10,
+    "learning_rate": 1e-05,
+    "unfrozen_layers": 10
+  },
+  "threshold_optimization": {
+    "method": "Grid search (0.0-1.0, step=0.01)",
+    "target": "Sensitivity \u2265 95%"
+  },
+  "validation_metrics": {
+    "threshold": 0.39,
+    "accuracy": 0.4751958224543081,
+    "sensitivity": 0.9625,
+    "specificity": 0.12556053811659193,
+    "precision": 0.44126074498567336,
+    "f1": 0.6051080550098232
+  },
+  "test_metrics": {
+    "accuracy": 0.4792746113989637,
+    "sensitivity": 0.9506172839506173,
+    "specificity": 0.13839285714285715,
+    "precision": 0.4438040345821326,
+    "f1": 0.6051080550098232,
+    "roc_auc": 0.5836364638447972,
+    "tp": 154,
+    "fp": 193,
+    "fn": 8,
+    "tn": 31
+  }
+}

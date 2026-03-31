@@ -1,0 +1,4 @@
+Model,FN Cost,FP Cost,TP Cost,TN Cost,Total Cost,Cost per Patient
+Logistic Regression,400,10,68,0,478,4.192982456140351
+Random Forest,400,30,68,0,498,4.368421052631579
+XGBoost,300,30,69,0,399,3.5

@@ -1,0 +1,3 @@
+Approach,Dataset,Data Type,Training Samples,Dataset Size,Min Recommended,Preprocessing,Augmentation
+Machine Learning,Wisconsin,Tabular (30 features),398,~50 KB,200-500 samples,Feature extraction required,SMOTE (synthetic samples)
+Deep Learning,CBIS-DDSM,Images (224x224x3),~1400 (sample),~5-10 GB,1000-2000 images per class,"Image preprocessing (CLAHE, normalization)","Image transformations (flip, rotate)"

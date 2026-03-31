@@ -1,0 +1,21 @@
+{
+  "mcnemar": {
+    "n00_both_correct": 101,
+    "n01_baseline_correct_optimized_wrong": 111,
+    "n10_baseline_wrong_optimized_correct": 84,
+    "n11_both_wrong": 90,
+    "statistic": 3.466666666666667,
+    "pvalue": 0.06261737421478708,
+    "significant_alpha_0_05": false
+  },
+  "auroc": {
+    "baseline": 0.6046075837742505,
+    "optimized": 0.5836364638447972,
+    "difference_optimized_minus_baseline": -0.02097111992945333,
+    "difference_bootstrap_ci_95": [
+      -0.045184805520624094,
+      0.0018137532964642852
+    ],
+    "bootstrap_samples_used": 2000
+  }
+}

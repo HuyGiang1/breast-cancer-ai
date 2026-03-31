@@ -1,0 +1,190 @@
+{
+  "ablation_study": [
+    {
+      "condition": "Baseline Model + Original Images",
+      "threshold": 0.5,
+      "accuracy": 0.6217616580310881,
+      "sensitivity": 0.24691358024691357,
+      "specificity": 0.8928571428571429,
+      "ppv": 0.625,
+      "f1_score": 0.35398230088495575,
+      "roc_auc": 0.6703042328042328
+    },
+    {
+      "condition": "Baseline Model + ROI Images",
+      "threshold": 0.5,
+      "accuracy": 0.5492227979274611,
+      "sensitivity": 0.43209876543209874,
+      "specificity": 0.6339285714285714,
+      "ppv": 0.4605263157894737,
+      "f1_score": 0.445859872611465,
+      "roc_auc": 0.6046075837742505
+    },
+    {
+      "condition": "Optimized Model + Original Images",
+      "threshold": 0.39,
+      "accuracy": 0.47668393782383417,
+      "sensitivity": 0.9444444444444444,
+      "specificity": 0.13839285714285715,
+      "ppv": 0.4421965317919075,
+      "f1_score": 0.6023622047244095,
+      "roc_auc": 0.6553681657848324
+    },
+    {
+      "condition": "Optimized Model + ROI Images",
+      "threshold": 0.39,
+      "accuracy": 0.4792746113989637,
+      "sensitivity": 0.9506172839506173,
+      "specificity": 0.13839285714285715,
+      "ppv": 0.4438040345821326,
+      "f1_score": 0.6051080550098232,
+      "roc_auc": 0.5836364638447972
+    }
+  ],
+  "bootstrap_ci": [
+    {
+      "condition": "Baseline + Original",
+      "metric": "accuracy",
+      "mean": 0.6204274611398966,
+      "lower_ci": 0.5724740932642487,
+      "upper_ci": 0.6709844559585493,
+      "ci_range": 0.09851036269430058
+    },
+    {
+      "condition": "Baseline + Original",
+      "metric": "sensitivity",
+      "mean": 0.2445366497647429,
+      "lower_ci": 0.17807798974703756,
+      "upper_ci": 0.31214776011560696,
+      "ci_range": 0.1340697703685694
+    },
+    {
+      "condition": "Baseline + Original",
+      "metric": "specificity",
+      "mean": 0.892448832407103,
+      "lower_ci": 0.8516514318360351,
+      "upper_ci": 0.9292535875631145,
+      "ci_range": 0.0776021557270794
+    },
+    {
+      "condition": "Baseline + Original",
+      "metric": "roc_auc",
+      "mean": 0.6696232612474549,
+      "lower_ci": 0.6161520276865833,
+      "upper_ci": 0.7220638221241892,
+      "ci_range": 0.1059117944376059
+    },
+    {
+      "condition": "Baseline + ROI",
+      "metric": "accuracy",
+      "mean": 0.5482331606217618,
+      "lower_ci": 0.4999352331606218,
+      "upper_ci": 0.5984455958549223,
+      "ci_range": 0.09851036269430052
+    },
+    {
+      "condition": "Baseline + ROI",
+      "metric": "sensitivity",
+      "mean": 0.4301353656337042,
+      "lower_ci": 0.35185185185185186,
+      "upper_ci": 0.5090994854202401,
+      "ci_range": 0.15724763356838822
+    },
+    {
+      "condition": "Baseline + ROI",
+      "metric": "specificity",
+      "mean": 0.6336755409990742,
+      "lower_ci": 0.5707358490566038,
+      "upper_ci": 0.6972534885513839,
+      "ci_range": 0.12651763949478012
+    },
+    {
+      "condition": "Baseline + ROI",
+      "metric": "roc_auc",
+      "mean": 0.6034686400264858,
+      "lower_ci": 0.5467151953771494,
+      "upper_ci": 0.6585659663234856,
+      "ci_range": 0.11185077094633622
+    },
+    {
+      "condition": "Optimized + Original",
+      "metric": "accuracy",
+      "mean": 0.4761580310880829,
+      "lower_ci": 0.4274611398963731,
+      "upper_ci": 0.5259715025906735,
+      "ci_range": 0.09851036269430041
+    },
+    {
+      "condition": "Optimized + Original",
+      "metric": "sensitivity",
+      "mean": 0.943991170754332,
+      "lower_ci": 0.9058823529411765,
+      "upper_ci": 0.9754601226993865,
+      "ci_range": 0.06957776975821006
+    },
+    {
+      "condition": "Optimized + Original",
+      "metric": "specificity",
+      "mean": 0.13758538734803602,
+      "lower_ci": 0.09291802023822861,
+      "upper_ci": 0.1814059196617336,
+      "ci_range": 0.088487899423505
+    },
+    {
+      "condition": "Optimized + Original",
+      "metric": "roc_auc",
+      "mean": 0.6541916140598444,
+      "lower_ci": 0.6000669527758031,
+      "upper_ci": 0.7087296807197682,
+      "ci_range": 0.10866272794396503
+    },
+    {
+      "condition": "Optimized + ROI",
+      "metric": "accuracy",
+      "mean": 0.4787564766839378,
+      "lower_ci": 0.43005181347150256,
+      "upper_ci": 0.5284974093264249,
+      "ci_range": 0.0984455958549223
+    },
+    {
+      "condition": "Optimized + ROI",
+      "metric": "sensitivity",
+      "mean": 0.9498583967672213,
+      "lower_ci": 0.9107142857142857,
+      "upper_ci": 0.9802663828689371,
+      "ci_range": 0.06955209715465138
+    },
+    {
+      "condition": "Optimized + ROI",
+      "metric": "specificity",
+      "mean": 0.13778791074956284,
+      "lower_ci": 0.0932128393580321,
+      "upper_ci": 0.18137363352420613,
+      "ci_range": 0.08816079416617403
+    },
+    {
+      "condition": "Optimized + ROI",
+      "metric": "roc_auc",
+      "mean": 0.5816982364062967,
+      "lower_ci": 0.5253072691911301,
+      "upper_ci": 0.6402466121888766,
+      "ci_range": 0.11493934299774644
+    }
+  ],
+  "statistical_tests": {
+    "mcnemar": {
+      "statistic": 3.466666666666667,
+      "pvalue": 0.06261737421478708,
+      "significant_at_0_05": false
+    },
+    "auroc": {
+      "baseline": 0.6046075837742505,
+      "optimized": 0.5836364638447972,
+      "difference": -0.02097111992945333,
+      "difference_bootstrap_ci_95": [
+        -0.045184805520624094,
+        0.0018137532964642852
+      ]
+    }
+  }
+}

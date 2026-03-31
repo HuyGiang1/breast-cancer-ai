@@ -1,0 +1,7 @@
+Approach,Training Time,Inference Time (per sample),Model Size,GPU Required,Memory Usage
+ML - Logistic Regression,< 1 second,< 0.1 ms,~1 KB,No,< 100 MB
+ML - Random Forest,~2 seconds,~1 ms,~600 KB,No,< 500 MB
+ML - XGBoost,~5 seconds,~2 ms,~180 KB,No (OpenMP for speed),< 500 MB
+DL - ResNet50,~30-60 minutes,~50 ms,~100 MB,Recommended,~2-4 GB
+DL - EfficientNetB0,~20-40 minutes,~30 ms,~30 MB,Recommended,~1-2 GB
+DL - Custom CNN,~15-30 minutes,~20 ms,~20 MB,Optional,~500 MB - 1 GB

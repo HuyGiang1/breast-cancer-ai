@@ -1,0 +1,8 @@
+Criterion,If This...,Choose,If That...,Choose_
+Dataset Size,< 1000 samples,Machine Learning,> 5000 images,Deep Learning
+Budget,< $2000,Machine Learning,> $5000,Deep Learning
+Infrastructure,CPU only,Machine Learning,GPU available,Deep Learning
+Explainability Need,"Critical (FDA, legal)",Machine Learning,Moderate,Deep Learning
+Data Type,Measurements available,Machine Learning,Images only,Deep Learning
+Training Time Budget,< 1 hour,Machine Learning,> 1 day OK,Deep Learning
+Deployment Target,Mobile/Edge,Machine Learning,Cloud/Server,Deep Learning

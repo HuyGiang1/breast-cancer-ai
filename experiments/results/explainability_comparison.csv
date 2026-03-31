@@ -1,0 +1,9 @@
+Aspect,Machine Learning (SHAP),Deep Learning (Grad-CAM)
+Method,SHAP (SHapley Additive exPlanations),Grad-CAM (Gradient-weighted CAM)
+Output Type,Feature importance values,Spatial heatmaps
+Granularity,Feature-level (30 features),Pixel-level (50k+ pixels)
+Quantitative,Yes - exact contribution values,Partial - relative importance
+Clinical Alignment,High - features are measurements,Medium - visual regions
+Computation Time,Fast (< 1 second),Medium (~1 second)
+Trustworthiness,High - based on game theory,"Medium - shows ""where"" not ""why"""
+Regulatory Acceptance,Well-established,Emerging

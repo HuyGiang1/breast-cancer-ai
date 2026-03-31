@@ -1,0 +1,4 @@
+Model,Accuracy,ROC-AUC,F1-Score,Approach,Dataset
+Logistic Regression,0.9561,0.9931,0.9645,Machine Learning,Wisconsin
+Random Forest,0.9386,0.9932,0.951,Machine Learning,Wisconsin
+XGBoost,0.9474,0.9927,0.9583,Machine Learning,Wisconsin

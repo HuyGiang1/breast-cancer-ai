@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-03-28T11:03:04.654795",
+  "dataset": {
+    "test_samples": 386,
+    "malignant": 162,
+    "benign": 224,
+    "preprocessing": "ROI crop + thresholding + margin=20px"
+  },
+  "models_evaluated": 4,
+  "best_model": {
+    "name": "Custom CNN v2 (Fine-tuned on ROI-cropped images)",
+    "threshold": 0.39,
+    "accuracy": 0.5051813471502591,
+    "sensitivity": 0.9506172839506173,
+    "specificity": 0.18303571428571427,
+    "roc_auc": 0.5836364638447972,
+    "improvements": {
+      "sensitivity_vs_baseline": "-0.6%",
+      "roc_auc_vs_baseline": "-2.1%"
+    }
+  },
+  "key_findings": {
+    "cancer_detection_rate": "95.1%",
+    "false_negative_rate": "4.9%",
+    "missed_cancer_cases": 8,
+    "requires_further_testing": 193
+  }
+}

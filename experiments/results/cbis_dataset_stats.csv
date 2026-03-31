@@ -1,0 +1,5 @@
+Split,Benign,Malignant,Total
+Train,1040,750,1790
+Val,223,160,383
+Test,224,162,386
+Total,1487,1072,2559

@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: breast_cancer_api
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount models directly so they don't need to be rebuilt into the image if retrained
+      - ./src/models:/app/src/models
+      - ./models:/app/models
+    environment:
+      - PORT=8000
+    restart: unless-stopped
