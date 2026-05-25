@@ -1,17 +1,28 @@
-version: '3.8'
-
 services:
   api:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: breast_cancer_api
-    ports:
-      - "8000:8000"
+    env_file:
+      - .env
+    expose:
+      - "8000"
     volumes:
-      # Mount models directly so they don't need to be rebuilt into the image if retrained
-      - ./src/models:/app/src/models
+      - ./backend/data:/app/backend/data
       - ./models:/app/models
-    environment:
-      - PORT=8000
+      - ./src/models:/app/src/models
+      - ./frontend/results:/app/frontend/results
+    restart: unless-stopped
+
+  web:
+    image: nginx:1.27-alpine
+    container_name: breast_cancer_web
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     restart: unless-stopped

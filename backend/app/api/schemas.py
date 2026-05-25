@@ -57,7 +57,13 @@ class PredictionResponse(BaseModel):
     prediction: int = Field(..., description="0 for Benign, 1 for Malignant")
     diagnosis: str = Field(..., description="'Benign' or 'Malignant'")
     probability: float = Field(..., description="Confidence probability of the prediction")
+    raw_probability: Optional[float] = Field(None, description="Raw model probability before display calibration")
+    calibration_mode: Optional[str] = Field(None, description="Probability calibration mode used for the displayed probability")
+    risk_band: Optional[str] = Field(None, description="Low/Medium/High risk band based on calibrated malignant probability")
     analysis_text: Optional[str] = None
+    advice: Optional[str] = None
+    advice_provider: Optional[str] = None
+    advice_model: Optional[str] = None
     explanation_image: Optional[str] = None
     top_features: Optional[List[Dict[str, Any]]] = None
 
@@ -66,4 +72,121 @@ class MultiModalResponse(BaseModel):
     dl_result: PredictionResponse
     combined_diagnosis: str
     combined_confidence: float
+    combined_risk_band: Optional[str] = None
     advice: str
+    advice_provider: Optional[str] = None
+    advice_model: Optional[str] = None
+
+
+class ClinicalExtractionResponse(BaseModel):
+    values: Dict[str, Optional[float]]
+    filled_count: int
+    missing_fields: List[str]
+    provider: str
+    model: str
+    raw_text: Optional[str] = None
+
+
+class RegisterRequest(BaseModel):
+    email: str
+    full_name: str
+    role: str = Field("user", pattern="^(user|doctor)$")
+    password: str = Field(..., min_length=8)
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class AuthResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: Dict[str, Any]
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str = Field(..., min_length=8)
+
+
+class ForgotPasswordResponse(BaseModel):
+    message: str
+    reset_token: Optional[str] = None
+    expires_at: Optional[str] = None
+
+
+class UpdateProfileRequest(BaseModel):
+    full_name: str
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str = Field(..., min_length=8)
+
+
+class PatientCreateRequest(BaseModel):
+    full_name: str
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class PatientUpdateRequest(BaseModel):
+    full_name: str
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class PatientResponse(PatientCreateRequest):
+    id: int
+    user_id: int
+    created_at: str
+    updated_at: str
+
+
+class SavedPredictionResponse(BaseModel):
+    id: int
+    patient_id: Optional[int] = None
+    prediction_type: str
+    model_name: Optional[str] = None
+    diagnosis: Optional[str] = None
+    probability: Optional[float] = None
+    raw_probability: Optional[float] = None
+    calibration_mode: Optional[str] = None
+    risk_band: Optional[str] = None
+    advice: Optional[str] = None
+    advice_provider: Optional[str] = None
+    advice_model: Optional[str] = None
+    created_at: str
+    input_payload: Dict[str, Any]
+    response_payload: Dict[str, Any]
+
+
+class ChatTurn(BaseModel):
+    role: str
+    content: str
+
+
+class ChatRequest(BaseModel):
+    message: str
+    history: List[ChatTurn] = []
+
+
+class ChatResponse(BaseModel):
+    answer: str
+    provider: str
+    model: str
+    created_at: str
+
+
+class SavedChatMessage(BaseModel):
+    id: int
+    question: str
+    answer: str
+    created_at: str

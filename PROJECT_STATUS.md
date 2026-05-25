@@ -1,7 +1,7 @@
 # 📊 Tình trạng Dự án - Breast Cancer AI Research
 
-**Ngày cập nhật**: 10/02/2026  
-**Trạng thái**: Phase 1 Complete ✅ | Phase 2 Ready 🚀
+**Ngày cập nhật**: 05/04/2026  
+**Trạng thái**: ML/DL demo running | Auth + patient workspace enabled | DL retraining still in progress
 
 ---
 
@@ -178,11 +178,17 @@ Generated visualizations:
 
 #### ✅ Đã hoàn thành (Implemented by AI Assistant):
 - [x] **FastAPI Backend** (`backend/app/`)
-  - Load trained ML models (XGBoost, Random Forest, Logistic Regression)
-  - REST API endpoints (`/api/v1/models/`, `/api/v1/predict/`)
+  - Load trained ML models and selected DL artifact
+  - REST API endpoints (`/api/v1/models/`, `/api/v1/predict/`, `/api/v1/models/dl/status/`, `/api/v1/models/dl/warmup/`)
   - Input validation with Pydantic (`schemas.py`)
   - Feature matching and Prediction service
   - CORS configuration for frontend integration
+
+- [x] **Auth + Workspace**
+  - Register, login, logout, logout-all
+  - Forgot password and reset password via file outbox
+  - Patient records and prediction history in SQLite
+  - Optional save-to-history flow for ML, DL, and multimodal endpoints
 
 - [x] **Docker Containerization**
   - Dockerfile cho backend (Python 3.13-slim)
@@ -190,14 +196,17 @@ Generated visualizations:
   - Container volume mapping for models update
 
 - [x] **Frontend (Modern GUI)**
-  - Beautiful glassmorphic Web Interface (`frontend/`)
-  - Dynamic animations and dark mode aesthetics
+  - Mint-toned Web Interface (`frontend/`)
   - Form validation and sample data loaders (Benign/Malignant)
-  - Direct API integration with Visual Status mapping
+  - Direct API integration with auth, patient, history, and DL warm-up status
 
 #### ⏳ Cần làm tiếp:
+- [ ] **DL Retraining Promotion Loop**
+  - Run long DL retraining on CPU/GPU
+  - Compare exported summaries
+  - Promote strongest artifact with `scripts/promote_best_dl_model.py`
 - [ ] **ONNX Optimization**
-  - Convert PyTorch → ONNX
+  - Convert PyTorch/TensorFlow artifact when final DL model is stable
   - Inference optimization
   - Benchmarking
 

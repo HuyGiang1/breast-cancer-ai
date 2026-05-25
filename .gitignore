@@ -1,3 +1,36 @@
+# Virtualenv
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Environment
+.env
+.env.*
+
+# macOS
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data and large artifacts
+/data/
+/models/deep_learning/
+/models/*.keras
+*.keras
+*.h5
+*.ckpt
+*.pth
+*.pt
+
+# Logs and results
+/logs/
+/results/
+
+# Editor settings
+.vscode/
 # Python
 __pycache__/
 *.py[cod]
@@ -20,17 +53,17 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual Environment
+# Virtual environments
 venv/
 env/
 ENV/
-.venv
+.venv/
 
-# Jupyter Notebook
-.ipynb_checkpoints
-*.ipynb_checkpoints/
+# Jupyter
+.ipynb_checkpoints/
+.mplconfig/
 
-# IDEs
+# Editors / OS
 .vscode/
 .idea/
 *.swp
@@ -38,14 +71,26 @@ ENV/
 *~
 .DS_Store
 
-# Data & Datasets (Too large for Git)
+# Environment / secrets
+.env
+secret.txt
+credentials.json
+
+# Runtime data
+backend/data/app.db
+backend/data/outbox/
+frontend/results/
+logs/
+*.log
+
+# Large data artifacts
 data/cbis_ddsm/
 data/raw/*.csv
 data/processed/*.csv
 data/processed/*.pkl
 data/processed/*.npy
 
-# Deep Learning Models (Limit to small weights, ignore heavy ones)
+# Heavy model artifacts
 *.keras
 *.h5
 *.pth
@@ -54,28 +99,10 @@ models/deep_learning/
 src/models/**/*.keras
 backend/*.keras
 
-# Experiments & Results
-experiments/results/*.png
-experiments/results/*.jpg
-experiments/results/*.csv
-experiments/results/*.json
-
-# Logs
-*.log
-logs/
-backend/app/__pycache__/
-
-# Environment & Credentials
-.env
-secret.txt
-credentials.json
-data/cbis_ddsm/
-backend/*.keras
-models/deep_learning/
-frontend/results/
+# Experiment outputs
 experiments/results/
-.DS_Store
-__pycache__/
-*.log
-venv/
-.vscode/
+models/*.pkl
+models/*.json
+/frontend/assets/
+*.docx
+*.zip

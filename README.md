@@ -135,6 +135,42 @@ jupyter notebook notebooks/03_wisconsin_train_models.ipynb
 jupyter notebook notebooks/06_cbis_train_resnet.ipynb
 ```
 
+### 2.1 DL Fine-Tuning + Calibration Export (Production Flow)
+```bash
+source venv/bin/activate
+PYTHONPATH=backend python scripts/train_dl_finetune_calibrated.py \
+  --architecture custom_cnn \
+  --epochs 25 \
+  --batch-size 16 \
+  --tta-rounds 6
+```
+
+Pipeline này tự động thực hiện:
+- Class weighting cho mất cân bằng dữ liệu
+- Focal Loss cho hard samples
+- TTA evaluation trên tập test
+- Calibrated threshold export vào `models/deep_learning/calibration_profile.json`
+
+Backend sẽ tự nạp calibration profile này để dùng ngay khi suy luận.
+
+### 2.2 One-Command DL Retrain + Promote
+```bash
+source venv/bin/activate
+PYTHONPATH=backend python scripts/run_dl_retrain_pipeline.py \
+  --epochs 18 \
+  --batch-size 12 \
+  --image-size 192 \
+  --tta-rounds 4 \
+  --cache-dataset \
+  --skip-image-rf
+```
+
+Flow này sẽ:
+- train lại `Custom CNN`
+- xuất artifact + summary mới
+- so sánh với các summary hiện có
+- promote model mạnh nhất vào calibration profile
+
 ### 3. Run API Server
 ```bash
 cd backend

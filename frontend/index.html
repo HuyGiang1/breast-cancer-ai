@@ -1,360 +1,979 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Breast Cancer AI Diagnostic - Professional</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>BreastCare Mint — Hỗ trợ sàng lọc ung thư vú bằng AI</title>
+    <meta name="description"
+        content="Nền tảng hỗ trợ sàng lọc ung thư vú bằng AI. Dự đoán lâm sàng (ML), phân tích ảnh nhũ ảnh (DL), và kết hợp đa phương thức.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <style>
-        .fusion-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-
-        @media (max-width: 900px) {
-            .fusion-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .combined-badge {
-            width: 100%;
-            text-align: center;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        .badge-malignant {
-            background: rgba(255, 51, 102, 0.1);
-            color: #ff3366;
-            border: 1px solid #ff3366;
-        }
-
-        .badge-benign {
-            background: rgba(0, 204, 102, 0.1);
-            color: #00cc66;
-            border: 1px solid #00cc66;
-        }
-    </style>
 </head>
 
 <body>
-    <div class="background-animation"></div>
+    <div class="site-bg"></div>
 
-    <div class="container">
-        <header>
-            <div class="logo-container">
-                <div class="pulse-ring"></div>
-                <div class="logo">AI</div>
+    <!-- =================== MOBILE NAV DRAWER =================== -->
+    <div class="mobile-nav-drawer" id="mobileNavDrawer">
+        <div class="mobile-nav-panel">
+            <div
+                style="display:flex;align-items:center;gap:10px;padding:4px 4px 16px;border-bottom:1px solid var(--line);margin-bottom:8px;">
+                <div class="brand-mark" style="width:32px;height:32px;font-size:0.88rem;border-radius:8px;">B</div>
+                <span style="font-weight:800;font-size:0.95rem;">BreastCare Mint</span>
             </div>
-            <h1>Breast Cancer Diagnostics</h1>
-            <p class="subtitle">Next-Gen Multi-Modal Clinical Decision Support</p>
-        </header>
-
-        <main>
-            <div class="tabs">
-                <button class="tab-btn active" id="btn-ml" onclick="switchTab('ml')">🔬 Clinical Data</button>
-                <button class="tab-btn" id="btn-dl" onclick="switchTab('dl')">📸 X-Ray Image</button>
-                <button class="tab-btn" id="btn-fusion" onclick="switchTab('fusion')">🩺 Integrated Analysis</button>
-            </div>
-
-            <!-- Tab 1: Machine Learning -->
-            <div class="glass-panel form-container content-tab active-tab" id="mlTab">
-                <div class="model-dashboard" id="modelSelectionBar" style="margin: 0 0 2rem 0;">
-                    <div class="dashboard-main">
-                        <div class="selection-box">
-                            <div class="selector-info">
-                                <h2>Select Diagnostic Engine</h2>
-                            </div>
-                            <div class="input-wrapper">
-                                <select id="modelSelect">
-                                    <option value="">Loading models...</option>
-                                </select>
-                                <div class="status-indicator">
-                                    <span class="status-dot online"></span> API Online
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="modelInsights" class="model-insights">
-                            <div class="insights-trigger" onclick="toggleModelComparison()">
-                                <span class="trigger-text">📊 Performance Benchmarks & Model Comparison</span>
-                                <div class="trigger-icon"><span class="arrow-icon-small"></span></div>
-                            </div>
-
-                            <div id="comparisonTable" class="comparison-expanded-view" style="display:none">
-                                <div class="table-scroll">
-                                    <table class="benchmark-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Diagnostic Model</th>
-                                                <th>Accuracy</th>
-                                                <th>Sensitivity (Recall)</th>
-                                                <th>ROC-AUC Score</th>
-                                                <th>Recommendation</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="benchmarkBody">
-                                            <!-- Data injected via app.js -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div id="recommendationReason" class="recommendation-card"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h2>Clinical Measurements</h2>
-                    <div class="csv-upload-button">
-                        <input type="file" id="csvInput" accept=".csv" style="display: none;"
-                            onchange="handleCsvUpload(event)">
-                        <button class="btn btn-secondary btn-sm"
-                            onclick="document.getElementById('csvInput').click()">📂 Import CSV</button>
-                    </div>
-                </div>
-                <div class="form-grid" id="featuresForm"></div>
-                <div class="action-bar">
-                    <button class="btn btn-secondary" onclick="loadSampleData('benign')">Sample Benign</button>
-                    <button class="btn btn-secondary" onclick="loadSampleData('malignant')">Sample Malignant</button>
-                    <button class="btn btn-primary" onclick="predictDiagnosis()" id="predictBtn">Analyze Data</button>
-                </div>
-            </div>
-
-            <!-- Tab 2: Deep Learning -->
-            <div class="glass-panel form-container content-tab" id="dlTab" style="display: none;">
-                <div class="model-dashboard" style="margin: 0 0 2rem 0;">
-                    <div class="selection-box">
-                        <div class="selector-info">
-                            <h2>Select Diagnostic Vision Engine</h2>
-                        </div>
-                        <div class="input-wrapper">
-                            <select id="dlModelSelect">
-                                <option value="ResNet50">ResNet50 (Recommend) 🌟</option>
-                                <option value="EfficientNet-B0">EfficientNet-B0</option>
-                                <option value="Custom CNN">Custom CNN</option>
-                            </select>
-                            <div class="status-indicator">
-                                <span class="status-dot online"></span>
-                                <span>Vision API Online</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <h2>Image Analysis</h2>
-                <div class="upload-area" id="dropArea" onclick="document.getElementById('imageInput').click()">
-                    <input type="file" id="imageInput" accept="image/*" style="display: none;"
-                        onchange="handleImageSelect(event)">
-                    <div class="upload-content" id="uploadPlaceholder">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" class="upload-icon">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor"
-                                stroke-width="2" />
-                            <polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="2" />
-                            <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2" />
-                        </svg>
-                        <p>Drag & Drop Mammography</p>
-                    </div>
-                    <img id="imagePreview" class="image-preview" style="display: none;">
-                </div>
-                <div class="action-bar flex-center">
-                    <button class="btn btn-primary" onclick="predictDiagnosisImage()" id="predictImageBtn"
-                        disabled>Analyze X-Ray</button>
-                </div>
-            </div>
-
-            <!-- Tab 3: Fusion -->
-            <div class="glass-panel form-container content-tab" id="fusionTab" style="display: none;">
-                <div class="fusion-config-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
-                    <div class="glass-panel" style="padding: 1rem; background: rgba(255,255,255,0.03);">
-                        <h4 style="margin-bottom: 0.5rem; color: var(--primary-light);">Clinical Engine</h4>
-                        <select id="fusionMlSelect" style="width: 100%; padding: 0.8rem; border-radius: 8px; background: rgba(0,0,0,0.2); color: white; border: 1px solid rgba(255,255,255,0.1);"></select>
-                    </div>
-                    <div class="glass-panel" style="padding: 1rem; background: rgba(255,255,255,0.03);">
-                        <h4 style="margin-bottom: 0.5rem; color: var(--accent-light);">Vision Engine</h4>
-                        <select id="fusionDlSelect" style="width: 100%; padding: 0.8rem; border-radius: 8px; background: rgba(0,0,0,0.2); color: white; border: 1px solid rgba(255,255,255,0.1);">
-                            <option value="ResNet50">ResNet50</option>
-                            <option value="EfficientNet-B0">EfficientNet-B0</option>
-                            <option value="Custom CNN">Custom CNN</option>
-                        </select>
-                    </div>
-                </div>
-                <h2>Consolidated Multi-Modal Diagnosis</h2>
-                <p style="margin-bottom: 2rem; color: var(--text-muted); font-size: 0.9rem;">Combine cellular
-                    measurements with visual X-ray findings for the highest accuracy.</p>
-
-                <div class="fusion-grid">
-                    <div class="fusion-ml-part">
-                        <h3>1. Clinical Measurements</h3>
-                        <div id="fusionFeatures" class="form-grid"
-                            style="grid-template-columns: 1fr; font-size: 0.8rem; max-height: 300px; overflow-y: auto; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px;">
-                            <!-- Mirror of ML form -->
-                        </div>
-                        <div style="margin-top: 1rem;">
-                            <button class="btn btn-secondary btn-sm" onclick="loadSampleData('malignant', true)">Load
-                                Malignant Example</button>
-                        </div>
-                    </div>
-                    <div class="fusion-dl-part">
-                        <h3>2. X-Ray Mammography</h3>
-                        <div class="upload-area" id="fusionDropArea"
-                            onclick="document.getElementById('fusionImageInput').click()" style="min-height: 200px;">
-                            <input type="file" id="fusionImageInput" accept="image/*" style="display: none;"
-                                onchange="handleFusionImageSelect(event)">
-                            <div id="fusionUploadPlaceholder">
-                                <p>Upload Image</p>
-                            </div>
-                            <img id="fusionImagePreview" class="image-preview" style="display: none;">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="action-bar flex-center" style="margin-top: 2rem;">
-                    <button class="btn btn-primary" onclick="predictFusion()" id="fusionBtn"
-                        style="width: 100%; max-width: 400px; font-size: 1.1rem;">
-                        Perform Integrated Diagnosis
-                    </button>
-                </div>
-            </div>
-
-            <!-- Common Result Container -->
-            <div class="glass-panel result-container" id="resultContainer" style="display: none;">
-                <div id="fusionResultsHeader" style="display: none;">
-                    <h2 style="color: var(--primary);">CONSOLIDATED AI ADVICE</h2>
-                    <div id="combinedDiagnosisBadge" class="combined-badge">BENIGN</div>
-                    <div class="analysis-box" style="margin-top: 1rem; border-left-color: gold;">
-                        <h3 style="color: gold;">🏥 Integrated Advice</h3>
-                        <p id="fusionAdviceText">...</p>
-                    </div>
-                </div>
-
-                <h2 id="singleResultTitle">Diagnostic Detail</h2>
-                <div class="result-card" id="resultCard">
-                    <div class="prediction-label" id="diagnosisLabel">Analyzing...</div>
-                    <div class="confidence-bar-container">
-                        <div class="confidence-label">
-                            <span>Malignancy Risk (Nguy cơ Ác tính)</span>
-                            <span id="confidenceValue">--%</span>
-                        </div>
-                        <div class="progress-bg">
-                            <div class="progress-fill" id="confidenceBar"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="explanation-section">
-                    <div class="analysis-box">
-                        <h3>📋 Clinical Summary</h3>
-                        <p id="analysisText">...</p>
-                    </div>
-
-                    <div id="mlExplanations" style="display: none;">
-                        <h3>📊 Key Cellular Drivers (SHAP)</h3>
-                        <div id="featureImportanceList" class="feature-list"></div>
-                    </div>
-
-                    <div id="dlExplanations" style="display: none;">
-                        <h3>🗺️ Bằng Chứng Hình Ảnh (Grad-CAM)</h3>
-
-                        <!-- Gradcam image + legend side by side -->
-                        <div class="gradcam-wrapper">
-                            <div class="gradcam-image-col">
-                                <div class="gradcam-container"><img id="gradcamImg" class="gradcam-img"></div>
-                                <div class="gradcam-legend">
-                                    <span class="legend-item"><span class="legend-dot legend-red"></span> Nguy cơ cao</span>
-                                    <span class="legend-item"><span class="legend-dot legend-yellow"></span> Vùng nghi ngờ</span>
-                                    <span class="legend-item"><span class="legend-dot legend-blue"></span> Bình thường</span>
-                                </div>
-                                <p class="explanation-hint">Bản đồ nhiệt (Đỏ) xác nhận vùng AI đang tập trung phân tích.</p>
-                            </div>
-
-                            <!-- AI Detailed analysis breakdown -->
-                            <div class="gradcam-analysis-col">
-                                <div class="dl-analysis-card" id="dlAnalysisCard">
-                                    <div class="dl-analysis-header">
-                                        <span class="dl-analysis-icon">🩻</span>
-                                        <h4>Phân Tích Chuyên Sâu từ AI</h4>
-                                    </div>
-                                    <div class="dl-analysis-body" id="dlAnalysisBody">
-                                        <p style="color: var(--text-muted); font-style: italic;">Kết quả phân tích sẽ xuất hiện sau khi xử lý ảnh...</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Confidence Breakdown sections -->
-                        <div class="dl-detail-sections" id="dlDetailSections" style="display:none;">
-                            <div class="dl-detail-card" id="dlFindingsCard">
-                                <h4>📍 Các Vùng Phát Hiện</h4>
-                                <div id="dlFindingsList"></div>
-                            </div>
-                            <div class="dl-detail-card" id="dlRecommendCard">
-                                <h4>📋 Khuyến Nghị Lâm Sàng</h4>
-                                <div id="dlRecommendList"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass-panel research-panel" id="researchPanel">
-                <div class="research-headline">
-                    <p class="research-kicker">RESEARCH VALIDATION SNAPSHOT</p>
-                    <h2>Phase 3 Statistical Evidence</h2>
-                    <p class="research-subtext">Live summary from experiment outputs for reproducible reporting.</p>
-                </div>
-
-                <div class="research-metric-grid">
-                    <div class="research-metric-card">
-                        <span class="metric-label">McNemar p-value</span>
-                        <strong id="mcnemarPValue" class="metric-value">--</strong>
-                        <span id="mcnemarBadge" class="sig-badge">Loading</span>
-                    </div>
-                    <div class="research-metric-card">
-                        <span class="metric-label">AUROC Difference</span>
-                        <strong id="aurocDifference" class="metric-value">--</strong>
-                        <span class="metric-footnote">Optimized minus Baseline</span>
-                    </div>
-                    <div class="research-metric-card">
-                        <span class="metric-label">95% CI of Difference</span>
-                        <strong id="aurocDifferenceCi" class="metric-value metric-ci">--</strong>
-                        <span class="metric-footnote">Bootstrap paired sampling</span>
-                    </div>
-                </div>
-
-                <div class="research-interpretation" id="researchInterpretation">
-                    Waiting for statistical report...
-                </div>
-
-                <div class="research-table-wrap">
-                    <table class="research-table">
-                        <thead>
-                            <tr>
-                                <th>Condition</th>
-                                <th>Accuracy</th>
-                                <th>Sensitivity</th>
-                                <th>Specificity</th>
-                                <th>ROC-AUC</th>
-                            </tr>
-                        </thead>
-                        <tbody id="researchTableBody">
-                            <tr>
-                                <td colspan="5">Loading...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
+            <button class="mobile-nav-link" data-page="home">Trang chủ</button>
+            <button class="mobile-nav-link" data-page="learn">Kiến thức</button>
+            <button class="mobile-nav-link" data-page="care">Chăm sóc</button>
+            <button class="mobile-nav-link" data-page="videos">Video</button>
+            <button class="mobile-nav-link" data-page="assistant">Hỏi AI</button>
+            <button class="mobile-nav-link" data-page="prediction">Dự đoán</button>
+            <button class="mobile-nav-link" data-page="stats">Thống kê</button>
+            <button class="mobile-nav-link" data-page="about">Về chúng tôi</button>
+            <button class="mobile-nav-link hidden" data-page="history" id="mobileHistoryLink">Lịch sử</button>
+            <button class="mobile-nav-link hidden" data-page="patients" id="mobilePatientsLink">Bệnh nhân</button>
+        </div>
     </div>
 
-    <script src="app.js"></script>
+    <div class="app-shell">
+        <!-- =================== TOPBAR =================== -->
+        <header class="topbar">
+            <!-- Brand -->
+            <div class="brand-block" id="brandHomeBtn">
+                <div class="brand-mark">BC</div>
+                <div>
+                    <div class="brand-name">BreastCare Mint</div>
+                    <div class="brand-tagline">AI · Sàng lọc ung thư vú</div>
+                </div>
+            </div>
+
+            <!-- Desktop Nav -->
+            <nav class="topbar-nav" id="desktopNav">
+                <button class="topbar-nav-link active" data-page="home">Trang chủ</button>
+                <button class="topbar-nav-link" data-page="learn">Kiến thức</button>
+                <button class="topbar-nav-link" data-page="care">Chăm sóc</button>
+                <button class="topbar-nav-link" data-page="videos">Video</button>
+                <button class="topbar-nav-link" data-page="assistant">Hỏi AI</button>
+                <button class="topbar-nav-link" data-page="prediction">Dự đoán</button>
+                <button class="topbar-nav-link" data-page="stats">Thống kê</button>
+                <button class="topbar-nav-link" data-page="about">Về chúng tôi</button>
+                <button class="topbar-nav-link hidden" data-page="history" id="historyNavBtn">Lịch sử</button>
+                <button class="topbar-nav-link hidden" data-page="patients" id="patientsNavBtn">Bệnh nhân</button>
+            </nav>
+
+            <!-- Right side -->
+            <div class="topbar-right">
+                <!-- Guest -->
+                <div class="guest-actions" id="guestActions">
+                    <button class="btn btn-secondary btn-sm" data-nav-target="login">Đăng nhập</button>
+                    <button class="btn btn-primary btn-sm" data-nav-target="register">Đăng ký</button>
+                </div>
+
+                <!-- Logged in user -->
+                <div class="user-menu hidden" id="userMenu">
+                    <button class="avatar-button-wrap" id="avatarButton" type="button">
+                        <div class="avatar-circle">
+                            <span id="avatarInitials">K</span>
+                        </div>
+                        <span class="avatar-name" id="sessionBadge">Khách</span>
+                        <span class="avatar-role-badge" id="roleBadge">user</span>
+                    </button>
+                    <div class="avatar-dropdown hidden" id="avatarDropdown">
+                        <button class="dropdown-link" data-nav-target="account">
+                            Hồ sơ cá nhân
+                        </button>
+                        <button class="dropdown-link" data-nav-target="history" id="historyMenuLink">
+                            Lịch sử dự đoán
+                        </button>
+                        <button class="dropdown-link hidden" data-nav-target="patients" id="doctorMenuLink">
+                            Quản lý bệnh nhân
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-link danger" id="menuLogoutBtn">
+                            Đăng xuất
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile hamburger -->
+                <button class="mobile-nav-toggle" id="mobileNavToggle" title="Mở menu">☰</button>
+            </div>
+        </header>
+
+        <!-- =================== PAGES =================== -->
+        <main class="page-stack">
+
+            <!-- ========== HOME ========== -->
+            <section class="page is-active" id="page-home">
+                <!-- Hero -->
+                <div class="card hero-card">
+                    <div class="hero-copy">
+                        <p class="eyebrow">BreastCare Mint</p>
+                        <h2>Phát hiện sớm — bước đầu tiên để chăm sóc tốt hơn</h2>
+                        <p class="section-copy">
+                            Nền tảng kết hợp AI lâm sàng, phân tích ảnh nhũ ảnh và kiến thức y khoa giúp bạn hiểu rõ hơn
+                            về tình trạng sức khỏe và biết bước tiếp theo nên làm gì.
+                        </p>
+                        <div class="hero-actions">
+                            <button class="btn btn-primary" data-nav-target="prediction">Dự đoán ngay</button>
+                            <button class="btn btn-secondary" data-nav-target="learn">Xem dấu hiệu cần chú ý</button>
+                        </div>
+                    </div>
+                    <div class="hero-visual">
+                        <img src="assets/image/1639013521.jpg" alt="Nâng cao nhận thức về ung thư vú">
+                    </div>
+                    <div class="hero-panel">
+                        <div class="metric-card">
+                            <span class="metric-label">Đừng chờ quá lâu</span>
+                            <strong>Khối cứng · Tiết dịch · Da lõm</strong>
+                            <p>Những dấu hiệu này cần được kiểm tra sớm, không nên tự chờ xem.</p>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">AI hỗ trợ sàng lọc</span>
+                            <strong>ML lâm sàng + DL ảnh nhũ ảnh</strong>
+                            <p>Kết quả AI là lớp tham khảo, không thay thế chẩn đoán của bác sĩ.</p>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Hiệu suất đã xác thực</span>
+                            <strong id="homeStatsText">Đang tải thống kê…</strong>
+                            <p>Các model được đánh giá trên tập dữ liệu lâm sàng chuẩn.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual strip -->
+                <div class="visual-strip">
+                    <div class="visual-strip-item">
+                        <div class="strip-title">Dự đoán lâm sàng (ML)</div>
+                        <p class="strip-text">Nhập chỉ số lâm sàng từ kết quả FNA để phân tích nguy cơ.</p>
+                    </div>
+                    <div class="visual-strip-item">
+                        <div class="strip-title">Phân tích ảnh nhũ ảnh (DL)</div>
+                        <p class="strip-text">Tải ảnh lên để model DL làm rõ vùng nghi ngờ trên phim nhũ ảnh.</p>
+                    </div>
+                    <div class="visual-strip-item">
+                        <div class="strip-title">Kiến thức y khoa</div>
+                        <p class="strip-text">Tổng hợp thông tin về dấu hiệu, dinh dưỡng và phục hồi.</p>
+                    </div>
+                </div>
+
+                <!-- Highlight cards (rendered by JS) -->
+                <div class="grid three-col" id="homeHighlights"></div>
+            </section>
+
+            <!-- ========== LEARN ========== -->
+            <section class="page" id="page-learn">
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Kiến thức</p>
+                        <h2>Trung tâm kiến thức cho bệnh nhân và gia đình</h2>
+                    </div>
+                    <p class="section-copy">Nội dung được biên soạn theo mạch rõ ràng: hiểu dấu hiệu → hiểu việc cần làm
+                        → hiểu khi nào đi khám sớm.</p>
+                </div>
+
+                <div class="grid two-col">
+                    <article class="embed-card">
+                        <img class="care-image" src="assets/image/image-20241024092947-1.jpeg"
+                            alt="Dấu hiệu cần chú ý ở ung thư vú">
+                        <strong>Dấu hiệu nên đi khám sớm</strong>
+                        <p>Khối cứng, da lõm, tụt núm vú mới xuất hiện hoặc tiết dịch bất thường cần được kiểm tra
+                            chuyên khoa sớm.</p>
+                    </article>
+                    <article class="embed-card">
+                        <img class="care-image" src="assets/image/images.jpeg" alt="Tự theo dõi thay đổi ở vú">
+                        <strong>Tự theo dõi tại nhà</strong>
+                        <p>Tự quan sát giúp phát hiện thay đổi sớm hơn, nhưng không thay thế cho chẩn đoán của bác sĩ
+                            khi đã có dấu hiệu.</p>
+                    </article>
+                </div>
+
+                <div class="grid three-col" id="learnGrid"></div>
+                <div class="grid two-col" id="learnDeepGrid"></div>
+
+                <div class="card">
+                    <div class="section-head compact" style="margin-bottom:16px;">
+                        <div>
+                            <p class="eyebrow">Câu hỏi thường gặp</p>
+                            <h3>Giải đáp nhanh trước và sau khi đi khám</h3>
+                        </div>
+                    </div>
+                    <div class="faq-list" id="faqList"></div>
+                </div>
+            </section>
+
+            <!-- ========== CARE ========== -->
+            <section class="page" id="page-care">
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Chăm sóc và dinh dưỡng</p>
+                        <h2>Nên làm gì trước và sau khi phát hiện ung thư vú</h2>
+                    </div>
+                    <p class="section-copy">Tổng hợp định hướng ăn uống, sinh hoạt và chăm sóc từ các nguồn bệnh viện
+                        lớn để có khung tham khảo dễ hiểu.</p>
+                </div>
+
+                <div class="grid two-col">
+                    <article class="embed-card">
+                        <img class="care-image" src="assets/image/thap-che-do-dinh-duong-cho-nguoi-benh-ung-thu.webp"
+                            alt="Tháp dinh dưỡng cho người bệnh ung thư">
+                        <strong>Tháp dinh dưỡng tham khảo</strong>
+                        <p>Ưu tiên nước, rau xanh, trái cây, đạm nạc và ngũ cốc nguyên hạt; hạn chế đồ ngọt, đồ chiên và
+                            rượu bia.</p>
+                    </article>
+                    <article class="embed-card">
+                        <img class="care-image"
+                            src="assets/image/anh-avar-1632575744465751354437-0-0-445-712-crop-16325757580671986263760.webp"
+                            alt="Thực phẩm hỗ trợ người bệnh ung thư vú">
+                        <strong>Thực phẩm ưu tiên</strong>
+                        <p>Rau họ cải, cá béo, trái cây chín, đậu và các nguồn đạm nạc thường được nhắc tới trong tài
+                            liệu dinh dưỡng hỗ trợ.</p>
+                    </article>
+                </div>
+
+                <div class="grid two-col">
+                    <article class="card">
+                        <p class="eyebrow">Trước điều trị</p>
+                        <h3>Việc nên làm sớm khi có nghi ngờ</h3>
+                        <div class="stack-list dense" id="careBeforeList" style="margin-top:14px;"></div>
+                    </article>
+                    <article class="card">
+                        <p class="eyebrow">Sau điều trị</p>
+                        <h3>Nhịp phục hồi nên ưu tiên</h3>
+                        <div class="stack-list dense" id="careAfterList" style="margin-top:14px;"></div>
+                    </article>
+                </div>
+
+                <div class="grid two-col">
+                    <article class="card">
+                        <p class="eyebrow">Dinh dưỡng cốt lõi</p>
+                        <h3>Tháp dinh dưỡng gợi ý</h3>
+                        <div class="food-pyramid" style="margin-top:14px;" id="foodPyramid">
+                            <div class="pyramid-level level-1">Nước, rau xanh, trái cây, đạm nạc</div>
+                            <div class="pyramid-level level-2">Ngũ cốc nguyên hạt, họ đậu, cá giàu omega-3</div>
+                            <div class="pyramid-level level-3">Sữa chua, dầu thực vật, hạt và quả hạch</div>
+                            <div class="pyramid-level level-4">Đường, đồ chiên rán, rượu bia, thịt chế biến sẵn</div>
+                        </div>
+                    </article>
+                    <article class="card">
+                        <p class="eyebrow">Nên ưu tiên</p>
+                        <h3>Nhóm thực phẩm nổi bật</h3>
+                        <div class="grid two-col" style="margin-top:14px;" id="careFoodGrid"></div>
+                    </article>
+                </div>
+
+                <div class="grid three-col" id="careImageGrid"></div>
+
+                <div class="grid two-col">
+                    <article class="card">
+                        <p class="eyebrow">Cần hạn chế</p>
+                        <h3>Những điều nên tránh hoặc giảm bớt</h3>
+                        <div class="stack-list dense" id="careAvoidList" style="margin-top:14px;"></div>
+                    </article>
+                    <article class="card">
+                        <p class="eyebrow">Nguồn tham khảo</p>
+                        <h3>Các bài viết y tế xây dựng trang này</h3>
+                        <div class="stack-list dense" id="careSources" style="margin-top:14px;"></div>
+                    </article>
+                </div>
+
+                <div class="grid two-col">
+                    <article class="card">
+                        <p class="eyebrow">Sản phẩm hỗ trợ</p>
+                        <h3>Vật dụng có thể hữu ích trong chăm sóc</h3>
+                        <div class="grid two-col" style="margin-top:14px;" id="careSupportGrid"></div>
+                    </article>
+                    <article class="card">
+                        <p class="eyebrow">Lưu ý an toàn</p>
+                        <h3>Không dùng sản phẩm thay cho điều trị</h3>
+                        <div class="stack-list dense" id="productWarnings" style="margin-top:14px;"></div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ========== VIDEOS ========== -->
+            <section class="page" id="page-videos">
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Thư viện video</p>
+                        <h2>Video giáo dục rõ ràng và có thể xem ngay trên web</h2>
+                    </div>
+                    <p class="section-copy">Mỗi thẻ video có đường dẫn cụ thể để mở đúng video trên YouTube, không phải
+                        tự tìm lại.</p>
+                </div>
+                <div class="grid three-col" id="videoGrid"></div>
+            </section>
+
+            <section class="page" id="page-assistant">
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Hỏi AI</p>
+                        <h2>Chatbot hỗ trợ hỏi đáp về ung thư vú bất cứ lúc nào</h2>
+                    </div>
+                    <p class="section-copy">Bạn có thể hỏi về dấu hiệu, sàng lọc, nhũ ảnh, dinh dưỡng, phục hồi hoặc
+                        cách chuẩn bị trước khi đi khám. Nếu đã đăng nhập, lịch sử chat sẽ được lưu theo tài khoản.</p>
+                </div>
+
+                <div class="grid two-col">
+                    <article class="card">
+                        <p class="eyebrow">Gợi ý câu hỏi</p>
+                        <h3 style="margin-bottom:14px;">Bắt đầu nhanh</h3>
+                        <div class="stack-list dense" id="chatSuggestionList"></div>
+                    </article>
+                    <article class="card">
+                        <p class="eyebrow">Lưu ý</p>
+                        <h3 style="margin-bottom:14px;">Giới hạn của chatbot</h3>
+                        <div class="stack-list dense">
+                            <div class="check-item">Chatbot chỉ hỗ trợ cung cấp thông tin và định hướng hỏi bác sĩ.
+                            </div>
+                            <div class="check-item">Không dùng chatbot để tự chẩn đoán hoặc trì hoãn đi khám khi có dấu
+                                hiệu nghi ngờ.</div>
+                            <div class="check-item">Nếu có khối cứng, tiết dịch bất thường, da lõm hoặc đau khu trú kéo
+                                dài, nên đi khám sớm.</div>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="card chat-shell">
+                    <div class="chat-toolbar">
+                        <div>
+                            <strong>BreastCare Assistant</strong>
+                            <p class="chat-subtitle" id="chatStatus">Sẵn sàng trả lời.</p>
+                        </div>
+                        <div class="inline-actions">
+                            <button class="btn btn-secondary btn-sm" id="clearChatBtn">Xóa cuộc trò chuyện</button>
+                        </div>
+                    </div>
+                    <div class="chat-history" id="chatHistory">
+                        <div class="result-empty">Chưa có tin nhắn. Hãy bắt đầu bằng một câu hỏi về ung thư vú.</div>
+                    </div>
+                    <div class="chat-input-shell">
+                        <textarea class="input chat-textarea" id="chatMessageInput"
+                            placeholder="Ví dụ: Tôi sờ thấy khối cứng ở vú thì nên làm gì?" rows="4"></textarea>
+                        <div class="inline-actions" style="justify-content:flex-end;">
+                            <button class="btn btn-primary" id="sendChatBtn">Gửi câu hỏi</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== PREDICTION ========== -->
+            <section class="page" id="page-prediction">
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Dự đoán AI</p>
+                        <h2>Dữ liệu lâm sàng, ảnh nhũ ảnh và dự đoán kết hợp</h2>
+                    </div>
+                    <p class="section-copy">Chọn một trong ba kiểu dự đoán. Kết quả tập trung vào chẩn đoán, phân tích
+                        và lời khuyên tiếp theo.</p>
+                </div>
+
+                <div class="card hidden" id="predictionPatientCard" style="margin-bottom:18px;padding:16px 20px;">
+                    <div class="inline-actions">
+                        <label class="field" style="flex:1;min-width:240px;">
+                            <span>Dự đoán cho bệnh nhân</span>
+                            <select class="input" id="predictionPatientSelect">
+                                <option value="">— Chọn bệnh nhân —</option>
+                            </select>
+                        </label>
+                        <div class="mini-card" style="min-width:220px;">
+                            <strong>Bác sĩ</strong>
+                            <p id="predictionPatientHint">Hãy chọn đúng bệnh nhân trước khi chạy dự đoán để lưu kết quả
+                                vào đúng hồ sơ.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls row -->
+                <div style="display:flex;align-items:center;flex-wrap:wrap;gap:14px;justify-content:space-between;">
+                    <div class="subnav">
+                        <button class="subnav-link active" data-predict-tab="ml">Dự đoán lâm sàng (ML)</button>
+                        <button class="subnav-link" data-predict-tab="dl">Dự đoán hình ảnh (DL)</button>
+                        <button class="subnav-link" data-predict-tab="fusion">Kết hợp đa phương thức</button>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                        <span class="inline-note prediction-note" id="predictionStatus">Sẵn sàng dự đoán.</span>
+                    </div>
+                </div>
+
+                <!-- ML Tab -->
+                <div class="predict-panel is-active" id="predict-tab-ml">
+                    <div class="card">
+                        <div class="section-head compact" style="margin-bottom:18px;">
+                            <div>
+                                <p class="eyebrow">Mô hình lâm sàng</p>
+                                <h3>Sàng lọc bằng bộ chỉ số cấu trúc FNA</h3>
+                            </div>
+                            <div class="inline-actions">
+                                <select id="modelSelect" class="input compact-input"></select>
+                                <input type="file" id="csvInput" accept=".csv" hidden>
+                                <input type="file" id="reportImageInput" accept="image/*" capture="environment" hidden>
+                                <button class="btn btn-secondary btn-sm" id="importCsvBtn">Nhập CSV</button>
+                                <button class="btn btn-secondary btn-sm" id="importReportImageBtn">Chụp/đọc phiếu xét nghiệm</button>
+                            </div>
+                        </div>
+                        <p class="section-copy" style="margin-bottom:14px;font-size:0.92rem;">
+                            Nếu người dùng có ảnh chụp tờ phiếu xét nghiệm chứa 30 chỉ số, hệ thống có thể dùng AI để nhận diện và tự điền vào form ML.
+                        </p>
+                        <div class="feature-grid" id="featuresForm"></div>
+                        <div class="inline-actions">
+                            <button class="btn btn-secondary btn-sm" id="sampleBenignBtn">Mẫu lành tính</button>
+                            <button class="btn btn-secondary btn-sm" id="sampleMalignantBtn">Mẫu ác tính</button>
+                            <button class="btn btn-primary" id="predictMlBtn">Chạy dự đoán lâm sàng</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DL Tab -->
+                <div class="predict-panel" id="predict-tab-dl">
+                    <div class="card">
+                        <div class="section-head compact" style="margin-bottom:18px;">
+                            <div>
+                                <p class="eyebrow">Mô hình hình ảnh</p>
+                                <h3>Sàng lọc bằng ảnh nhũ ảnh</h3>
+                            </div>
+                            <select id="dlModelSelect" class="input compact-input"></select>
+                        </div>
+                        <label class="upload-shell" for="imageInput">
+                            <input type="file" id="imageInput" accept="image/*" hidden>
+                            <div class="upload-copy">
+                                <p class="upload-title">Kéo thả hoặc bấm để tải ảnh nhũ ảnh</p>
+                                <p class="upload-subtitle">Hỗ trợ JPEG / PNG.</p>
+                            </div>
+                            <img id="imagePreview" alt="Ảnh nhũ ảnh đã chọn">
+                        </label>
+                        <div class="card" style="margin-top:14px;padding:14px;">
+                            <p class="eyebrow">Ảnh mẫu demo</p>
+                            <p class="section-copy" style="margin:0 0 12px;font-size:0.92rem;">
+                                Nếu người dùng chưa có ảnh X-quang/nhũ ảnh để thử, có thể dùng 2 ảnh mẫu đã chuẩn bị sẵn dưới đây để hình dung cách hệ thống DL hoạt động.
+                            </p>
+                            <div class="inline-actions">
+                                <button class="btn btn-secondary btn-sm" id="useDemoBenignImageBtn">Dùng ảnh mẫu lành tính</button>
+                                <button class="btn btn-secondary btn-sm" id="useDemoMalignantImageBtn">Dùng ảnh mẫu nghi ngờ ác tính</button>
+                            </div>
+                        </div>
+                        <div class="inline-actions dl-primary-action">
+                            <button class="btn btn-primary" id="predictDlBtn">Chạy dự đoán</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MULTIMODAL Tab -->
+                <div class="predict-panel" id="predict-tab-fusion">
+                    <div class="card">
+                        <div class="section-head compact" style="margin-bottom:18px;">
+                            <div>
+                                <p class="eyebrow">Mô hình đa phương thức</p>
+                                <h3>Kết hợp dữ liệu lâm sàng và ảnh nhũ ảnh</h3>
+                            </div>
+                            <div class="inline-actions">
+                                <select id="fusionMlModelSelect" class="input compact-input"></select>
+                                <select id="fusionDlModelSelect" class="input compact-input"></select>
+                            </div>
+                        </div>
+                        <p class="section-copy" style="margin-bottom:14px;font-size:0.92rem;">
+                            Tab này có vùng nhập dữ liệu riêng. Bạn có thể nạp CSV lâm sàng và tải ảnh nhũ ảnh trực tiếp tại đây, không cần chuyển sang tab ML hoặc DL.
+                        </p>
+                        <div class="inline-actions" style="margin-bottom:14px;">
+                            <input type="file" id="fusionCsvInput" accept=".csv" hidden>
+                            <input type="file" id="fusionReportImageInput" accept="image/*" capture="environment" hidden>
+                            <button class="btn btn-secondary btn-sm" id="importFusionCsvBtn">Nhập CSV lâm sàng</button>
+                            <button class="btn btn-secondary btn-sm" id="importFusionReportImageBtn">Chụp/đọc phiếu xét nghiệm</button>
+                        </div>
+                        <div class="grid two-col">
+                            <article class="mini-card">
+                                <strong>Dữ liệu lâm sàng hiện có</strong>
+                                <p id="fusionClinicalStatus">Chưa có dữ liệu.</p>
+                            </article>
+                            <article class="mini-card">
+                                <strong>Ảnh nhũ ảnh hiện có</strong>
+                                <p id="fusionImageStatus">Chưa có ảnh được chọn.</p>
+                            </article>
+                        </div>
+                        <div class="card" style="margin-top:14px;padding:14px;">
+                            <p class="eyebrow">Ảnh nhũ ảnh cho nhánh DL trong kết hợp</p>
+                            <label class="upload-shell" for="fusionImageInput">
+                                <input type="file" id="fusionImageInput" accept="image/*" hidden>
+                                <div class="upload-copy">
+                                    <p class="upload-title">Kéo thả hoặc bấm để tải ảnh nhũ ảnh cho tab Kết hợp</p>
+                                    <p class="upload-subtitle">Ảnh tại tab này độc lập với tab DL.</p>
+                                </div>
+                                <img id="fusionImagePreview" alt="Ảnh dùng cho dự đoán đa phương thức">
+                            </label>
+                            <p id="fusionImagePreviewEmpty" class="result-empty" style="padding:0;">Chưa có ảnh nhũ ảnh nào được nạp vào luồng kết hợp.</p>
+                        </div>
+                        <div class="card" style="margin-top:14px;padding:14px;">
+                            <p class="eyebrow">Chuẩn bị nhanh dữ liệu mẫu</p>
+                            <p class="section-copy" style="margin:0 0 12px;font-size:0.92rem;">
+                                Nếu muốn demo toàn bộ pipeline, có thể nạp đồng thời cả chỉ số lâm sàng và ảnh mẫu chỉ với một lần bấm.
+                            </p>
+                            <div class="inline-actions">
+                                <button class="btn btn-secondary btn-sm" id="useFusionBenignDemoBtn">Mẫu kết hợp lành tính</button>
+                                <button class="btn btn-secondary btn-sm" id="useFusionMalignantDemoBtn">Mẫu kết hợp ác tính</button>
+                            </div>
+                        </div>
+                        <div class="inline-actions dl-primary-action">
+                            <button class="btn btn-primary" id="predictFusionBtn" disabled>Chạy dự đoán kết hợp</button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Result -->
+                <div class="card result-card" id="resultCard">
+                    <div class="section-head compact" style="margin-bottom:16px;">
+                        <div>
+                            <p class="eyebrow">Kết quả</p>
+                            <h3>Phân tích và lời khuyên</h3>
+                        </div>
+                    </div>
+                    <div id="resultContent" class="result-empty">Chưa có kết quả dự đoán. Hãy điền dữ liệu và nhấn chạy
+                        dự đoán.</div>
+                </div>
+            </section>
+
+            <!-- ========== STATS (New Page) ========== -->
+            <section class="page" id="page-stats">
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Thống kê AI</p>
+                        <h2>Hiệu suất và thông tin các mô hình</h2>
+                    </div>
+                    <p class="section-copy">Tổng hợp chỉ số đánh giá của các model ML và DL đang hoạt động trên nền
+                        tảng.</p>
+                </div>
+
+                <!-- Quick stats row -->
+                <div class="grid four-col" id="statsQuickGrid">
+                    <div class="stat-card">
+                        <div class="stat-card-value" id="statMlCount">—</div>
+                        <div class="stat-card-label">Model ML đang hoạt động</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-value" id="statDlCount">—</div>
+                        <div class="stat-card-label">Model DL đang hoạt động</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-value" id="statBestAcc">—</div>
+                        <div class="stat-card-label">Độ chính xác tốt nhất (ML)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-value" id="statPredCount">—</div>
+                        <div class="stat-card-label">Dự đoán đã thực hiện</div>
+                    </div>
+                </div>
+
+                <!-- Benchmarks table -->
+                <div class="card">
+                    <div class="section-head compact" style="margin-bottom:18px;">
+                        <div>
+                            <p class="eyebrow">Benchmark ML</p>
+                            <h3>Bảng so sánh hiệu suất các mô hình lâm sàng</h3>
+                        </div>
+                    </div>
+                    <div id="benchmarksTable">
+                        <div class="result-empty">Đang tải dữ liệu hiệu suất...</div>
+                    </div>
+                </div>
+
+                <!-- DL Models list -->
+                <div class="card">
+                    <div class="section-head compact" style="margin-bottom:18px;">
+                        <div>
+                            <p class="eyebrow">So sánh DL</p>
+                            <h3>Các mô hình DL đã từng nghiên cứu trước khi chọn CNN</h3>
+                        </div>
+                    </div>
+                    <div id="dlBenchmarkTable">
+                        <div class="result-empty">Đang tải so sánh mô hình DL...</div>
+                    </div>
+                    <div class="stack-list dense" id="dlSelectionSummary" style="margin-top:18px;"></div>
+                </div>
+
+                <div class="card">
+                    <div class="section-head compact" style="margin-bottom:18px;">
+                        <div>
+                            <p class="eyebrow">Model DL</p>
+                            <h3>Mô hình DL hiện đang nạp trong hệ thống</h3>
+                        </div>
+                    </div>
+                    <div class="grid three-col" id="dlModelCards">
+                        <div class="result-empty">Đang tải model DL...</div>
+                    </div>
+                </div>
+
+                <!-- Note about AI -->
+                <div class="card"
+                    style="background:linear-gradient(135deg,rgba(240,253,248,0.9),rgba(220,253,240,0.7));border-color:rgba(34,199,142,0.2);">
+                    <p class="eyebrow">Lưu ý quan trọng</p>
+                    <h3 style="margin-bottom:10px;">Giới hạn của AI trong sàng lọc y tế</h3>
+                    <div class="stack-list dense" id="statsDisclaimers"></div>
+                </div>
+            </section>
+
+            <!-- ========== HISTORY ========== -->
+            <section class="page" id="page-history">
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Lịch sử</p>
+                        <h2 id="historyPageTitle">Lịch sử dự đoán cá nhân</h2>
+                    </div>
+                    <div class="inline-actions">
+                        <button class="btn btn-secondary btn-sm" id="refreshHistoryBtn">Làm mới</button>
+                    </div>
+                </div>
+
+                <!-- Filter bar for doctor -->
+                <div class="card hidden" id="historyPatientFilter" style="padding:16px 20px;">
+                    <div class="inline-actions">
+                        <label class="field" style="flex:1;min-width:200px;">
+                            <span>Xem lịch sử của bệnh nhân</span>
+                            <select class="input" id="historyPatientSelect">
+                                <option value="">— Lịch sử của tôi —</option>
+                            </select>
+                        </label>
+                        <button class="btn btn-primary btn-sm" id="loadHistoryBtn" style="margin-top:22px;">Xem lịch
+                            sử</button>
+                    </div>
+                </div>
+
+                <!-- History list -->
+                <div class="grid" id="userHistoryList">
+                    <div class="result-empty">Đăng nhập để xem lịch sử dự đoán.</div>
+                </div>
+            </section>
+
+            <!-- ========== PATIENTS ========== -->
+            <section class="page" id="page-patients">
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Bệnh nhân</p>
+                        <h2>Hồ sơ bệnh nhân và lịch sử dự đoán</h2>
+                    </div>
+                    <p class="section-copy">Khu vực dành cho tài khoản bác sĩ để tạo hồ sơ và gắn lịch sử dự đoán theo
+                        từng ca.</p>
+                </div>
+
+                <div class="grid two-col">
+                    <article class="card">
+                        <h3 style="margin-bottom:16px;" id="patientFormTitle">Tạo hồ sơ bệnh nhân</h3>
+                        <div class="form-grid two">
+                            <label class="field">
+                                <span>Họ và tên</span>
+                                <input class="input" type="text" id="patientFullName" placeholder="Trần Thị B">
+                            </label>
+                            <label class="field">
+                                <span>Ngày sinh</span>
+                                <input class="input" type="date" id="patientDob">
+                            </label>
+                            <label class="field">
+                                <span>Giới tính</span>
+                                <select class="input" id="patientGender">
+                                    <option value="">Chưa xác định</option>
+                                    <option value="female">Nữ</option>
+                                    <option value="male">Nam</option>
+                                    <option value="other">Khác</option>
+                                </select>
+                            </label>
+                            <label class="field">
+                                <span>Ghi chú</span>
+                                <input class="input" type="text" id="patientNotes" placeholder="Tóm tắt ngắn nếu cần">
+                            </label>
+                        </div>
+                        <div class="inline-actions" style="margin-top:14px;">
+                            <button class="btn btn-primary" id="createPatientBtn"><span id="patientFormActionText">Tạo
+                                    bệnh nhân</span></button>
+                            <button class="btn btn-secondary hidden" id="cancelPatientEditBtn">Hủy chỉnh sửa</button>
+                            <button class="btn btn-secondary" id="refreshPatientsBtn">Làm mới</button>
+                        </div>
+                        <p class="inline-note" id="patientStatus" style="margin-top:12px;">Đăng nhập để tạo và lưu hồ sơ
+                            bệnh nhân.</p>
+                    </article>
+
+                    <article class="card">
+                        <h3 style="margin-bottom:16px;">Bối cảnh bệnh nhân hiện tại</h3>
+                        <label class="field" style="margin-bottom:14px;">
+                            <span>Bệnh nhân đang chọn</span>
+                            <select class="input" id="patientSelect"></select>
+                        </label>
+                        <div class="summary-list">
+                            <div class="summary-row"><span>Chế độ</span><strong id="patientMode">Khách</strong></div>
+                            <div class="summary-row"><span>Trạng thái lịch sử</span><strong id="historyStatus">Chưa
+                                    tải</strong></div>
+                            <div class="summary-row"><span>Số dự đoán đã lưu</span><strong
+                                    id="workspaceHistoryCount">0</strong></div>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="grid two-col">
+                    <article class="card">
+                        <h3 style="margin-bottom:14px;">Danh sách bệnh nhân</h3>
+                        <div id="patientCards" class="stack-list empty-state">Chưa có hồ sơ bệnh nhân.</div>
+                    </article>
+                    <article class="card">
+                        <h3 style="margin-bottom:14px;">Lịch sử dự đoán</h3>
+                        <div id="historyList" class="stack-list empty-state">Đăng nhập để xem lịch sử.</div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ========== ABOUT (New Page) ========== -->
+            <section class="page" id="page-about">
+                <div class="about-hero">
+                    <p class="eyebrow">Về chúng tôi</p>
+                    <h2>BreastCare Mint — AI hỗ trợ sàng lọc ung thư vú</h2>
+                    <p>Dự án được xây dựng để hỗ trợ sàng lọc ung thư vú bằng dữ liệu lâm sàng, ảnh nhũ ảnh và nội dung
+                        y khoa rõ ràng cho người dùng và bác sĩ.</p>
+                </div>
+
+                <!-- Mission -->
+                <div class="grid three-col">
+                    <div class="card" style="text-align:center;">
+                        <h3 style="margin-bottom:8px;">Sứ mệnh</h3>
+                        <p class="section-copy" style="font-size:0.88rem;">Giúp người dùng có thêm một lớp tham khảo AI
+                            trước khi đi khám, không thay thế chuyên môn y tế.</p>
+                    </div>
+                    <div class="card" style="text-align:center;">
+                        <h3 style="margin-bottom:8px;">Phương pháp</h3>
+                        <p class="section-copy" style="font-size:0.88rem;">Kết hợp ML trên dữ liệu Wisconsin WDBC với DL
+                            ảnh nhũ ảnh đang hoạt động thực tế là Custom CNN và lớp giải thích heatmap.</p>
+                    </div>
+                    <div class="card" style="text-align:center;">
+                        <h3 style="margin-bottom:8px;">An toàn & Minh bạch</h3>
+                        <p class="section-copy" style="font-size:0.88rem;">Mọi kết quả đều có giải thích (SHAP,
+                            Grad-CAM). Người dùng hiểu được cơ sở của từng dự đoán.</p>
+                    </div>
+                </div>
+
+                <!-- Technical details -->
+                <div class="grid two-col">
+                    <div class="card">
+                        <p class="eyebrow">Mô hình ML</p>
+                        <h3 style="margin-bottom:14px;">Phân loại lâm sàng (Wisconsin WDBC)</h3>
+                        <div class="stack-list dense" id="aboutMlList"></div>
+                    </div>
+                    <div class="card">
+                        <p class="eyebrow">Mô hình DL</p>
+                        <h3 style="margin-bottom:14px;">Phân tích ảnh nhũ ảnh</h3>
+                        <div class="stack-list dense" id="aboutDlList"></div>
+                    </div>
+                </div>
+
+                <!-- Disclaimer -->
+                <div class="card"
+                    style="background:linear-gradient(135deg,rgba(224,92,110,0.06),rgba(255,255,255,0.9));border-color:rgba(224,92,110,0.15);">
+                    <p class="eyebrow" style="color:var(--danger);">Tuyên bố từ chối trách nhiệm</p>
+                    <h3 style="margin-bottom:12px;">Công cụ hỗ trợ — không thay thế bác sĩ</h3>
+                    <p class="section-copy">BreastCare Mint là dự án nghiên cứu học thuật. Kết quả từ AI chỉ mang tính
+                        chất tham khảo và hỗ trợ sàng lọc ban đầu. Mọi quyết định y tế cần dựa trên chẩn đoán của bác sĩ
+                        chuyên khoa, kết quả xét nghiệm chính thức và/hoặc sinh thiết khi cần thiết.</p>
+                </div>
+            </section>
+
+            <!-- ========== LOGIN ========== -->
+            <section class="page" id="page-login">
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Đăng nhập</p>
+                        <h2>Truy cập tài khoản của bạn</h2>
+                    </div>
+                    <p class="section-copy">Đăng nhập để lưu lịch sử dự đoán hoặc dùng quyền bác sĩ để quản lý hồ sơ
+                        bệnh nhân.</p>
+                </div>
+                <div class="grid two-col">
+                    <article class="card">
+                        <h3 style="margin-bottom:16px;">Đăng nhập</h3>
+                        <div class="form-grid">
+                            <label class="field">
+                                <span>Email</span>
+                                <input class="input" type="email" id="loginEmail" placeholder="you@example.com">
+                            </label>
+                            <label class="field">
+                                <span>Mật khẩu</span>
+                                <input class="input" type="password" id="loginPassword" placeholder="Nhập mật khẩu">
+                            </label>
+                        </div>
+                        <div class="inline-actions" style="margin-top:16px;">
+                            <button class="btn btn-primary" id="loginBtn">Đăng nhập</button>
+                            <button class="btn btn-ghost btn-sm" data-nav-target="recovery">Quên mật khẩu?</button>
+                        </div>
+                        <p class="inline-note" data-auth-status style="margin-top:12px;">Chưa có phiên đăng nhập.</p>
+                    </article>
+                    <article class="card">
+                        <p class="eyebrow">Chưa có tài khoản</p>
+                        <h3 style="margin-bottom:10px;">Tạo tài khoản mới</h3>
+                        <p class="section-copy" style="font-size:0.88rem;margin-bottom:16px;">Người dùng phổ thông lưu
+                            lịch sử dự đoán cá nhân. Bác sĩ có thêm quyền tạo hồ sơ bệnh nhân.</p>
+                        <button class="btn btn-secondary" data-nav-target="register">Đi tới đăng ký →</button>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ========== REGISTER ========== -->
+            <section class="page" id="page-register">
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Đăng ký</p>
+                        <h2>Tạo tài khoản mới</h2>
+                    </div>
+                    <p class="section-copy">Chọn đúng vai trò để mở ra trải nghiệm phù hợp với người dùng phổ thông hoặc
+                        bác sĩ.</p>
+                </div>
+                <div class="card" style="max-width:600px;">
+                    <div class="form-grid two">
+                        <label class="field">
+                            <span>Họ và tên</span>
+                            <input class="input" type="text" id="registerFullName" placeholder="Nguyễn Văn A">
+                        </label>
+                        <label class="field">
+                            <span>Email</span>
+                            <input class="input" type="email" id="registerEmail" placeholder="you@example.com">
+                        </label>
+                        <label class="field">
+                            <span>Mật khẩu</span>
+                            <input class="input" type="password" id="registerPassword" placeholder="Tối thiểu 8 ký tự">
+                        </label>
+                        <label class="field">
+                            <span>Vai trò</span>
+                            <select class="input" id="registerRole">
+                                <option value="user">Người dùng</option>
+                                <option value="doctor">Bác sĩ</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="inline-actions" style="margin-top:16px;">
+                        <button class="btn btn-primary" id="registerBtn">Đăng ký tài khoản</button>
+                        <button class="btn btn-ghost btn-sm" data-nav-target="login">Đã có tài khoản?</button>
+                    </div>
+                    <p class="inline-note" data-auth-status style="margin-top:12px;">Chưa có phiên đăng nhập.</p>
+                </div>
+            </section>
+
+            <!-- ========== RECOVERY ========== -->
+            <section class="page" id="page-recovery">
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Khôi phục tài khoản</p>
+                        <h2>Quên mật khẩu và đặt lại</h2>
+                    </div>
+                    <p class="section-copy">Yêu cầu token đặt lại rồi nhập lại ngay bên dưới để tạo mật khẩu mới.</p>
+                </div>
+                <div class="grid two-col">
+                    <article class="card">
+                        <p class="eyebrow">Bước 1</p>
+                        <h3 style="margin-bottom:14px;">Yêu cầu mã đặt lại</h3>
+                        <div class="form-grid">
+                            <label class="field">
+                                <span>Email</span>
+                                <input class="input" type="email" id="forgotEmail" placeholder="you@example.com">
+                            </label>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top:14px;" id="forgotPasswordBtn">Gửi yêu
+                            cầu</button>
+                    </article>
+                    <article class="card">
+                        <p class="eyebrow">Bước 2</p>
+                        <h3 style="margin-bottom:14px;">Nhập token và mật khẩu mới</h3>
+                        <div class="form-grid">
+                            <label class="field">
+                                <span>Mã reset</span>
+                                <input class="input" type="text" id="resetToken"
+                                    placeholder="Dán token từ email hoặc outbox">
+                            </label>
+                            <label class="field">
+                                <span>Mật khẩu mới</span>
+                                <input class="input" type="password" id="resetNewPassword" placeholder="Mật khẩu mới">
+                            </label>
+                        </div>
+                        <button class="btn btn-secondary" style="margin-top:14px;" id="resetPasswordBtn">Đặt lại mật
+                            khẩu</button>
+                    </article>
+                </div>
+                <p class="inline-note" data-auth-status>Chưa có phiên đăng nhập.</p>
+            </section>
+
+            <!-- ========== ACCOUNT ========== -->
+            <section class="page" id="page-account">
+                <div class="section-head">
+                    <div>
+                        <p class="eyebrow">Tài khoản</p>
+                        <h2>Hồ sơ cá nhân và bảo mật</h2>
+                    </div>
+                    <p class="section-copy">Thông tin người dùng sau khi đăng nhập: hồ sơ cơ bản, mật khẩu và trạng thái
+                        tài khoản.</p>
+                </div>
+
+                <div class="grid two-col">
+                    <article class="card">
+                        <h3 style="margin-bottom:16px;">Hồ sơ cá nhân</h3>
+                        <div class="form-grid two">
+                            <label class="field">
+                                <span>Họ và tên</span>
+                                <input class="input" type="text" id="profileFullName" placeholder="Nguyễn Văn A">
+                            </label>
+                            <label class="field">
+                                <span>Email</span>
+                                <input class="input" type="email" id="profileEmail" placeholder="you@example.com"
+                                    disabled>
+                            </label>
+                        </div>
+                        <div class="inline-actions" style="margin-top:14px;">
+                            <button class="btn btn-primary" id="updateProfileBtn">Cập nhật hồ sơ</button>
+                            <button class="btn btn-secondary" id="logoutBtn">Đăng xuất</button>
+                            <button class="btn btn-danger btn-sm" id="logoutAllBtn">Đăng xuất mọi thiết bị</button>
+                        </div>
+                    </article>
+                    <article class="card">
+                        <h3 style="margin-bottom:16px;">Đổi mật khẩu</h3>
+                        <div class="form-grid">
+                            <label class="field">
+                                <span>Mật khẩu hiện tại</span>
+                                <input class="input" type="password" id="currentPassword"
+                                    placeholder="Nhập mật khẩu hiện tại">
+                            </label>
+                            <label class="field">
+                                <span>Mật khẩu mới</span>
+                                <input class="input" type="password" id="newPassword" placeholder="Nhập mật khẩu mới">
+                            </label>
+                        </div>
+                        <button class="btn btn-secondary" style="margin-top:14px;" id="changePasswordBtn">Đổi mật
+                            khẩu</button>
+                    </article>
+                </div>
+
+                <div class="grid two-col">
+                    <article class="card">
+                        <h3 style="margin-bottom:14px;">Tóm tắt tài khoản</h3>
+                        <div class="summary-list">
+                            <div class="summary-row"><span>Người dùng</span><strong id="accountName">Khách</strong>
+                            </div>
+                            <div class="summary-row"><span>Email</span><strong id="accountEmail">Chưa đăng nhập</strong>
+                            </div>
+                            <div class="summary-row"><span>Vai trò</span><strong id="accountRole">—</strong></div>
+                            <div class="summary-row"><span>Số bệnh nhân đã lưu</span><strong
+                                    id="accountPatientCount">0</strong></div>
+                        </div>
+                        <p class="inline-note" data-auth-status style="margin-top:14px;">Chưa có phiên đăng nhập.</p>
+                    </article>
+                    <article class="card">
+                        <h3 style="margin-bottom:14px;">Khuyến nghị sử dụng</h3>
+                        <div class="stack-list dense" id="accountChecklist"></div>
+                    </article>
+                </div>
+            </section>
+
+        </main><!-- end .page-stack -->
+    </div><!-- end .app-shell -->
+
+    <!-- =================== STATUS TOAST =================== -->
+    <div class="status-toast hidden" id="statusToast" role="alert" aria-live="polite"></div>
+    <button class="chat-fab" id="chatFab" type="button">Hỏi AI</button>
+
+    <script src="app.js?v=20260406-8"></script>
 </body>
 
 </html>

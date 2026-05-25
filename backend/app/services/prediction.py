@@ -2,10 +2,11 @@ import pickle
 import numpy as np
 import pandas as pd
 from pathlib import Path
-import shap
 import joblib
 from sklearn.datasets import load_breast_cancer
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
@@ -99,10 +100,13 @@ class PredictionService:
     def __init__(self):
         self.models = {}
         self.explainers = {}
-        self.probability_calibrators = {}
+        self.malignant_class_label = {}
+        self.model_probability_reference = {}
         self.scaler = None
+        self._shap_module = None
         self._load_resources()
-        self._fit_probability_calibrators()
+        self._ensure_healthy_models()
+        self._build_probability_references()
         
     def get_model_benchmarks(self):
         """Returns stats for all active models."""
@@ -113,6 +117,25 @@ class PredictionService:
                 "is_recommended": False, "reason": "Dữ liệu hiệu năng đang được cập nhật."
             })
         return results
+
+    def _risk_band_from_probability(self, probability: float) -> str:
+        p = float(np.clip(probability, 0.0, 1.0))
+        if p < 0.35:
+            return "Low"
+        if p < 0.65:
+            return "Medium"
+        return "High"
+
+    def _empirical_probability(self, model_name: str, raw_probability: float) -> float:
+        p_raw = float(np.clip(raw_probability, 1e-6, 1.0 - 1e-6))
+        ref = self.model_probability_reference.get(model_name)
+        if isinstance(ref, np.ndarray) and ref.size > 20:
+            rank = float(np.searchsorted(ref, p_raw, side="right") / ref.size)
+            p_rank = 0.10 + 0.80 * rank
+            p = (0.25 * p_raw) + (0.75 * p_rank)
+            return float(np.clip(p, 0.10, 0.90))
+        return float(np.clip(p_raw, 0.10, 0.90))
+
     def _load_resources(self):
         # 1. Load Scaler
         scaler_path = PROJECT_ROOT / "models" / "ml_scaler.pkl"
@@ -139,73 +162,210 @@ class PredictionService:
                     model = joblib.load(model_path)
                     self.models[name] = model
                     print(f"✅ Loaded {name} from {model_path.name}")
+                    self.malignant_class_label[name] = self._infer_malignant_class_label(model)
                     
                     # 3. Create Explainers
-                    # Using generic Explainer with a small background dataset for stability
-                    # We'll initialize them on-demand or use a simplified linear explainer for LogReg
-                    if name in ["XGBoost", "Random Forest"]:
-                        try:
-                            # Use TreeExplainer specifically for these as it's faster
-                            self.explainers[name] = shap.TreeExplainer(model)
-                        except:
-                            print(f"⚠️ SHAP TreeExplainer failed for {name}, will use fallback.")
+                    # SHAP explainers are initialized lazily to keep startup fast.
                 except Exception as e:
                     print(f"❌ Error loading ML {name}: {e}")
 
-    def _fit_probability_calibrators(self):
-        """Fit per-model Platt scaling calibrators on a holdout split.
+    def _model_probability_std(self, model) -> float:
+        try:
+            x, _ = load_breast_cancer(return_X_y=True)
+            x = x[:256]
+            probs = model.predict_proba(x)
+            if probs.ndim != 2 or probs.shape[1] < 2:
+                return 0.0
+            return float(np.std(probs[:, 0]))
+        except Exception:
+            return 0.0
 
-        Logistic calibration is smoother and less prone to hard 0/1 collapse.
+    def _infer_malignant_class_label(self, model) -> int:
+        """Infer which class label corresponds to malignant cases.
+
+        We use Wisconsin convention y==0 malignant and pick class with higher AUC.
         """
+        try:
+            x, y = load_breast_cancer(return_X_y=True)
+            y_malignant = (y == 0).astype(int)
+            probs = model.predict_proba(x)
+            classes = getattr(model, "classes_", np.array([0, 1]))
+            if probs.ndim != 2:
+                return 1
+
+            best_auc = -1.0
+            best_label = int(classes[0])
+            for idx, cls in enumerate(classes):
+                auc = roc_auc_score(y_malignant, probs[:, idx])
+                if auc > best_auc:
+                    best_auc = float(auc)
+                    best_label = int(cls)
+
+            return int(best_label)
+        except Exception:
+            return 1
+
+    def _train_fallback_models(self):
+        x, y = load_breast_cancer(return_X_y=True)
+        y_malignant = (y == 0).astype(int)
+
+        x_train, _, y_train, _ = train_test_split(
+            x,
+            y_malignant,
+            test_size=0.25,
+            random_state=42,
+            stratify=y_malignant,
+        )
+
+        fallback_models = {
+            "Logistic Regression": LogisticRegression(max_iter=5000, solver="liblinear", random_state=42),
+            "Random Forest": RandomForestClassifier(n_estimators=300, random_state=42, class_weight="balanced"),
+        }
+
+        for name, model in fallback_models.items():
+            model.fit(x_train, y_train)
+            self.models[name] = model
+            self.malignant_class_label[name] = 1
+            if name in self.explainers:
+                del self.explainers[name]
+
+        print("⚠️ Using fallback ML models trained from sklearn Wisconsin dataset due unhealthy artifacts.")
+
+    def _ensure_healthy_models(self):
+        if not self.models:
+            self._train_fallback_models()
+            return
+
+        unhealthy = []
+        for name, model in self.models.items():
+            std = self._model_probability_std(model)
+            if std < 0.02:
+                unhealthy.append(name)
+
+        if len(unhealthy) == len(self.models):
+            self.models.clear()
+            self.explainers.clear()
+            self.malignant_class_label.clear()
+            self._train_fallback_models()
+            return
+
+        for name in unhealthy:
+            print(f"⚠️ Disabled unhealthy ML artifact: {name}")
+            self.models.pop(name, None)
+            self.explainers.pop(name, None)
+            self.malignant_class_label.pop(name, None)
+
+    def _build_probability_references(self):
         if not self.models:
             return
 
         try:
-            X_all, y_all = load_breast_cancer(return_X_y=True)
-            # sklearn target: 0=malignant, 1=benign -> convert to malignant label 1/0
-            y_malignant = (y_all == 0).astype(int)
-
-            _, X_cal, _, y_cal = train_test_split(
-                X_all,
+            x, y = load_breast_cancer(return_X_y=True)
+            y_malignant = (y == 0).astype(int)
+            _, x_val, _, _ = train_test_split(
+                x,
                 y_malignant,
-                test_size=0.35,
+                test_size=0.2,
                 random_state=42,
                 stratify=y_malignant,
             )
+        except Exception:
+            return
 
-            if self.scaler is not None:
-                X_cal_scaled = self.scaler.transform(X_cal)
-            else:
-                X_cal_scaled = X_cal
+        for name, model in self.models.items():
+            try:
+                x_input = x_val
+                if self.scaler is not None:
+                    x_input = self.scaler.transform(self._align_for_scaler(x_val))
 
-            for name, model in self.models.items():
-                try:
-                    probs = model.predict_proba(X_cal_scaled)
-                    classes = getattr(model, "classes_", np.array([0, 1]))
+                probs = model.predict_proba(x_input)
+                classes = getattr(model, "classes_", None)
+                prob_mal = None
+                if classes is not None:
                     class_to_index = {int(cls): idx for idx, cls in enumerate(classes)}
+                    mal_label = int(self.malignant_class_label.get(name, 1))
+                    if mal_label in class_to_index:
+                        prob_mal = probs[:, class_to_index[mal_label]]
+                    elif 1 in class_to_index and probs.shape[1] > 1:
+                        prob_mal = probs[:, class_to_index[1]]
+                if prob_mal is None:
+                    prob_mal = probs[:, 0]
 
-                    if 0 in class_to_index:
-                        mal_idx = class_to_index[0]
-                        raw_mal = probs[:, mal_idx]
-                    elif 1 in class_to_index and probs.shape[1] == 2:
-                        raw_mal = 1.0 - probs[:, class_to_index[1]]
-                    else:
-                        raw_mal = probs[:, 0]
+                self.model_probability_reference[name] = np.sort(
+                    np.clip(np.asarray(prob_mal, dtype=np.float32), 0.0, 1.0)
+                )
+            except Exception as exc:
+                print(f"⚠️ Could not build ML probability reference for {name}: {exc}")
 
-                    # Platt scaling on raw malignant probability.
-                    eps = 1e-6
-                    x_cal = np.clip(raw_mal, eps, 1.0 - eps).reshape(-1, 1)
-                    calibrator = LogisticRegression(max_iter=1000, random_state=42)
-                    calibrator.fit(x_cal, y_cal)
-                    self.probability_calibrators[name] = calibrator
-                    print(f"✅ Calibrated probabilities for {name}")
-                except Exception as e:
-                    print(f"⚠️ Calibration skipped for {name}: {e}")
-        except Exception as e:
-            print(f"⚠️ Global probability calibration skipped: {e}")
+    def _get_shap_module(self):
+        if self._shap_module is None:
+            import shap
+            self._shap_module = shap
+        return self._shap_module
+
+    def _get_base_estimator(self, model):
+        """Unwrap calibrated/pipeline models so explanation uses the real estimator."""
+        calibrated = getattr(model, "calibrated_classifiers_", None)
+        if calibrated:
+            inner = getattr(calibrated[0], "estimator", None)
+            if inner is not None:
+                return inner
+        estimator = getattr(model, "estimator", None)
+        return estimator if estimator is not None else model
+
+    def _extract_linear_components(self, model):
+        base = self._get_base_estimator(model)
+        if hasattr(base, "named_steps"):
+            scaler = base.named_steps.get("scaler")
+            lr = base.named_steps.get("lr") or base.named_steps.get("logisticregression")
+            if scaler is not None and lr is not None and hasattr(lr, "coef_"):
+                return scaler, lr
+        if hasattr(base, "coef_"):
+            return None, base
+        return None, None
+
+    def _get_explainer(self, model_name, model):
+        if model_name in self.explainers:
+            return self.explainers[model_name]
+
+        base_model = self._get_base_estimator(model)
+
+        if model_name in ["XGBoost", "Random Forest"]:
+            try:
+                shap_module = self._get_shap_module()
+                self.explainers[model_name] = shap_module.TreeExplainer(base_model)
+            except Exception as e:
+                print(f"⚠️ SHAP TreeExplainer failed for {model_name}: {e}")
+                return None
+        return self.explainers.get(model_name)
 
     def get_available_models(self):
         return sorted(list(self.models.keys()))
+
+    def _align_for_scaler(self, values_2d: np.ndarray):
+        """Align runtime feature order/names with scaler training columns."""
+        if self.scaler is None:
+            return values_2d
+
+        expected_cols = getattr(self.scaler, "feature_names_in_", None)
+        if expected_cols is None:
+            return values_2d
+
+        canonical_index = {
+            f.lower().replace("_", " ").strip(): i
+            for i, f in enumerate(FEATURES)
+        }
+
+        aligned_rows = []
+        for row in values_2d:
+            aligned = []
+            for col in expected_cols:
+                key = str(col).lower().replace("_", " ").strip()
+                idx = canonical_index.get(key)
+                aligned.append(float(row[idx]) if idx is not None else 0.0)
+            aligned_rows.append(aligned)
+
+        return pd.DataFrame(aligned_rows, columns=list(expected_cols))
 
     def recommend_model(self):
         """Returns the recommended model based on training performance."""
@@ -234,7 +394,8 @@ class PredictionService:
         
         # APPLY SCALING
         if self.scaler:
-            input_scaled = self.scaler.transform(input_raw)
+            input_aligned = self._align_for_scaler(input_raw)
+            input_scaled = self.scaler.transform(input_aligned)
         else:
             input_scaled = input_raw # Fallback (will be inaccurate)
 
@@ -248,41 +409,39 @@ class PredictionService:
         classes = getattr(model, "classes_", None)
         if classes is not None:
             class_to_index = {int(cls): idx for idx, cls in enumerate(classes)}
-            if 0 in class_to_index:
-                mal_idx = class_to_index[0]
+            mal_label = int(self.malignant_class_label.get(model_name, 1))
+            if mal_label in class_to_index:
+                mal_idx = class_to_index[mal_label]
                 prob_mal = float(probs[mal_idx])
             elif 1 in class_to_index and len(probs) == 2:
-                mal_idx = 1 - class_to_index[1]
-                prob_mal = float(1.0 - probs[class_to_index[1]])
+                mal_idx = class_to_index[1]
+                prob_mal = float(probs[mal_idx])
 
         if prob_mal is None:
             # Safe fallback for binary classifiers when classes_ is absent.
             prob_mal = float(probs[0])
 
-        prob_ben = float(1.0 - prob_mal)
-
-        calibrator = self.probability_calibrators.get(model_name)
-        if calibrator is not None:
-            try:
-                x = np.array([[float(np.clip(prob_mal, 1e-6, 1.0 - 1e-6))]])
-                prob_mal = float(calibrator.predict_proba(x)[0, 1])
-                prob_ben = float(1.0 - prob_mal)
-            except Exception as e:
-                print(f"⚠️ Calibration transform failed for {model_name}: {e}")
-        
-        is_mal = prob_mal >= 0.5
-        # Return probability of being Malignant (Risk Score)
-        confidence = float(np.clip(prob_mal, 0.0, 1.0))
+        prob_mal = float(np.clip(prob_mal, 0.001, 0.999))
+        displayed_prob = self._empirical_probability(model_name, prob_mal)
+        decision_threshold = 0.5
+        is_mal = prob_mal >= decision_threshold
+        confidence = float(np.clip(displayed_prob, 0.0, 1.0))
         
         # EXPLAINABILITY (SHAP or Fallback)
         top_features = []
         try:
+            scaler_for_linear, linear_model = self._extract_linear_components(model)
+            explanation_input = input_scaled
+            if scaler_for_linear is not None:
+                explanation_input = scaler_for_linear.transform(input_raw)
+
             # Prepare DataFrame for SHAP consistency
-            df_input = pd.DataFrame(input_scaled, columns=FEATURES)
+            df_input = pd.DataFrame(explanation_input, columns=FEATURES)
             
             # We want sv_vals where positive means increasing malignant probability.
-            if model_name in self.explainers:
-                sv = self.explainers[model_name].shap_values(df_input)
+            explainer = self._get_explainer(model_name, model)
+            if explainer is not None:
+                sv = explainer.shap_values(df_input)
                 # handle shapes: XGBoost binary usually returns (1, features) contribution to Class 1
                 # RF usually returns [(1, features), (1, features)] list for each class
                 if isinstance(sv, list):
@@ -293,16 +452,16 @@ class PredictionService:
                     mal_shap_idx = mal_idx if mal_idx < sv.shape[2] else 0
                     sv_vals = sv[0, :, mal_shap_idx]
                 else:
-                    # Binary SHAP array convention usually aligns with positive class.
-                    # If malignant is class 0, flip signs to express malignant contribution.
+                    # Binary SHAP array convention usually aligns with class index 1.
                     sv_vals = sv.flatten() if mal_idx == 1 else -sv.flatten()
             else:
                 # Fallback (e.g. LogReg): map coefficient sign to malignant class direction.
-                if hasattr(model, 'coef_'):
+                base_model = self._get_base_estimator(model)
+                if linear_model is not None:
                      direction = 1.0 if mal_idx == 1 else -1.0
-                     sv_vals = direction * model.coef_[0] * input_scaled.flatten()
-                elif hasattr(model, 'feature_importances_'):
-                    sv_vals = model.feature_importances_
+                     sv_vals = direction * linear_model.coef_[0] * explanation_input.flatten()
+                elif hasattr(base_model, 'feature_importances_'):
+                    sv_vals = base_model.feature_importances_
                 else:
                     sv_vals = np.zeros(len(FEATURES))
 
@@ -320,7 +479,9 @@ class PredictionService:
                 # Get mean and raw values for comparison
                 current_raw = float(raw_vals[i])
                 avg_val = 0.0
-                if self.scaler is not None:
+                if scaler_for_linear is not None and hasattr(scaler_for_linear, "mean_"):
+                    avg_val = float(scaler_for_linear.mean_[i])
+                elif self.scaler is not None:
                     avg_val = float(self.scaler.mean_[i])
                 
                 detail = FEATURE_DETAILS.get(clean_name, {"desc": "Dữ liệu đo lường tế bào học.", "advice": "Tư vấn bác sĩ."})
@@ -342,6 +503,9 @@ class PredictionService:
             "prediction": 1 if is_mal else 0, # Schema mapping: 1=Malignant, 0=Benign
             "diagnosis": "Malignant" if is_mal else "Benign",
             "probability": confidence,
+            "raw_probability": prob_mal,
+            "calibration_mode": "empirical_validation_rank",
+            "risk_band": self._risk_band_from_probability(confidence),
             "analysis_text": self._gen_text(model_name, is_mal, confidence, top_features),
             "top_features": top_features
         }
