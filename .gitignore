@@ -106,3 +106,9 @@ models/*.json
 /frontend/assets/
 *.docx
 *.zip
+*.command
+*.sh
+*.md
+*.ipynb
+notebooks/
+*.pdf
