@@ -5,7 +5,7 @@
 | 0. Re-audit baseline | DONE | `main` clean; API/tests/compile previously passed; CI present | `9270fa4` |
 | 1. Dataset truth | DONE | Final JSON/CSV statistics and precise protocol generated from manifest seed 42 | `98b7724` |
 | 2. Manifest-driven DL pipeline | DONE | Parser, tests and final trainer read `cbis_group_split_seed42.csv` directly | `9bcba28` |
-| 3-4. Final DL retraining/evaluation | IN_PROGRESS | Gate A/B pass; Custom CNN full-image candidate complete; ResNet50 and EfficientNet-B0 pending | Pending checkpoint commit |
+| 3-4. Final DL retraining/evaluation | IN_PROGRESS | Gate A/B pass; Custom CNN full-image candidate complete; ResNet50 and EfficientNet-B0 pending | `092fb15` |
 | 5. Final ML re-evaluation | NOT_STARTED | Existing calibrated ML trainer is available | - |
 | 6-10. Analysis, XAI, paper artifacts, selection | NOT_STARTED | Development artifacts exist but are not final evidence | - |
 | 11-18. Software and operations finalization | IN_PROGRESS | FastAPI, static web, Docker, Nginx, CI and artifact policy exist | `9270fa4` and earlier |

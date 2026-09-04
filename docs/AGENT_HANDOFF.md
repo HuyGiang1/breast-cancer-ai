@@ -62,6 +62,6 @@ Run only after verifying that every manifest `relative_path` resolves to a local
 
 ## Latest commit and Git status
 
-Latest pushed checkpoint: `9d9cb1b docs: update phase handoff status`. Current safe-reset and Custom CNN changes are pending a logical checkpoint commit.
+Latest pushed checkpoint: `092fb15 research: add final dataset gates and custom CNN baseline`. Run `git status --short` before continuing; expected status is clean after committing the tracked training log and this handoff correction.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.

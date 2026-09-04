@@ -45,6 +45,7 @@ backend/data/outbox/
 frontend/results/
 logs/
 *.log
+!experiments/final/runs/**/training.log
 
 # Large private datasets
 data/cbis_ddsm/
