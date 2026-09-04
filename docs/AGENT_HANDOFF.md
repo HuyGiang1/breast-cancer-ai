@@ -82,6 +82,6 @@ Run only after verifying that every manifest `relative_path` resolves to a local
 
 ## Latest commit and Git status
 
-Latest pushed checkpoint: `f27dd63 research: evaluate EfficientNet-B0 ROI ablation`. Current reliability/error-analysis changes are pending a logical checkpoint commit.
+Reliability research artifact commit: `ff6e53a research: analyze final DL calibration and errors`. The next action remains final Grad-CAM/XAI; no DL training is authorized.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.
