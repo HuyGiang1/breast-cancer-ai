@@ -1,0 +1,10 @@
+{
+  "model_name": "EfficientNet-B0",
+  "threshold": 0.5399999999999999,
+  "validation_accuracy": 0.6666666666666666,
+  "validation_auc": 0.6788858695652173,
+  "spread_factor": 2.762796713117856,
+  "reference_threshold": 0.5399999999999999,
+  "centering_gain": 4.0,
+  "std_probability": 0.07239041477441788
+}

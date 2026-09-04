@@ -2,11 +2,11 @@
 
 ## Last completed phase
 
-All three final full-image DL baselines and their comparison are complete locally. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai` on branch `main`.
+Final DL baselines and the sole ROI ablation are complete locally. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai` on branch `main`.
 
 ## Current phase
 
-Training is stopped after baseline comparison. The next research action is one controlled EfficientNet-B0 full-image versus ROI ablation.
+DL training is stopped. The next research phase is calibration plus error analysis of the retained EfficientNet-B0 full-image candidate.
 
 ## Files changed in this handoff checkpoint
 
@@ -31,6 +31,10 @@ Training is stopped after baseline comparison. The next research action is one c
 - `experiments/final/figures/`
 - `scripts/compare_final_dl_baselines.py`
 - `docs/FINAL_DL_EXPERIMENT_LOG.md`
+- `experiments/final/runs/efficientnet_b0_roi/`
+- `experiments/final/roi_ablation.csv`
+- `scripts/compare_efficientnet_roi_ablation.py`
+- `docs/DL_BASELINE_AND_ROI_ANALYSIS.md`
 
 ## Evidence and decisions
 
@@ -46,6 +50,7 @@ Training is stopped after baseline comparison. The next research action is one c
 - Custom CNN full-image candidate completed with final-run artifacts. It is not promoted; test ROC-AUC is 0.6153, sensitivity 0.4583 and FN 91, so it remains a comparison baseline rather than a selected production model.
 - ResNet50 test ROC-AUC is 0.6278; sensitivity is 0.7202 and FN 47, but specificity is 0.4152.
 - EfficientNet-B0 test ROC-AUC is 0.7229, PR-AUC 0.6564, sensitivity 0.6786, specificity 0.6250 and FN 54. It is the ROI-ablation candidate, not a runtime model.
+- ROI ablation is CASE ROI-C by validation-first comparison: validation ROC-AUC falls from 0.7044 to 0.6789 and sensitivity from 0.6813 to 0.5125. Full image remains the candidate representation. No runtime model is promoted.
 - Existing DL metrics and figures under `experiments/results/` are development/preliminary only, because legacy folders had 90 cross-split study-like prefixes.
 - Keep multimodal fusion as `Experimental Multimodal Integration` unless valid paired clinical-image data is found.
 - Do not commit raw CBIS-DDSM, runtime database, `.env`, or model weight artifacts.
@@ -64,12 +69,12 @@ Training is stopped after baseline comparison. The next research action is one c
 
 ## Exact next command
 
-`MPLBACKEND=Agg MPLCONFIGDIR=/private/tmp/breast-cancer-ai-mpl PYTHONPATH=backend venv/bin/python scripts/train_dl_finetune_calibrated.py --architecture efficientnetb0 --image-set images_roi --epochs 25 --batch-size 16 --image-size 224 --learning-rate 0.0001 --output-stem efficientnetb0_roi_final_seed42 --run-dir experiments/final/runs/roi_ablation`
+`PYTHONPATH=backend venv/bin/python scripts/diagnose_ml_calibration.py`
 
 Run only after verifying that every manifest `relative_path` resolves to a local processed image.
 
 ## Latest commit and Git status
 
-Latest pushed checkpoint: `765a103 docs: retain final training log`. Current DL-02/DL-03/comparison changes are pending a logical checkpoint commit.
+Latest pushed checkpoint: `adfadce research: compare final DL baselines on clean CBIS split`. Current DL-04 ROI ablation changes are pending a logical checkpoint commit.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.

@@ -5,7 +5,8 @@
 | 0. Re-audit baseline | DONE | `main` clean; API/tests/compile previously passed; CI present | `9270fa4` |
 | 1. Dataset truth | DONE | Final JSON/CSV statistics and precise protocol generated from manifest seed 42 | `98b7724` |
 | 2. Manifest-driven DL pipeline | DONE | Parser, tests and final trainer read `cbis_group_split_seed42.csv` directly | `9bcba28` |
-| 3-4. Final DL retraining/evaluation | DONE | Three full-image baselines, comparative table and figures complete; EfficientNet-B0 is ROI-ablation candidate | Pending comparison commit |
+| 3-4. Final DL retraining/evaluation | DONE | Three baselines and controlled EfficientNet ROI ablation complete; full image retained by validation-first ROI-C decision | Pending ROI commit |
+| DL calibration and error analysis | IN_PROGRESS | Next phase; no additional DL training authorized | - |
 | 5. Final ML re-evaluation | NOT_STARTED | Existing calibrated ML trainer is available | - |
 | 6-10. Analysis, XAI, paper artifacts, selection | NOT_STARTED | Development artifacts exist but are not final evidence | - |
 | 11-18. Software and operations finalization | IN_PROGRESS | FastAPI, static web, Docker, Nginx, CI and artifact policy exist | `9270fa4` and earlier |

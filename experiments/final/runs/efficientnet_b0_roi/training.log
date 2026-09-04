@@ -1,0 +1,12 @@
+Final candidate run: efficientnet_b0_roi
+Architecture: EfficientNet-B0
+Manifest: /Users/GiangNguyenHuy/Documents/breast-cancer-ai/manifests/cbis_group_split_seed42.csv
+Image set: images_roi
+Seed: 42
+Epoch limit: 25
+Batch size: 16
+Input size: 224
+Checkpoint selection: validation ROC-AUC
+Threshold selection: validation balanced accuracy
+Test-time augmentation: none
+Completion: successful; detailed epoch history is stored in history.csv.

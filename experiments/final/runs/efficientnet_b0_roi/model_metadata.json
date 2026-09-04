@@ -1,0 +1,10 @@
+{
+  "version": "final-candidate",
+  "architecture": "efficientnetb0",
+  "model_file": "/Users/GiangNguyenHuy/Documents/breast-cancer-ai/models/deep_learning/efficientnetb0_roi_final_seed42.keras",
+  "sha256": "434597f4207238d5495a278f19dda772842f45af00b07f7e29b10d336ad4f6cb",
+  "training_manifest": "/Users/GiangNguyenHuy/Documents/breast-cancer-ai/manifests/cbis_group_split_seed42.csv",
+  "seed": 42,
+  "threshold": 0.5399999999999999,
+  "metrics_file": "experiments/final/runs/efficientnet_b0_roi/metrics.json"
+}
