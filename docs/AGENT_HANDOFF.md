@@ -55,6 +55,6 @@ Run only after verifying that every manifest `relative_path` resolves to a local
 
 ## Latest commit and Git status
 
-Latest pushed checkpoint: `98b7724 research: document final dataset protocol and project overview`. The current Phase 2 changes are uncommitted pending this checkpoint.
+Latest pushed checkpoint: `9bcba28 research: make DL training manifest-driven`. Run `git status --short` before continuing; expected status after committing this handoff update is clean.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.
