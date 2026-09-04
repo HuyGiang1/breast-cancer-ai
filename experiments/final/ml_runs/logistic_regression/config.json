@@ -1,0 +1,21 @@
+{
+  "model": "Logistic Regression",
+  "seed": 42,
+  "outer_test_size": 0.2,
+  "cv": 5,
+  "configuration": {
+    "memory": null,
+    "steps": [
+      [
+        "scaler",
+        "StandardScaler()"
+      ],
+      [
+        "lr",
+        "LogisticRegression(class_weight='balanced', max_iter=5000, random_state=42,\n                   solver='liblinear')"
+      ]
+    ],
+    "transform_input": null,
+    "verbose": false
+  }
+}

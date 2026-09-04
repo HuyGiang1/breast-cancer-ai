@@ -1,0 +1,13 @@
+{
+  "dataset": "sklearn.datasets.load_breast_cancer",
+  "total_samples": 569,
+  "features": 30,
+  "malignant_count": 212,
+  "benign_count": 357,
+  "label_convention": {
+    "1": "malignant",
+    "0": "benign"
+  },
+  "outer_test_size": 0.2,
+  "seed": 42
+}

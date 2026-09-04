@@ -1,0 +1,19 @@
+{
+  "selected": "platt",
+  "selection_split": "development OOF",
+  "criterion": "minimum cross-fitted Brier score, then log loss",
+  "methods": [
+    {
+      "calibration": "raw",
+      "brier_score": 0.03307466470684705,
+      "log_loss": 0.12808322438357397,
+      "ece_10bin": 0.038007796173909175
+    },
+    {
+      "calibration": "platt",
+      "brier_score": 0.03052947807779291,
+      "log_loss": 0.11410135805896329,
+      "ece_10bin": 0.014007533931421401
+    }
+  ]
+}

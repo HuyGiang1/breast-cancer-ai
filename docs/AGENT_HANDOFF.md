@@ -2,11 +2,11 @@
 
 ## Last completed phase
 
-Final DL XAI / Grad-CAM is complete locally for the frozen EfficientNet-B0 full-image candidate. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai` on branch `main`.
+Final WDBC ML re-evaluation is complete locally. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai` on branch `main`.
 
 ## Current phase
 
-DL architecture, weights, and threshold are frozen. The next research phase is final ML re-evaluation; Grad-CAM outputs must not drive more DL tuning.
+DL research remains frozen. Final ML evaluation is also frozen after its locked outer-test report. The next research phase is final ML SHAP/XAI; do not promote a runtime model yet.
 
 ## Files changed in this handoff checkpoint
 
@@ -46,6 +46,19 @@ DL architecture, weights, and threshold are frozen. The next research phase is f
 - `experiments/final/gradcam_selection.json`
 - `experiments/final/figures/efficientnet_gradcam_examples.png`
 - `docs/FINAL_DL_XAI_ANALYSIS.md`
+- `scripts/run_final_ml_study.py`
+- `experiments/final/ml_dataset_statistics.json`
+- `experiments/final/ml_split_seed42.csv`
+- `experiments/final/ml_runs/`
+- `experiments/final/ml_cv_metrics.csv`
+- `experiments/final/ml_oof_predictions.csv`
+- `experiments/final/ml_calibration_metrics.csv`
+- `experiments/final/ml_threshold_analysis.csv`
+- `experiments/final/ml_metrics.csv`
+- `experiments/final/ml_bootstrap_ci.csv`
+- `experiments/final/ml_error_analysis.csv`
+- `docs/FINAL_ML_MODEL_SELECTION.md`
+- `docs/FINAL_ML_ERROR_ANALYSIS.md`
 
 ## Evidence and decisions
 
@@ -65,6 +78,10 @@ DL architecture, weights, and threshold are frozen. The next research phase is f
 - Platt calibration is selected by 5-fold OOF validation Brier/log loss; final fitting used validation only. DL weights are frozen. The next action is XAI, not further training.
 - Grad-CAM is complete for the checksum-verified EfficientNet-B0 full-image `.keras` artifact. The script dynamically selected `top_conv`, reproduced frozen probabilities with the trainer's TensorFlow preprocessing, and deterministically selected two examples each from TP, TN, FP, and FN.
 - Grad-CAM is qualitative attention evidence only: no lesion localization, pathology, clinical causality, or tuning conclusion is claimed from it.
+- Final WDBC ML evaluation uses a fixed 20% stratified outer holdout (seed 42) and 5-fold stratified development OOF CV. All scaling is fold-safe inside the Logistic Regression pipeline; no resampling is used.
+- XGBoost 3.2.0 was healthy and included as a new reproducible comparison model; no legacy XGBoost artifact was reused.
+- Logistic Regression is the development-selected ML candidate: OOF ROC-AUC 0.9950, PR-AUC 0.9941, balanced accuracy 0.9724, and raw-probability Brier 0.0200. It is not promoted to runtime.
+- ML final test results are frozen. Subsequent SHAP/XAI is explanatory only and cannot change the selected model, calibrator, or threshold.
 - Existing DL metrics and figures under `experiments/results/` are development/preliminary only, because legacy folders had 90 cross-split study-like prefixes.
 - Keep multimodal fusion as `Experimental Multimodal Integration` unless valid paired clinical-image data is found.
 - Do not commit raw CBIS-DDSM, runtime database, `.env`, or model weight artifacts.
@@ -83,12 +100,12 @@ DL architecture, weights, and threshold are frozen. The next research phase is f
 
 ## Exact next command
 
-`PYTHONPATH=backend venv/bin/python scripts/train_ml_calibrated.py`
+`PYTHONPATH=backend venv/bin/python scripts/generate_final_ml_shap.py`
 
 Run only after verifying that every manifest `relative_path` resolves to a local processed image.
 
 ## Latest commit and Git status
 
-Latest documentation checkpoint: `6a16ff0 docs: update final DL reliability handoff`. The next action is final ML re-evaluation; no DL training is authorized.
+The next action is final ML SHAP/XAI. No DL training or ML re-evaluation change is authorized.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.

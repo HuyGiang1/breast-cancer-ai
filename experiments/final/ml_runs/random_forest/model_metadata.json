@@ -1,0 +1,19 @@
+{
+  "model": "Random Forest",
+  "model_file": "/Users/GiangNguyenHuy/Documents/breast-cancer-ai/experiments/final/ml_runs/random_forest/random_forest_final_seed42.joblib",
+  "model_sha256": "d4c295111abe7f3211a62c0e6df71fd51c3663798607ce6e5a6345980397b8fd",
+  "dataset": "sklearn.datasets.load_breast_cancer",
+  "label_convention": "1=malignant, 0=benign",
+  "outer_split": {
+    "test_size": 0.2,
+    "random_state": 42,
+    "stratify": "malignant label"
+  },
+  "development_cv": {
+    "n_splits": 5,
+    "shuffle": true,
+    "random_state": 42
+  },
+  "calibration": "platt",
+  "threshold": 0.44
+}

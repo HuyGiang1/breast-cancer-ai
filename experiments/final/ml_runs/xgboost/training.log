@@ -1,0 +1,5 @@
+model=XGBoost
+protocol=outer holdout seed42; 5-fold stratified development OOF
+calibration=raw
+threshold=0.6
+test_roc_auc=0.9923941798941799

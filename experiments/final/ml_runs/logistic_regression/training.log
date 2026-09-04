@@ -1,0 +1,5 @@
+model=Logistic Regression
+protocol=outer holdout seed42; 5-fold stratified development OOF
+calibration=raw
+threshold=0.36
+test_roc_auc=0.9953703703703705

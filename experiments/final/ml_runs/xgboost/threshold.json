@@ -1,0 +1,5 @@
+{
+  "threshold": 0.6,
+  "selected_on": "development OOF",
+  "objective": "maximum balanced accuracy; then sensitivity, fewer FN/FP, lower threshold"
+}

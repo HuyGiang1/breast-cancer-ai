@@ -1,0 +1,83 @@
+{
+  "folds": [
+    {
+      "model": "Random Forest",
+      "fold": 1,
+      "roc_auc": 0.9860681114551084,
+      "pr_auc": 0.9825369675794606,
+      "sensitivity": 0.9117647058823529,
+      "specificity": 0.9824561403508771,
+      "balanced_accuracy": 0.947110423116615
+    },
+    {
+      "model": "Random Forest",
+      "fold": 2,
+      "roc_auc": 0.9989680082559339,
+      "pr_auc": 0.9983660130718954,
+      "sensitivity": 0.9705882352941176,
+      "specificity": 0.9649122807017544,
+      "balanced_accuracy": 0.967750257997936
+    },
+    {
+      "model": "Random Forest",
+      "fold": 3,
+      "roc_auc": 0.9917440660474717,
+      "pr_auc": 0.9873580800051389,
+      "sensitivity": 0.8823529411764706,
+      "specificity": 0.9649122807017544,
+      "balanced_accuracy": 0.9236326109391124
+    },
+    {
+      "model": "Random Forest",
+      "fold": 4,
+      "roc_auc": 0.9850361197110423,
+      "pr_auc": 0.9820777682369378,
+      "sensitivity": 0.9411764705882353,
+      "specificity": 0.9473684210526315,
+      "balanced_accuracy": 0.9442724458204335
+    },
+    {
+      "model": "Random Forest",
+      "fold": 5,
+      "roc_auc": 0.9793601651186791,
+      "pr_auc": 0.9834218135279897,
+      "sensitivity": 0.9705882352941176,
+      "specificity": 0.9824561403508771,
+      "balanced_accuracy": 0.9765221878224974
+    }
+  ],
+  "mean": {
+    "model": "Random Forest",
+    "fold": "mean",
+    "roc_auc": 0.9882352941176471,
+    "pr_auc": 0.9867521284842844,
+    "sensitivity": 0.9352941176470588,
+    "specificity": 0.9684210526315787,
+    "balanced_accuracy": 0.951857585139319
+  },
+  "std": {
+    "model": "Random Forest",
+    "fold": "std",
+    "roc_auc": 0.007436429680207982,
+    "pr_auc": 0.0068183156890764375,
+    "sensitivity": 0.03834824944236853,
+    "specificity": 0.014678246079545178,
+    "balanced_accuracy": 0.02084249703411943
+  },
+  "oof_metrics": {
+    "accuracy": 0.9626373626373627,
+    "precision": 0.9421965317919075,
+    "sensitivity": 0.9588235294117647,
+    "specificity": 0.9649122807017544,
+    "f1": 0.9504373177842566,
+    "balanced_accuracy": 0.9618679050567596,
+    "roc_auc": 0.9875748194014448,
+    "pr_auc": 0.9859279081455571,
+    "brier_score": 0.03052947807779291,
+    "log_loss": 0.11410135805896329,
+    "tn": 275,
+    "fp": 10,
+    "fn": 7,
+    "tp": 163
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "primary_candidate": "Logistic Regression",
+  "selection_split": "development OOF only",
+  "selection_priority": [
+    "ROC-AUC",
+    "PR-AUC",
+    "balanced accuracy after selected calibration/threshold"
+  ],
+  "models": {
+    "Logistic Regression": {
+      "calibration": "raw",
+      "threshold": 0.36,
+      "oof_metrics": {
+        "accuracy": 0.9714285714285714,
+        "precision": 0.9485714285714286,
+        "sensitivity": 0.9764705882352941,
+        "specificity": 0.968421052631579,
+        "f1": 0.9623188405797102,
+        "balanced_accuracy": 0.9724458204334365,
+        "roc_auc": 0.9950051599587204,
+        "pr_auc": 0.9940638199866361,
+        "brier_score": 0.02003377995564075,
+        "log_loss": 0.07553425211689468,
+        "tn": 276,
+        "fp": 9,
+        "fn": 4,
+        "tp": 166
+      }
+    },
+    "Random Forest": {
+      "calibration": "platt",
+      "threshold": 0.44,
+      "oof_metrics": {
+        "accuracy": 0.9626373626373627,
+        "precision": 0.9421965317919075,
+        "sensitivity": 0.9588235294117647,
+        "specificity": 0.9649122807017544,
+        "f1": 0.9504373177842566,
+        "balanced_accuracy": 0.9618679050567596,
+        "roc_auc": 0.9875748194014448,
+        "pr_auc": 0.9859279081455571,
+        "brier_score": 0.03052947807779291,
+        "log_loss": 0.11410135805896329,
+        "tn": 275,
+        "fp": 10,
+        "fn": 7,
+        "tp": 163
+      }
+    },
+    "XGBoost": {
+      "calibration": "raw",
+      "threshold": 0.6,
+      "oof_metrics": {
+        "accuracy": 0.9758241758241758,
+        "precision": 0.9818181818181818,
+        "sensitivity": 0.9529411764705882,
+        "specificity": 0.9894736842105263,
+        "f1": 0.9671641791044776,
+        "balanced_accuracy": 0.9712074303405572,
+        "roc_auc": 0.9939112487100104,
+        "pr_auc": 0.9924244281022332,
+        "brier_score": 0.022508332467019655,
+        "log_loss": 0.08489699235785426,
+        "tn": 282,
+        "fp": 3,
+        "fn": 8,
+        "tp": 162
+      }
+    }
+  }
+}

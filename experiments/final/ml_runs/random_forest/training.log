@@ -1,0 +1,5 @@
+model=Random Forest
+protocol=outer holdout seed42; 5-fold stratified development OOF
+calibration=platt
+threshold=0.44
+test_roc_auc=0.9983465608465608

@@ -1,0 +1,19 @@
+{
+  "model": "XGBoost",
+  "model_file": "/Users/GiangNguyenHuy/Documents/breast-cancer-ai/experiments/final/ml_runs/xgboost/xgboost_final_seed42.joblib",
+  "model_sha256": "403fce511a5c89a0ad4391bac18a3654b2c79046531c6e58048d9df4706da2fe",
+  "dataset": "sklearn.datasets.load_breast_cancer",
+  "label_convention": "1=malignant, 0=benign",
+  "outer_split": {
+    "test_size": 0.2,
+    "random_state": 42,
+    "stratify": "malignant label"
+  },
+  "development_cv": {
+    "n_splits": 5,
+    "shuffle": true,
+    "random_state": 42
+  },
+  "calibration": "raw",
+  "threshold": 0.6
+}

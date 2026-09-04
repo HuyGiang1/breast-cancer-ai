@@ -1,0 +1,83 @@
+{
+  "folds": [
+    {
+      "model": "Logistic Regression",
+      "fold": 1,
+      "roc_auc": 0.9943240454076367,
+      "pr_auc": 0.9910359536657115,
+      "sensitivity": 0.9117647058823529,
+      "specificity": 0.9649122807017544,
+      "balanced_accuracy": 0.9383384932920537
+    },
+    {
+      "model": "Logistic Regression",
+      "fold": 2,
+      "roc_auc": 0.9979360165118679,
+      "pr_auc": 0.9969040247678019,
+      "sensitivity": 0.9705882352941176,
+      "specificity": 0.9649122807017544,
+      "balanced_accuracy": 0.967750257997936
+    },
+    {
+      "model": "Logistic Regression",
+      "fold": 3,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "sensitivity": 1.0,
+      "specificity": 1.0,
+      "balanced_accuracy": 1.0
+    },
+    {
+      "model": "Logistic Regression",
+      "fold": 4,
+      "roc_auc": 0.9865841073271413,
+      "pr_auc": 0.9872549019607844,
+      "sensitivity": 0.9411764705882353,
+      "specificity": 1.0,
+      "balanced_accuracy": 0.9705882352941176
+    },
+    {
+      "model": "Logistic Regression",
+      "fold": 5,
+      "roc_auc": 0.9979360165118679,
+      "pr_auc": 0.9969040247678019,
+      "sensitivity": 0.9705882352941176,
+      "specificity": 0.9649122807017544,
+      "balanced_accuracy": 0.967750257997936
+    }
+  ],
+  "mean": {
+    "model": "Logistic Regression",
+    "fold": "mean",
+    "roc_auc": 0.9953560371517026,
+    "pr_auc": 0.99441978103242,
+    "sensitivity": 0.9588235294117646,
+    "specificity": 0.9789473684210526,
+    "balanced_accuracy": 0.9688854489164086
+  },
+  "std": {
+    "model": "Logistic Regression",
+    "fold": "std",
+    "roc_auc": 0.005312502652728107,
+    "pr_auc": 0.0051543078429250825,
+    "sensitivity": 0.033534571326445245,
+    "specificity": 0.01921833535105846,
+    "balanced_accuracy": 0.02183293718983205
+  },
+  "oof_metrics": {
+    "accuracy": 0.9714285714285714,
+    "precision": 0.9485714285714286,
+    "sensitivity": 0.9764705882352941,
+    "specificity": 0.968421052631579,
+    "f1": 0.9623188405797102,
+    "balanced_accuracy": 0.9724458204334365,
+    "roc_auc": 0.9950051599587204,
+    "pr_auc": 0.9940638199866361,
+    "brier_score": 0.02003377995564075,
+    "log_loss": 0.07553425211689468,
+    "tn": 276,
+    "fp": 9,
+    "fn": 4,
+    "tp": 166
+  }
+}
