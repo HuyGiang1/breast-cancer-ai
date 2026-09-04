@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-checks:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: backend
+      DL_PRELOAD_ON_STARTUP: "false"
+      AI_ADVISOR_PROVIDER: local
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install minimal backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Compile Python sources
+        run: python -m compileall backend/app scripts tests
+
+      - name: Run unit tests
+        run: pytest -q
+
+      - name: Import FastAPI app
+        run: python -c "from app.main import app; print(app.title)"
+
+      - name: Audit CBIS split if local data is present
+        run: |
+          if [ -d data/cbis_ddsm/processed/images ]; then
+            python scripts/audit_cbis_splits.py --json
+          else
+            echo "CBIS-DDSM data not present in CI; skipping split audit."
+          fi
