@@ -1,0 +1,6 @@
+{
+  "selected_method": "Platt",
+  "selection_split": "validation",
+  "criterion": "minimum OOF validation Brier then log loss",
+  "note": "Calibration does not alter architecture, weights, or the pre-specified raw-probability operating points."
+}
