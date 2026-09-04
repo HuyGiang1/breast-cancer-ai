@@ -1,0 +1,6 @@
+sample_index,test_position,true_label,predicted_label,probability,threshold,outcome,confidence_distance_from_threshold,selection_reason,output_scale,explainer,waterfall_path
+196,47,1,1,0.9990609829947033,0.36,TP,0.6390609829947033,median confidence: nearest median absolute distance from frozen threshold,log-odds of malignant class,shap.LinearExplainer,experiments/final/ml_shap_cases/tp_sample_196_waterfall.png
+325,104,0,0,0.002125246139272554,0.36,TN,0.3578747538607274,median confidence: nearest median absolute distance from frozen threshold,log-odds of malignant class,shap.LinearExplainer,experiments/final/ml_shap_cases/tn_sample_325_waterfall.png
+455,4,0,1,0.6425540844103339,0.36,FP,0.2825540844103339,all false positives: only frozen LR false positive,log-odds of malignant class,shap.LinearExplainer,experiments/final/ml_shap_cases/fp_sample_455_waterfall.png
+73,16,1,0,0.0863513923638945,0.36,FN,0.2736486076361055,all false negatives: frozen LR final test has two false negatives,log-odds of malignant class,shap.LinearExplainer,experiments/final/ml_shap_cases/fn_sample_73_waterfall.png
+190,87,1,0,0.2761291949884771,0.36,FN,0.08387080501152289,all false negatives: frozen LR final test has two false negatives,log-odds of malignant class,shap.LinearExplainer,experiments/final/ml_shap_cases/fn_sample_190_waterfall.png

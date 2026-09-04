@@ -2,11 +2,11 @@
 
 ## Last completed phase
 
-Final WDBC ML re-evaluation is complete locally. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai` on branch `main`.
+Final WDBC ML SHAP/XAI is complete locally. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai` on branch `main`.
 
 ## Current phase
 
-DL research remains frozen. Final ML evaluation is also frozen after its locked outer-test report. The next research phase is final ML SHAP/XAI; do not promote a runtime model yet.
+DL research and final ML evaluation are frozen. The next research phase is paper artifacts and final research synthesis; do not promote a runtime model yet.
 
 ## Files changed in this handoff checkpoint
 
@@ -59,6 +59,14 @@ DL research remains frozen. Final ML evaluation is also frozen after its locked 
 - `experiments/final/ml_error_analysis.csv`
 - `docs/FINAL_ML_MODEL_SELECTION.md`
 - `docs/FINAL_ML_ERROR_ANALYSIS.md`
+- `scripts/generate_final_ml_shap.py`
+- `experiments/final/ml_shap_global.csv`
+- `experiments/final/ml_shap_selection.json`
+- `experiments/final/ml_shap_cases/`
+- `experiments/final/figures/ml_shap_summary.png`
+- `experiments/final/figures/ml_shap_bar.png`
+- `experiments/final/figures/ml_shap_examples.png`
+- `docs/FINAL_ML_XAI_ANALYSIS.md`
 
 ## Evidence and decisions
 
@@ -82,6 +90,8 @@ DL research remains frozen. Final ML evaluation is also frozen after its locked 
 - XGBoost 3.2.0 was healthy and included as a new reproducible comparison model; no legacy XGBoost artifact was reused.
 - Logistic Regression is the development-selected ML candidate: OOF ROC-AUC 0.9950, PR-AUC 0.9941, balanced accuracy 0.9724, and raw-probability Brier 0.0200. It is not promoted to runtime.
 - ML final test results are frozen. Subsequent SHAP/XAI is explanatory only and cannot change the selected model, calibrator, or threshold.
+- Final ML SHAP/XAI used `shap.LinearExplainer` on the frozen Logistic Regression classifier after its saved StandardScaler, with all 455 development samples as the background and all 114 frozen test samples as the explanation set. SHAP values are malignant-class log-odds contributions.
+- The deterministic local selection includes one median-confidence TP, one TN, the only FP, and both FNs. Logistic Regression remains frozen and is not promoted to runtime.
 - Existing DL metrics and figures under `experiments/results/` are development/preliminary only, because legacy folders had 90 cross-split study-like prefixes.
 - Keep multimodal fusion as `Experimental Multimodal Integration` unless valid paired clinical-image data is found.
 - Do not commit raw CBIS-DDSM, runtime database, `.env`, or model weight artifacts.
@@ -100,12 +110,10 @@ DL research remains frozen. Final ML evaluation is also frozen after its locked 
 
 ## Exact next command
 
-`PYTHONPATH=backend venv/bin/python scripts/generate_final_ml_shap.py`
-
-Run only after verifying that every manifest `relative_path` resolves to a local processed image.
+Begin paper artifacts and final research synthesis from the frozen final artifacts. Do not retrain, re-evaluate, or promote runtime models.
 
 ## Latest commit and Git status
 
-The next action is final ML SHAP/XAI. No DL training or ML re-evaluation change is authorized.
+The next action is paper artifacts and final research synthesis. No DL training, ML re-evaluation change, or runtime promotion is authorized.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.
