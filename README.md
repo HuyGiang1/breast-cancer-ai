@@ -1,332 +1,287 @@
-# 🎗️ Breast Cancer Prediction using AI
-## Dự đoán ung thư vú sử dụng Machine Learning và Deep Learning
+# Breast Cancer AI
 
-[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+Research and educational prototype for breast cancer screening support using structured clinical machine learning, mammography-image deep learning, and a demo multimodal web workflow.
 
----
+> Research / Educational Prototype Only. This project is not a medical device and must not be used for clinical diagnosis, treatment decisions, or replacing qualified clinicians.
 
-## 📋 Giới thiệu
+## Overview
 
-Đề tài nghiên cứu khoa học ứng dụng **Machine Learning** và **Deep Learning** để dự đoán ung thư vú, với trọng tâm vào:
+Breast Cancer AI combines:
 
-- ✅ **Độ chính xác cao** trong chẩn đoán
-- ✅ **Tính giải thích được (Explainable AI)** - SHAP & Grad-CAM
-- ✅ **Đánh giá chuẩn y khoa** - Sensitivity, Specificity, ROC-AUC
-- ✅ **So sánh đa mô hình** - ML cổ điển vs Deep Learning
+- FastAPI backend for authentication, patient records, prediction, chat/advice, history, reports, and research summaries.
+- Static HTML/CSS/JavaScript frontend for the demo web app.
+- Classical ML models for WDBC-style structured features.
+- DL image prediction with Grad-CAM-style visual explanation.
+- Research artifacts for model comparison, calibration, ablation, and statistical analysis.
+- Docker Compose deployment with API + Nginx web service.
 
----
+## Research Objective
 
-## 🎯 Mục tiêu nghiên cứu
+Evaluate whether structured ML, image DL, and multimodal fusion can provide reliable breast cancer screening signals in a reproducible research/demo setting.
 
-1. **Hybrid Study**: So sánh hiệu suất giữa ML truyền thống và Deep Learning
-2. **Clinical Validation**: Đánh giá theo tiêu chuẩn y khoa
-3. **Explainable AI**: Giải thích quyết định của mô hình cho bác sĩ
-4. **Deployment Ready**: API production-ready với Docker & ONNX
+The current project is not yet ready for final scientific defense because the processed CBIS-DDSM image split has a critical leakage risk and multimodal fusion is currently a heuristic demo.
 
----
+## Research Questions
 
-## 📊 Datasets
+- Which structured ML model performs best on WDBC under reproducible evaluation?
+- How does DL image screening perform under leakage-safe patient/study-level splits?
+- Does ROI preprocessing improve DL performance?
+- Are prediction probabilities calibrated well enough for risk communication?
+- Does multimodal fusion improve over ML-only and DL-only when evaluated on paired validation/test data?
 
-### 1. Wisconsin Diagnostic Breast Cancer (WDBC)
-- **Loại**: Dữ liệu số (30 đặc trưng)
-- **Mẫu**: 569 bệnh nhân
-- **Mục đích**: So sánh các thuật toán ML cổ điển
+## Key Contributions
 
-### 2. CBIS-DDSM (Curated Breast Imaging Subset of DDSM)
-- **Loại**: Hình ảnh X-quang tuyến vú (Mammography)
-- **Mẫu**: 2,620+ hình ảnh
-- **Mục đích**: Deep Learning với Transfer Learning
+- End-to-end demo system: web UI, API, model inference, history, reports, and deployment scaffold.
+- Structured ML baseline with calibrated Logistic Regression and Random Forest artifacts.
+- DL image inference with model discovery, threshold profile, and explanation image support.
+- Research dashboard backed by saved experiment JSON/CSV artifacts.
+- Explicit research safety framing: not for clinical diagnosis.
 
----
+## Architecture
 
-## 🧠 Models & Techniques
-
-### Machine Learning (Wisconsin Dataset)
-- Logistic Regression (Baseline y khoa)
-- Random Forest
-- XGBoost
-- **XAI**: SHAP Values
-
-### Deep Learning (CBIS-DDSM Dataset)
-- ResNet50 (Transfer Learning)
-- EfficientNet-B0
-- **XAI**: Grad-CAM Heatmaps
-
-### Key Techniques
-- ⚖️ **Imbalanced Data Handling**: SMOTE, Focal Loss
-- 🔒 **Data Leakage Prevention**: Patient-wise splitting
-- 📈 **Clinical Metrics**: Sensitivity, Specificity, ROC-AUC, PR Curve
-
----
-
-## 📁 Project Structure
-
-```
-breast-cancer-ai/
-│
-├── data/
-│   ├── raw/                    # Dataset gốc
-│   └── processed/              # Dữ liệu đã xử lý
-│
-├── notebooks/                  # Jupyter notebooks nghiên cứu
-│   ├── 01_wisconsin_eda.ipynb
-│   ├── 02_wisconsin_preprocessing.ipynb
-│   ├── 03_wisconsin_train_models.ipynb
-│   ├── 04_wisconsin_evaluation_shap.ipynb
-│   ├── 05_cbis_prepare_images.ipynb
-│   ├── 06_cbis_train_resnet.ipynb
-│   └── 07_cbis_gradcam.ipynb
-│
-├── src/
-│   ├── data_processing/        # Xử lý dữ liệu
-│   ├── models/                 # Định nghĩa mô hình
-│   ├── evaluation/             # Đánh giá mô hình
-│   ├── explainability/         # SHAP, Grad-CAM
-│   └── utils/                  # Utilities
-│
-├── models/                     # Mô hình đã train
-│
-├── experiments/
-│   └── results/                # Biểu đồ, kết quả
-│
-├── backend/                    # FastAPI
-│   └── app/
-│
-├── frontend/                   # Web UI (React/NextJS)
-│
-└── requirements.txt
+```text
+frontend/                 Static web app
+backend/app/main.py       FastAPI app, CORS, static results, health endpoints
+backend/app/api/          API schemas and endpoints
+backend/app/services/     ML, DL, and AI advisor services
+src/                      Research/model/data-processing utilities
+scripts/                  Reproducible training/evaluation/audit helpers
+experiments/results/      Small research outputs when available
+models/                   Local model artifacts, not for normal Git tracking
+deploy/nginx.conf         Docker Nginx config
+docker-compose.yml        API + web deployment
 ```
 
----
+## Dataset
 
-## 🚀 Installation
+### WDBC
+
+- 569 structured samples.
+- 30 numeric features.
+- Used for classical ML.
+
+### CBIS-DDSM Processed Images
+
+Local processed image snapshot:
+
+| Split | Benign | Malignant | Total |
+| --- | ---: | ---: | ---: |
+| Train | 1040 | 750 | 1790 |
+| Validation | 223 | 160 | 383 |
+| Test | 224 | 162 | 386 |
+
+Current audit found 90 study-like filename prefixes appearing across multiple splits. Treat current DL metrics as development evidence only until the split is rebuilt by patient/study.
+
+Run:
 
 ```bash
-# Clone repository
-git clone https://github.com/yourusername/breast-cancer-ai.git
-cd breast-cancer-ai
+python scripts/audit_cbis_splits.py --json
+```
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # macOS/Linux
-# or: venv\Scripts\activate  # Windows
+See [docs/DATA_CARD.md](docs/DATA_CARD.md).
 
-# Install dependencies
+## Methodology
+
+### ML Models
+
+Current runtime smoke test detected:
+
+- Logistic Regression
+- Random Forest
+
+XGBoost artifacts exist historically, but the runtime health check disabled the current XGBoost artifact.
+
+Training entry point:
+
+```bash
+PYTHONPATH=backend python scripts/train_ml_calibrated.py
+```
+
+### DL Models
+
+Current runtime smoke test detected:
+
+- Custom CNN
+
+Historical/development artifacts include ResNet50 and EfficientNet-B0. They should be re-evaluated on leakage-safe splits before use in final claims.
+
+Training entry point:
+
+```bash
+PYTHONPATH=backend python scripts/train_dl_finetune_calibrated.py --architecture custom_cnn
+```
+
+### Multimodal Fusion
+
+The current web/API multimodal endpoint uses:
+
+```text
+combined_probability = 0.4 * ml_probability + 0.6 * dl_probability
+```
+
+This is a demo heuristic. A scientific multimodal claim requires paired clinical-image samples, validation-only weight tuning, and final test evaluation.
+
+See [docs/RESEARCH_PROTOCOL.md](docs/RESEARCH_PROTOCOL.md).
+
+## Evaluation
+
+Required final metrics:
+
+- Accuracy
+- Precision
+- Sensitivity / Recall
+- Specificity
+- F1-score
+- ROC-AUC
+- PR-AUC
+- Balanced Accuracy
+- Confusion Matrix
+- False negative count
+- Calibration metrics such as Brier score and calibration curve
+
+Existing JSON/CSV artifacts are useful for development but must be regenerated after leakage-safe splitting.
+
+## Web Application
+
+Main flows:
+
+- Home and educational content
+- AI assistant/advice
+- ML clinical prediction
+- DL image prediction
+- Multimodal demo prediction
+- Auth/profile
+- Doctor patient records
+- Prediction history
+- Downloadable HTML prediction reports
+- Research/statistics dashboard
+
+The frontend is static HTML/CSS/JavaScript. Do not migrate to React/NextJS unless a future requirement clearly needs it.
+
+## Local Setup
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements-dev.txt
+cp .env.example .env
+```
+
+For full training workflows, install:
+
+```bash
 pip install -r requirements.txt
 ```
 
----
+## Environment Variables
 
-## 📖 Usage
+Start from `.env.example`. Do not commit `.env`.
 
-### 1. Data Preparation
-```bash
-jupyter notebook notebooks/01_wisconsin_eda.ipynb
-```
+Important variables:
 
-### 2. Train Models
-```bash
-# Wisconsin ML Models
-jupyter notebook notebooks/03_wisconsin_train_models.ipynb
+- `APP_FRONTEND_URL`
+- `APP_CORS_ORIGINS`
+- `APP_MAX_IMAGE_UPLOAD_MB`
+- `AI_ADVISOR_PROVIDER`
+- `GEMINI_API_KEY`
+- `OPENAI_API_KEY`
+- `APP_MAIL_MODE`
+- `SMTP_*`
+- `DL_PRELOAD_ON_STARTUP`
 
-# CBIS-DDSM Deep Learning
-jupyter notebook notebooks/06_cbis_train_resnet.ipynb
-```
+## Run Backend
 
-### 2.1 DL Fine-Tuning + Calibration Export (Production Flow)
-```bash
-source venv/bin/activate
-PYTHONPATH=backend python scripts/train_dl_finetune_calibrated.py \
-  --architecture custom_cnn \
-  --epochs 25 \
-  --batch-size 16 \
-  --tta-rounds 6
-```
-
-Pipeline này tự động thực hiện:
-- Class weighting cho mất cân bằng dữ liệu
-- Focal Loss cho hard samples
-- TTA evaluation trên tập test
-- Calibrated threshold export vào `models/deep_learning/calibration_profile.json`
-
-Backend sẽ tự nạp calibration profile này để dùng ngay khi suy luận.
-
-### 2.2 One-Command DL Retrain + Promote
-```bash
-source venv/bin/activate
-PYTHONPATH=backend python scripts/run_dl_retrain_pipeline.py \
-  --epochs 18 \
-  --batch-size 12 \
-  --image-size 192 \
-  --tta-rounds 4 \
-  --cache-dataset \
-  --skip-image-rf
-```
-
-Flow này sẽ:
-- train lại `Custom CNN`
-- xuất artifact + summary mới
-- so sánh với các summary hiện có
-- promote model mạnh nhất vào calibration profile
-
-### 3. Run API Server
 ```bash
 cd backend
-uvicorn app.main:app --reload
+DL_PRELOAD_ON_STARTUP=false uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-### 4. Docker Deployment
+Health endpoints:
+
 ```bash
-docker build -t breast-cancer-ai .
-docker run -p 8000:8000 breast-cancer-ai
+curl http://127.0.0.1:8000/healthz
+curl http://127.0.0.1:8000/readyz
 ```
 
----
+## Run Frontend
 
-## 📊 Results Preview
+From repository root:
 
-### Comparative Study
-
-| Model               | Dataset   | ROC-AUC | Sensitivity | Specificity |
-|---------------------|-----------|---------|-------------|-------------|
-| Logistic Regression | Wisconsin | TBD     | TBD         | TBD         |
-| Random Forest       | Wisconsin | TBD     | TBD         | TBD         |
-| XGBoost             | Wisconsin | TBD     | TBD         | TBD         |
-| ResNet50            | CBIS-DDSM | TBD     | TBD         | TBD         |
-| EfficientNet-B0     | CBIS-DDSM | TBD     | TBD         | TBD         |
-
-*(Kết quả sẽ được cập nhật sau khi training)*
-
----
-
-## 🔬 Key Features for Scientific Research
-
-### 1. ⚖️ Imbalanced Data Handling
-- SMOTE cho dữ liệu số
-- Class weighting & Focal Loss cho ảnh
-
-### 2. 🔍 Explainable AI (XAI)
-- **SHAP**: Feature importance cho ML models
-- **Grad-CAM**: Vùng ảnh ảnh hưởng đến quyết định
-
-### 3. 🏥 Clinical Evaluation
-- ROC-AUC Curve
-- Precision-Recall Curve
-- Confusion Matrix với ngưỡng tối ưu
-- Sensitivity (True Positive Rate)
-- Specificity (True Negative Rate)
-
-### 4. 🔒 Data Leakage Prevention
-- Patient-wise train/val/test split
-- Stratified splitting để giữ cân bằng class
-
----
-
-## 🛠️ Tech Stack
-
-| Category      | Technologies                      |
-|---------------|-----------------------------------|
-| ML            | Scikit-learn, XGBoost             |
-| DL            | PyTorch, TensorFlow               |
-| XAI           | SHAP, Grad-CAM                    |
-| Imbalance     | SMOTE, Focal Loss                 |
-| Backend       | FastAPI, Uvicorn                  |
-| Deployment    | Docker, ONNX                      |
-| Visualization | Matplotlib, Seaborn, Plotly       |
-
----
-
-## 📚 Research Methodology
-
-### Phase 1: Literature Review
-- Các nghiên cứu hiện tại về AI trong chẩn đoán ung thư vú
-- Baseline methods trong y khoa
-
-### Phase 2: Data Collection & Preprocessing
-- Wisconsin WDBC từ UCI ML Repository
-- CBIS-DDSM từ TCIA
-- Preprocessing chuẩn y tế
-
-### Phase 3: Model Development
-- ML: Traditional algorithms
-- DL: Transfer Learning với pretrained models
-
-### Phase 4: Evaluation & Comparison
-- Clinical metrics
-- Comparative analysis
-- Statistical significance testing
-
-### Phase 5: Explainability
-- SHAP values
-- Grad-CAM visualization
-
-### Phase 6: Deployment
-- REST API
-- Docker containerization
-- ONNX optimization
-
----
-
-## ⚠️ Ethical Considerations
-
-- Dữ liệu y tế được sử dụng chỉ cho mục đích nghiên cứu
-- Tuân thủ HIPAA và các quy định về quyền riêng tư
-- Mô hình phục vụ hỗ trợ bác sĩ, không thay thế chẩn đoán y khoa
-
----
-
-## 🎓 Citation
-
-Nếu bạn sử dụng công trình này trong nghiên cứu, vui lòng trích dẫn:
-
-```bibtex
-@misc{breast-cancer-ai-2026,
-  author = {Giang Nguyen Huy},
-  title = {Breast Cancer Prediction using Machine Learning and Deep Learning with Explainable AI},
-  year = {2026},
-  publisher = {GitHub},
-  url = {https://github.com/yourusername/breast-cancer-ai}
-}
+```bash
+python3 -m http.server 8080 -d frontend
 ```
 
----
+Open:
 
-## 📝 Future Work
+```text
+http://127.0.0.1:8080
+```
 
-- [ ] Thu thập dữ liệu từ bệnh viện Việt Nam
-- [ ] Mở rộng sang các loại ung thư khác
-- [ ] Tích hợp với hệ thống PACS y tế
-- [ ] Mobile app (iOS/Android)
-- [ ] Real-time inference optimization
+## Docker
 
----
+```bash
+docker compose up -d --build
+docker compose logs -f api
+```
 
-## 👨‍🔬 Author
+Model weights are intentionally not meant to be normal Git-tracked files. Place production model artifacts in the server `models/` volume or publish them separately as release artifacts.
 
-**Giang Nguyen Huy**
-- Đề tài: Dự đoán ung thư vú sử dụng AI
-- Email: your.email@example.com
-- GitHub: [@yourusername](https://github.com/yourusername)
+## Reproduce Experiments
 
----
+Current useful commands:
 
-## 📄 License
+```bash
+python scripts/audit_cbis_splits.py --json
+PYTHONPATH=backend python scripts/train_ml_calibrated.py
+PYTHONPATH=backend python scripts/train_dl_finetune_calibrated.py --architecture custom_cnn
+PYTHONPATH=backend python scripts/smoke_test_api.py
+```
 
-MIT License - see [LICENSE](LICENSE) file for details.
+Before final research reporting, rebuild the CBIS split safely and regenerate evaluation artifacts.
 
----
+## Deployment
 
-## 🙏 Acknowledgments
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
-- Wisconsin Diagnostic Breast Cancer Database (UCI ML Repository)
-- CBIS-DDSM dataset (The Cancer Imaging Archive)
-- PyTorch & TensorFlow communities
-- SHAP & Grad-CAM libraries
+Target:
 
----
+- Ubuntu VPS
+- Docker Compose
+- Nginx
+- domain
+- HTTPS
+- persistent `backend/data` and `models` volumes
 
-**⚡ Status**: 🚧 Under Active Development
+## Documentation
 
-*"Đề tài không chỉ dừng ở việc dự đoán, mà còn tập trung vào tính giải thích của AI trong môi trường y tế, đảm bảo mô hình có thể được bác sĩ tin tưởng sử dụng."*
+- [docs/PROJECT_AUDIT.md](docs/PROJECT_AUDIT.md)
+- [docs/RESEARCH_GAP_ANALYSIS.md](docs/RESEARCH_GAP_ANALYSIS.md)
+- [docs/RESEARCH_PROTOCOL.md](docs/RESEARCH_PROTOCOL.md)
+- [docs/PRODUCTION_ROADMAP.md](docs/PRODUCTION_ROADMAP.md)
+- [docs/MODEL_CARD.md](docs/MODEL_CARD.md)
+- [docs/DATA_CARD.md](docs/DATA_CARD.md)
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
+
+## Limitations
+
+- Current DL split has detected leakage risk.
+- Current multimodal fusion is not scientifically validated.
+- No external validation dataset is documented.
+- Demo records should be synthetic.
+- AI-generated advice is product support text, not model explanation or medical advice.
+
+## Ethical / Medical Disclaimer
+
+This repository is for research, education, and software demonstration. It cannot diagnose breast cancer. Any suspicious symptom, imaging abnormality, or clinical concern must be reviewed by qualified healthcare professionals.
+
+## Future Work
+
+- Rebuild CBIS-DDSM patient/study-level splits.
+- Add paired multimodal evaluation only if paired data is available.
+- Regenerate final metrics, calibration plots, and confidence intervals.
+- Publish model artifacts through a documented non-Git strategy.
+- Add Docker healthchecks and deployment automation.
+
+## Authors
+
+Giang Nguyen Huy and contributors.
