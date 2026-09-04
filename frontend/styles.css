@@ -817,6 +817,152 @@ a { color: inherit; }
 
 .result-note { color: var(--text-500); font-style: italic; font-size: 0.86rem; }
 
+.research-evidence-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.research-evidence-card,
+.research-evidence-block {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: rgba(255,255,255,0.9);
+    padding: 16px;
+}
+
+.research-evidence-card span {
+    display: block;
+    color: var(--text-500);
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.research-evidence-card strong {
+    display: block;
+    color: var(--mint-700);
+    font-size: 1.55rem;
+    line-height: 1;
+    margin-bottom: 10px;
+}
+
+.research-evidence-card h4,
+.research-evidence-block h4 {
+    margin: 0 0 8px;
+    color: var(--text-950);
+    font-size: 0.98rem;
+}
+
+.research-evidence-card p {
+    color: var(--text-700);
+    font-size: 0.88rem;
+    line-height: 1.65;
+}
+
+.research-evidence-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.mini-table-wrap {
+    overflow-x: auto;
+}
+
+.mini-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+}
+
+.mini-table th,
+.mini-table td {
+    border-bottom: 1px solid var(--line);
+    padding: 8px 10px;
+    text-align: left;
+}
+
+.mini-table th {
+    color: var(--mint-700);
+    background: var(--mint-50);
+    font-weight: 800;
+}
+
+.research-metric-list {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding-left: 18px;
+    color: var(--text-700);
+    font-size: 0.88rem;
+}
+
+.research-interpretation {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.reliability-box {
+    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--line-md);
+    background: rgba(255,255,255,0.9);
+    display: grid;
+    gap: 8px;
+}
+
+.reliability-box.medium {
+    border-color: rgba(212,151,42,0.32);
+    background: rgba(255,250,235,0.9);
+}
+
+.reliability-box.low {
+    border-color: rgba(224,92,110,0.32);
+    background: rgba(255,245,247,0.9);
+}
+
+.reliability-box.high {
+    border-color: rgba(34,199,142,0.28);
+    background: rgba(240,253,248,0.9);
+}
+
+.reliability-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--text-700);
+    font-size: 0.84rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.reliability-head strong {
+    color: var(--text-950);
+    font-size: 0.9rem;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.reliability-box p,
+.reliability-box ul {
+    margin: 0;
+    color: var(--text-700);
+    font-size: 0.88rem;
+    line-height: 1.65;
+}
+
+.reliability-box ul {
+    padding-left: 18px;
+}
+
 .result-badge {
     display: inline-flex;
     align-items: center;
@@ -922,6 +1068,24 @@ a { color: inherit; }
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
+}
+
+.history-report-btn {
+    border: 1px solid var(--line-md);
+    background: var(--glass-strong);
+    color: var(--mint-700);
+    border-radius: var(--radius-xs);
+    padding: 5px 9px;
+    font-size: 0.76rem;
+    font-weight: 800;
+    line-height: 1.2;
+    white-space: nowrap;
+    transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.history-report-btn:hover {
+    background: var(--mint-100);
+    border-color: var(--mint-300);
 }
 
 .history-open-text {
@@ -1575,6 +1739,8 @@ a { color: inherit; }
     .result-grid { grid-template-columns: 1fr; }
     .result-summary-grid { grid-template-columns: 1fr; }
     .result-detail-grid { grid-template-columns: 1fr; }
+    .research-evidence-grid { grid-template-columns: 1fr; }
+    .research-evidence-split { grid-template-columns: 1fr; }
     .feature-grid { grid-template-columns: repeat(2, 1fr); }
     .detail-grid { grid-template-columns: 1fr 1fr; }
     .visual-strip { grid-template-columns: 1fr; }
@@ -1608,6 +1774,7 @@ a { color: inherit; }
     .detail-grid { grid-template-columns: 1fr; }
     .detail-heatmap-wrap { grid-template-columns: 1fr; }
     .four-col { grid-template-columns: repeat(2, 1fr); }
+    .research-evidence-card strong { font-size: 1.25rem; }
 
     .btn { width: 100%; justify-content: center; }
     .inline-actions { flex-direction: column; align-items: stretch; }

@@ -22,6 +22,7 @@ const state = {
     mlModels:     [],
     dlModels:     [],
     benchmarks:   {},
+    researchEvidence: null,
     currentPage:  'home',
     currentPredictTab: 'ml',
     selectedDlImageFile: null,
@@ -869,6 +870,8 @@ function renderStatsPage() {
     });
     setText('statBestAcc', bestAcc ? `${(bestAcc * 100).toFixed(1)}%` : '—');
 
+    renderResearchEvidencePanel();
+
     const benchTable = el('benchmarksTable');
     if (benchTable) {
         if (!benchKeys.length) {
@@ -956,6 +959,78 @@ function renderStatsPage() {
             </div>
         `).join('');
     }
+}
+
+function formatMetricPercentValue(value) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) return 'N/A';
+    return `${Number(value).toFixed(1)}%`;
+}
+
+function renderResearchEvidencePanel() {
+    const panel = el('researchEvidencePanel');
+    if (!panel) return;
+
+    const evidence = state.researchEvidence;
+    if (!evidence) {
+        panel.innerHTML = '<div class="result-empty">Chưa có dữ liệu bằng chứng nghiên cứu.</div>';
+        return;
+    }
+
+    const highlights = Array.isArray(evidence.highlights) ? evidence.highlights : [];
+    const mlRows = Array.isArray(evidence.ml_retrain) ? evidence.ml_retrain : [];
+    const dlBest = evidence.dl_best_model || null;
+    const interpretation = Array.isArray(evidence.clinical_interpretation) ? evidence.clinical_interpretation : [];
+    const sources = evidence.sources || {};
+
+    panel.innerHTML = `
+        <div class="research-evidence-grid">
+            ${highlights.length ? highlights.map(item => `
+                <article class="research-evidence-card">
+                    <span>${escapeHtml(item.label || 'Evidence')}</span>
+                    <strong>${escapeHtml(String(item.value ?? 'N/A'))}</strong>
+                    <h4>${escapeHtml(item.title || 'Kết quả nghiên cứu')}</h4>
+                    <p>${escapeHtml(item.text || '')}</p>
+                </article>
+            `).join('') : '<div class="result-empty">Chưa có highlight nghiên cứu.</div>'}
+        </div>
+        <div class="research-evidence-split">
+            <article class="research-evidence-block">
+                <h4>ML retrain evidence</h4>
+                ${mlRows.length ? `
+                    <div class="mini-table-wrap">
+                        <table class="mini-table">
+                            <thead><tr><th>Model</th><th>ROC-AUC</th><th>Artifact</th></tr></thead>
+                            <tbody>
+                                ${mlRows.map(row => `
+                                    <tr>
+                                        <td>${escapeHtml(row.model || '—')}</td>
+                                        <td>${formatMetricPercentValue(row.roc_auc_percent)}</td>
+                                        <td>${escapeHtml(row.artifact || '—')}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                ` : '<p class="result-empty">Không có report retrain ML.</p>'}
+            </article>
+            <article class="research-evidence-block">
+                <h4>DL screening evidence</h4>
+                ${dlBest ? `
+                    <ul class="research-metric-list">
+                        <li>Model: <strong>${escapeHtml(dlBest.name || '—')}</strong></li>
+                        <li>Threshold: <strong>${escapeHtml(dlBest.threshold ?? '—')}</strong></li>
+                        <li>Sensitivity: <strong>${formatMetricPercentValue(dlBest.sensitivity_percent)}</strong></li>
+                        <li>Specificity: <strong>${formatMetricPercentValue(dlBest.specificity_percent)}</strong></li>
+                        <li>ROC-AUC: <strong>${formatMetricPercentValue(dlBest.roc_auc_percent)}</strong></li>
+                    </ul>
+                ` : '<p class="result-empty">Không có summary DL.</p>'}
+            </article>
+        </div>
+        <div class="research-interpretation">
+            ${interpretation.map(text => `<div class="check-item">${escapeHtml(text)}</div>`).join('')}
+        </div>
+        <p class="result-note">Nguồn: ${Object.values(sources).filter(Boolean).map(src => escapeHtml(src)).join(' · ') || 'Chưa đủ thông tin nguồn.'}</p>
+    `;
 }
 
 // ================================================================
@@ -1061,6 +1136,44 @@ async function deletePatient(patientId) {
     }
 }
 
+async function downloadPredictionReport(event, predictionId) {
+    event?.stopPropagation();
+    if (!state.authToken) {
+        showToast('Đăng nhập để tải báo cáo.', 'error');
+        return;
+    }
+
+    try {
+        setStatus('historyStatus', 'Đang tạo báo cáo...', 'muted');
+        const res = await apiFetch(`${API_BASE_URL}/predictions/${predictionId}/report/`);
+        if (!res.ok) {
+            let message = 'Không tải được báo cáo.';
+            try {
+                const data = await res.json();
+                message = data.detail || message;
+            } catch {}
+            throw new Error(message);
+        }
+
+        const blob = await res.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        const disposition = res.headers.get('Content-Disposition') || '';
+        const filenameMatch = disposition.match(/filename="?([^"]+)"?/i);
+        link.href = objectUrl;
+        link.download = filenameMatch?.[1] || `breastcare_prediction_report_${predictionId}.html`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(objectUrl);
+        setStatus('historyStatus', 'Đã tạo báo cáo.', 'success');
+        showToast('Đã tải báo cáo dự đoán.', 'success');
+    } catch (err) {
+        setStatus('historyStatus', err.message, 'error');
+        showToast(err.message, 'error');
+    }
+}
+
 function buildHistoryCardHTML(item) {
     const typeBadgeClass = item.prediction_type === 'ml' ? 'type-ml' : item.prediction_type === 'dl' ? 'type-dl' : 'type-fusion';
     const typeLabel = (item.prediction_type || '').toUpperCase();
@@ -1073,6 +1186,11 @@ function buildHistoryCardHTML(item) {
     const advice = cleanNarrative(item.advice || responsePayload.advice || '');
     const adviceSource = renderAdviceSource(item.advice_provider || responsePayload.advice_provider, item.advice_model || responsePayload.advice_model);
     const adviceHtml = advice ? advice.replace(/\n/g, '<br>') : 'Chưa có lời khuyên AI cho lần dự đoán này.';
+    const reliabilityPayload = {
+        reliability_label: responsePayload.reliability_label,
+        uncertainty_warning: responsePayload.uncertainty_warning,
+        uncertainty_reasons: responsePayload.uncertainty_reasons,
+    };
     const historySecondaryBlock = item.prediction_type === 'ml'
         ? `<div class="detail-analysis" style="background:#fff;"><strong>Lời khuyên từ AI:</strong><br>${adviceHtml}</div>`
         : item.prediction_type === 'dl'
@@ -1119,6 +1237,7 @@ function buildHistoryCardHTML(item) {
                     <div class="detail-block-value" style="font-size:0.75rem;">${item.created_at || '—'}</div>
                 </div>
             </div>
+            ${renderReliabilityBox(reliabilityPayload)}
             ${item.analysis_text ? `<div class="detail-analysis"><strong>Phân tích:</strong><br>${cleanNarrative(item.analysis_text).replace(/\n/g, '<br>')}</div>` : ''}
             ${adviceSource}
             <div class="result-detail-grid">
@@ -1136,6 +1255,7 @@ function buildHistoryCardHTML(item) {
             </div>
             <div class="history-card-actions">
                 <span class="result-badge ${diagClass}">${formatPercent(item.probability)}</span>
+                <button class="history-report-btn" type="button" onclick="downloadPredictionReport(event, ${Number(item.id)})">Tải báo cáo</button>
                 <div class="history-open-text">Xem chi tiết</div>
                 <div class="chevron-icon">▾</div>
             </div>
@@ -1221,19 +1341,21 @@ async function syncCurrentUser() {
 
 async function loadModels() {
     try {
-        const [mlRes, benchRes, dlRes] = await Promise.all([
+        const [mlRes, benchRes, dlRes, evidenceRes] = await Promise.all([
             fetch(`${API_BASE_URL}/models/`),
             fetch(`${API_BASE_URL}/models/benchmarks/`),
             fetch(`${API_BASE_URL}/models/dl/`),
+            fetch(`${API_BASE_URL}/research/evidence/`),
         ]);
         state.mlModels = mlRes.ok ? await mlRes.json() : [];
         state.benchmarks = benchRes.ok ? await benchRes.json() : {};
         state.dlModels = dlRes.ok ? await dlRes.json() : [];
+        state.researchEvidence = evidenceRes.ok ? await evidenceRes.json() : null;
         
         renderModels();
         renderStatsPage();
     } catch {
-        state.mlModels = []; state.dlModels = []; state.benchmarks = {};
+        state.mlModels = []; state.dlModels = []; state.benchmarks = {}; state.researchEvidence = null;
     }
 }
 
@@ -1494,6 +1616,41 @@ function renderHistoryTopFeatures(responsePayload) {
     `;
 }
 
+function translateReliability(value) {
+    if (value === 'High') return 'Cao';
+    if (value === 'Medium') return 'Trung bình';
+    if (value === 'Low') return 'Thấp';
+    return value || 'Chưa rõ';
+}
+
+function reliabilityClass(value) {
+    if (value === 'High') return 'high';
+    if (value === 'Low') return 'low';
+    return 'medium';
+}
+
+function renderReliabilityBox(payload) {
+    const label = payload?.reliability_label;
+    const warning = payload?.uncertainty_warning;
+    const reasons = Array.isArray(payload?.uncertainty_reasons) ? payload.uncertainty_reasons : [];
+    if (!label && !warning && !reasons.length) return '';
+
+    return `
+        <article class="reliability-box ${reliabilityClass(label)}">
+            <div class="reliability-head">
+                <span>Độ tin cậy diễn giải</span>
+                <strong>${escapeHtml(translateReliability(label))}</strong>
+            </div>
+            ${warning ? `<p>${escapeHtml(warning)}</p>` : ''}
+            ${reasons.length ? `
+                <ul>
+                    ${reasons.map(reason => `<li>${escapeHtml(reason)}</li>`).join('')}
+                </ul>
+            ` : ''}
+        </article>
+    `;
+}
+
 function renderAdviceBlock(advice, emptyText = 'Chưa có lời khuyên AI cho lần dự đoán này.') {
     if (!advice) {
         return `<p class="result-empty">${escapeHtml(emptyText)}</p>`;
@@ -1591,6 +1748,7 @@ function renderFusionResultHtml(result) {
                     ${adviceSource}
                 </article>
             </div>
+            ${renderReliabilityBox(result)}
             <div class="result-detail-grid">
                 ${renderFusionBranchCard('Nhánh ML lâm sàng', mlResult, { showFeatures: true })}
                 ${renderFusionBranchCard('Nhánh DL hình ảnh', dlResult, { showImage: true })}
@@ -1698,6 +1856,8 @@ function renderResultHtml(result, type = 'ml') {
                     <p>${advice ? escapeHtml(advice).replace(/\n/g, '<br>') : 'Chưa có tư vấn trả về cho lần dự đoán này.'}</p>
                 </article>
             </div>
+
+            ${renderReliabilityBox(result)}
 
             ${detailGridHtml}
 
