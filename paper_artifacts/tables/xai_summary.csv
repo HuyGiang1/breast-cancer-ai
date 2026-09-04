@@ -1,0 +1,3 @@
+Study,Method,Summary,Limitation
+WDBC ML,SHAP LinearExplainer,Top feature by mean absolute SHAP: worst texture,Log-odds model contribution; non-causal; post-hoc test description
+CBIS-DDSM DL,Grad-CAM,8 deterministic TP/TN/FP/FN examples; layer top_conv,Qualitative attention visualization; not localization or pathology evidence

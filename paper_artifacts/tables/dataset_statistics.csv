@@ -1,0 +1,10 @@
+Study,Measure,Value,Notes
+WDBC structured ML,Samples,569,sklearn.datasets.load_breast_cancer
+WDBC structured ML,Features,30,numeric features
+WDBC structured ML,Malignant / benign,212 / 357,1=malignant; 0=benign
+WDBC structured ML,Development / held-out test,455 / 114,"fixed stratified outer split, seed 42"
+CBIS-DDSM imaging DL,Full processed images,2559,images representation
+CBIS-DDSM imaging DL,ROI representations,2559,images_roi representation
+CBIS-DDSM imaging DL,Manifest rows,5118,two representations; not patients
+CBIS-DDSM imaging DL,Study-like groups,2354,filename-prefix grouping; not verified patient-level
+CBIS-DDSM imaging DL,Group overlap,0,train/validation/test pairwise overlap all zero
