@@ -11,9 +11,9 @@ ML and DL research are frozen. The next phase is **Final Model Promotion Review*
 ## Git workflow
 
 - Current branch: `research/final-paper-artifacts`
-- Current PR: pending creation after branch push
-- Branch commits: `af4e160 research: add reproducible final paper tables`; `6d52da6 research: add final paper figures and artifact manifest`
-- Required verification before merge: `python3 -m compileall backend/app scripts tests`, `pytest -q`, paper artifact regeneration, and `scripts/validate_final_research_artifacts.py`.
+- Current PR: not created; the configured GitHub CLI credential cannot create pull requests (`must be a collaborator`).
+- Branch commits: `af4e160 research: add reproducible final paper tables`; `6d52da6 research: add final paper figures and artifact manifest`; `13a2471 docs: synthesize final research results`.
+- Verification passed: `python3 -m compileall backend/app scripts tests`; `pytest -q` (5 passed); paper artifact regeneration; `scripts/validate_final_research_artifacts.py`.
 
 ## Files changed in this handoff checkpoint
 
@@ -122,6 +122,7 @@ ML and DL research are frozen. The next phase is **Final Model Promotion Review*
 ## Current blockers
 
 - Public deployment requires future VPS/domain credentials.
+- GitHub PR creation/merge requires a collaborator credential for `HuyGiang1/breast-cancer-ai`. No GitHub Actions run was listed for the pushed branch, so CI cannot yet be accepted as merge evidence.
 
 ## Exact next command
 
@@ -129,6 +130,6 @@ Conduct Final Model Promotion Review from the frozen evidence and deployment con
 
 ## Latest commit and Git status
 
-Latest branch commits are `af4e160` and `6d52da6`; the synthesis documentation commit is pending. Next action: PR review/CI, then Final Model Promotion Review. No DL training, ML re-evaluation change, or runtime promotion is authorized.
+Latest branch documentation commit is `13a2471`; the handoff status update follows. Next action: create/review PR with a collaborator credential, confirm CI, then Final Model Promotion Review. No DL training, ML re-evaluation change, or runtime promotion is authorized.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.
