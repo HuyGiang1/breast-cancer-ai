@@ -46,12 +46,27 @@ Can classical ML on structured WDBC features and DL on mammography-like image da
 - Verify no patient/study appears in more than one split.
 - Perform augmentation after split and only on training data.
 
+Current local fallback:
+
+```bash
+python scripts/generate_cbis_group_split.py
+python scripts/audit_cbis_splits.py --manifest data/cbis_ddsm/processed/splits/cbis_group_split_seed42.csv --json
+```
+
+This uses the filename prefix before `__` as a study-like group identifier because patient/case metadata is not available in the local processed PNG snapshot.
+
 ## Required Leakage Checks
 
 Run:
 
 ```bash
 python scripts/audit_cbis_splits.py --json
+```
+
+For generated manifests, run:
+
+```bash
+python scripts/audit_cbis_splits.py --manifest data/cbis_ddsm/processed/splits/cbis_group_split_seed42.csv --json
 ```
 
 A valid final experiment requires:

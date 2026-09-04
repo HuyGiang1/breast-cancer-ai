@@ -94,6 +94,41 @@ study overlap val/test = 0
 
 If true patient IDs are not available in the processed filenames, document the fallback identifier and its limitation.
 
+## Current Clean Manifest
+
+The local `data/cbis_ddsm/raw/` snapshot does not currently expose patient/case metadata files. The first leakage-control implementation therefore uses the strongest available fallback:
+
+```text
+group_id = filename prefix before "__"
+```
+
+Generate the manifest:
+
+```bash
+python scripts/generate_cbis_group_split.py
+```
+
+Audit the generated manifest:
+
+```bash
+python scripts/audit_cbis_splits.py --manifest data/cbis_ddsm/processed/splits/cbis_group_split_seed42.csv --json
+```
+
+Current local manifest summary:
+
+```text
+seed: 42
+rows: 5118
+groups: 2354
+train/val group overlap: 0
+train/test group overlap: 0
+val/test group overlap: 0
+mixed-label groups: 0
+original cross-split group count: 90
+```
+
+This manifest improves leakage control over the current folder split, but final reporting must state that true patient-level independence could not be verified from the PNG-only local snapshot.
+
 ## Version Control Policy
 
 Do not commit:
