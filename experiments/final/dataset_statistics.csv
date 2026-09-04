@@ -1,0 +1,35 @@
+dataset,scope,metric,value
+WDBC,overall,total_samples,569
+WDBC,overall,benign,357
+WDBC,overall,malignant,212
+WDBC,overall,features,30
+WDBC,overall,split_strategy,stratified_train_test_split; seed 42; final evaluation protocol to lock validation threshold before test
+WDBC,overall,seed,42
+CBIS-DDSM,overall,manifest_rows,5118
+CBIS-DDSM,overall,original_processed_images,2559
+CBIS-DDSM,overall,roi_images,2559
+CBIS-DDSM,overall,unique_source_image_identities,2559
+CBIS-DDSM,overall,group_count,2354
+CBIS-DDSM,overall,group_strategy,filename_prefix_before_double_underscore
+CBIS-DDSM,overall,limitation,No patient/case metadata was available in the local processed dataset.
+CBIS-DDSM,overall,seed,42
+CBIS-DDSM,benign,group_count,1375
+CBIS-DDSM,malignant,group_count,979
+CBIS-DDSM,train,group_count,1648
+CBIS-DDSM,val,group_count,353
+CBIS-DDSM,test,group_count,353
+CBIS-DDSM,train/benign/images,image_count,1033
+CBIS-DDSM,train/benign/images_roi,image_count,1033
+CBIS-DDSM,train/malignant/images,image_count,744
+CBIS-DDSM,train/malignant/images_roi,image_count,744
+CBIS-DDSM,val/benign/images,image_count,230
+CBIS-DDSM,val/benign/images_roi,image_count,230
+CBIS-DDSM,val/malignant/images,image_count,160
+CBIS-DDSM,val/malignant/images_roi,image_count,160
+CBIS-DDSM,test/benign/images,image_count,224
+CBIS-DDSM,test/benign/images_roi,image_count,224
+CBIS-DDSM,test/malignant/images,image_count,168
+CBIS-DDSM,test/malignant/images_roi,image_count,168
+CBIS-DDSM,train_val,group_overlap_count,0
+CBIS-DDSM,train_test,group_overlap_count,0
+CBIS-DDSM,val_test,group_overlap_count,0

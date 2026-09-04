@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "wdbc": {
+    "total_samples": 569,
+    "benign": 357,
+    "malignant": 212,
+    "features": 30,
+    "split_strategy": "stratified_train_test_split; seed 42; final evaluation protocol to lock validation threshold before test",
+    "seed": 42
+  },
+  "cbis_ddsm": {
+    "manifest": "manifests/cbis_group_split_seed42.csv",
+    "manifest_rows": 5118,
+    "original_processed_images": 2559,
+    "roi_images": 2559,
+    "unique_source_image_identities": 2559,
+    "group_count": 2354,
+    "class_group_counts": {
+      "benign": 1375,
+      "malignant": 979
+    },
+    "split_group_counts": {
+      "train": 1648,
+      "val": 353,
+      "test": 353
+    },
+    "image_counts": {
+      "train": {
+        "benign": {
+          "images": 1033,
+          "images_roi": 1033
+        },
+        "malignant": {
+          "images": 744,
+          "images_roi": 744
+        }
+      },
+      "val": {
+        "benign": {
+          "images": 230,
+          "images_roi": 230
+        },
+        "malignant": {
+          "images": 160,
+          "images_roi": 160
+        }
+      },
+      "test": {
+        "benign": {
+          "images": 224,
+          "images_roi": 224
+        },
+        "malignant": {
+          "images": 168,
+          "images_roi": 168
+        }
+      }
+    },
+    "overlap_counts": {
+      "train_val": 0,
+      "train_test": 0,
+      "val_test": 0
+    },
+    "group_strategy": "filename_prefix_before_double_underscore",
+    "limitation": "No patient/case metadata was available in the local processed dataset.",
+    "seed": 42
+  }
+}
