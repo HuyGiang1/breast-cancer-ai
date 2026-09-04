@@ -3,9 +3,9 @@
 | Phase | Status | Evidence | Commit |
 | --- | --- | --- | --- |
 | 0. Re-audit baseline | DONE | `main` clean; API/tests/compile previously passed; CI present | `9270fa4` |
-| 1. Dataset truth | DONE | Final JSON/CSV statistics and precise protocol generated from manifest seed 42 | Pending checkpoint commit |
-| 2. Manifest-driven DL pipeline | IN_PROGRESS | Existing DL trainer still discovers legacy folders; migration is next | - |
-| 3-4. Final DL retraining/evaluation | BLOCKED | Must complete Phase 2; retraining intentionally not started | - |
+| 1. Dataset truth | DONE | Final JSON/CSV statistics and precise protocol generated from manifest seed 42 | `98b7724` |
+| 2. Manifest-driven DL pipeline | DONE | Parser, tests and final trainer read `cbis_group_split_seed42.csv` directly | Pending checkpoint commit |
+| 3-4. Final DL retraining/evaluation | BLOCKED | Final processed CBIS image files are not mounted in this workspace | - |
 | 5. Final ML re-evaluation | NOT_STARTED | Existing calibrated ML trainer is available | - |
 | 6-10. Analysis, XAI, paper artifacts, selection | NOT_STARTED | Development artifacts exist but are not final evidence | - |
 | 11-18. Software and operations finalization | IN_PROGRESS | FastAPI, static web, Docker, Nginx, CI and artifact policy exist | `9270fa4` and earlier |

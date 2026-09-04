@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Fine-tune DL model with class weights + focal loss + TTA + threshold export.
+"""Train a final DL model from the leakage-safe CBIS manifest.
 
 Example:
   source venv/bin/activate
@@ -22,8 +22,10 @@ import numpy as np
 import tensorflow as tf
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, roc_auc_score
 
+from dl_manifest import ManifestRecord, load_manifest_records, split_records
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DATA_ROOT = PROJECT_ROOT / "data" / "cbis_ddsm" / "processed" / "images"
+MANIFEST_PATH = PROJECT_ROOT / "manifests" / "cbis_group_split_seed42.csv"
 MODEL_DIR = PROJECT_ROOT / "models" / "deep_learning"
 CALIB_PATH = MODEL_DIR / "calibration_profile.json"
 
@@ -45,7 +47,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--image-size", type=int, default=224)
     parser.add_argument("--learning-rate", type=float, default=1e-4)
-    parser.add_argument("--tta-rounds", type=int, default=6)
+    parser.add_argument("--image-set", choices=["images", "images_roi"], default="images")
+    parser.add_argument("--manifest", type=Path, default=MANIFEST_PATH)
     parser.add_argument("--patience", type=int, default=5)
     parser.add_argument("--reduce-lr-patience", type=int, default=2)
     parser.add_argument("--cache-dataset", action="store_true")
@@ -54,29 +57,29 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def _count_images(path: Path) -> int:
-    return len(list(path.glob("*.png"))) + len(list(path.glob("*.jpg"))) + len(list(path.glob("*.jpeg")))
+def _dataset_from_records(records: list[ManifestRecord], image_size: int, batch_size: int, training: bool, seed: int) -> tf.data.Dataset:
+    paths = [str(PROJECT_ROOT / record.relative_path) for record in records]
+    missing = [path for path in paths if not Path(path).is_file()]
+    if missing:
+        raise FileNotFoundError(f"Manifest references missing local images, first: {missing[0]}")
+    labels = np.asarray([record.label for record in records], dtype=np.float32)
+    dataset = tf.data.Dataset.from_tensor_slices((paths, labels))
+    if training:
+        dataset = dataset.shuffle(len(paths), seed=seed, reshuffle_each_iteration=True)
+
+    def decode(path: tf.Tensor, label: tf.Tensor) -> tuple[tf.Tensor, tf.Tensor]:
+        image = tf.io.decode_image(tf.io.read_file(path), channels=3, expand_animations=False)
+        image.set_shape([None, None, 3])
+        return tf.image.resize(tf.cast(image, tf.float32), (image_size, image_size)), label
+
+    return dataset.map(decode, num_parallel_calls=tf.data.AUTOTUNE).batch(batch_size).prefetch(tf.data.AUTOTUNE)
 
 
-def load_datasets(image_size: int, batch_size: int, seed: int, cache_dataset: bool) -> DatasetBundle:
-    train_dir = DATA_ROOT / "train"
-    val_dir = DATA_ROOT / "val"
-    test_dir = DATA_ROOT / "test"
-
-    if not train_dir.exists() or not val_dir.exists() or not test_dir.exists():
-        raise FileNotFoundError(f"Missing dataset folders under {DATA_ROOT}")
-
-    common = dict(
-        image_size=(image_size, image_size),
-        batch_size=batch_size,
-        label_mode="binary",
-        color_mode="rgb",
-        seed=seed,
-    )
-
-    train_ds = tf.keras.utils.image_dataset_from_directory(train_dir, shuffle=True, **common)
-    val_ds = tf.keras.utils.image_dataset_from_directory(val_dir, shuffle=False, **common)
-    test_ds = tf.keras.utils.image_dataset_from_directory(test_dir, shuffle=False, **common)
+def load_datasets(manifest: Path, image_set: str, image_size: int, batch_size: int, seed: int, cache_dataset: bool) -> DatasetBundle:
+    records = split_records(load_manifest_records(manifest, image_set=image_set))
+    train_ds = _dataset_from_records(records["train"], image_size, batch_size, training=True, seed=seed)
+    val_ds = _dataset_from_records(records["val"], image_size, batch_size, training=False, seed=seed)
+    test_ds = _dataset_from_records(records["test"], image_size, batch_size, training=False, seed=seed)
 
     autotune = tf.data.AUTOTUNE
     if cache_dataset:
@@ -87,16 +90,12 @@ def load_datasets(image_size: int, batch_size: int, seed: int, cache_dataset: bo
     val_ds = val_ds.prefetch(autotune)
     test_ds = test_ds.prefetch(autotune)
 
-    train_count = _count_images(train_dir / "benign") + _count_images(train_dir / "malignant")
-    val_count = _count_images(val_dir / "benign") + _count_images(val_dir / "malignant")
-    test_count = _count_images(test_dir / "benign") + _count_images(test_dir / "malignant")
-
-    return DatasetBundle(train_ds, val_ds, test_ds, train_count, val_count, test_count)
+    return DatasetBundle(train_ds, val_ds, test_ds, len(records["train"]), len(records["val"]), len(records["test"]))
 
 
-def get_class_weights() -> Dict[int, float]:
-    benign = _count_images(DATA_ROOT / "train" / "benign")
-    malignant = _count_images(DATA_ROOT / "train" / "malignant")
+def get_class_weights(records: list[ManifestRecord]) -> Dict[int, float]:
+    benign = sum(record.label == 0 for record in records)
+    malignant = sum(record.label == 1 for record in records)
     total = max(benign + malignant, 1)
     return {
         0: total / max(2 * benign, 1),
@@ -279,11 +278,12 @@ def main():
     args = parse_args()
     tf.keras.utils.set_random_seed(args.seed)
 
-    data = load_datasets(args.image_size, args.batch_size, args.seed, args.cache_dataset)
+    all_records = load_manifest_records(args.manifest, image_set=args.image_set)
+    data = load_datasets(args.manifest, args.image_set, args.image_size, args.batch_size, args.seed, args.cache_dataset)
     print(f"Dataset loaded: train={data.train_count}, val={data.val_count}, test={data.test_count}")
 
     model = build_model(args.architecture, args.image_size, args.learning_rate)
-    class_weight = get_class_weights()
+    class_weight = get_class_weights(split_records(all_records)["train"])
     print(f"Class weights: {class_weight}")
 
     model_name = architecture_to_service_name(args.architecture)
@@ -310,9 +310,9 @@ def main():
     val_auc = float(roc_auc_score(val_y, val_prob)) if len(np.unique(val_y)) > 1 else 0.0
     val_acc = float(accuracy_score(val_y, (val_prob >= threshold).astype(np.int32)))
 
-    test_y, test_prob_tta = collect_predictions_with_tta(model, data.test, rounds=args.tta_rounds)
-    test_auc = float(roc_auc_score(test_y, test_prob_tta)) if len(np.unique(test_y)) > 1 else 0.0
-    test_acc = float(accuracy_score(test_y, (test_prob_tta >= threshold).astype(np.int32)))
+    test_y, test_prob = collect_predictions(model, data.test)
+    test_auc = float(roc_auc_score(test_y, test_prob)) if len(np.unique(test_y)) > 1 else 0.0
+    test_acc = float(accuracy_score(test_y, (test_prob >= threshold).astype(np.int32)))
 
     std_prob = float(np.std(val_prob))
     spread_factor = float(np.clip(0.20 / max(std_prob, 1e-6), 0.5, 4.0))
@@ -338,14 +338,15 @@ def main():
         "batch_size": args.batch_size,
         "image_size": args.image_size,
         "learning_rate": args.learning_rate,
-        "tta_rounds": args.tta_rounds,
+        "manifest": str(args.manifest),
+        "image_set": args.image_set,
         "cache_dataset": args.cache_dataset,
         "threshold": threshold,
         "val_balanced_accuracy": val_bacc,
         "val_accuracy": val_acc,
         "val_auc": val_auc,
-        "test_tta_accuracy": test_acc,
-        "test_tta_auc": test_auc,
+        "test_accuracy": test_acc,
+        "test_auc": test_auc,
         "std_probability": std_prob,
         "spread_factor": spread_factor,
         "reference_threshold": reference_threshold,

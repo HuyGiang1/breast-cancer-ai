@@ -2,11 +2,11 @@
 
 ## Last completed phase
 
-Phase 1 Dataset Truth is complete. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai` on branch `main`.
+Phase 2 manifest-driven DL pipeline is complete locally. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai` on branch `main`.
 
 ## Current phase
 
-Phase 2, manifest-driven DL pipeline. Do not start Deep Learning retraining until this training input contract is complete and tested.
+Phase 3 final DL retraining is next, but blocked until the ignored CBIS-DDSM processed image files are restored/mounted at the paths recorded in the manifest.
 
 ## Files changed in this handoff checkpoint
 
@@ -17,6 +17,9 @@ Phase 2, manifest-driven DL pipeline. Do not start Deep Learning retraining unti
 - `scripts/build_final_dataset_statistics.py`
 - `experiments/final/dataset_statistics.json`
 - `experiments/final/dataset_statistics.csv`
+- `scripts/dl_manifest.py`
+- `tests/test_dl_manifest.py`
+- `scripts/train_dl_finetune_calibrated.py`
 
 ## Evidence and decisions
 
@@ -24,7 +27,9 @@ Phase 2, manifest-driven DL pipeline. Do not start Deep Learning retraining unti
 - `manifests/cbis_group_split_seed42.csv` has 5,118 rows across two representations (processed full image and ROI), and `manifests/cbis_group_split_seed42_summary.json` reports 2,354 study-like groups.
 - Manifest overlaps are zero: train/validation, train/test, validation/test.
 - Final machine-readable statistics confirm 2,559 full processed images, 2,559 ROI images and 2,354 inferred groups.
-- Existing `scripts/train_dl_finetune_calibrated.py` still reads `data/cbis_ddsm/processed/images/{train,val,test}` via directory discovery. It must be converted to read the manifest directly.
+- `scripts/train_dl_finetune_calibrated.py` now reads `manifests/cbis_group_split_seed42.csv` directly and supports `--image-set images|images_roi`.
+- Tests assert 2,559 full-image records, 2,559 ROI records, deterministic split counts, and one split per group.
+- Standard final test evaluation no longer applies random TTA; model/threshold selection remains validation-based.
 - Existing DL metrics and figures under `experiments/results/` are development/preliminary only, because legacy folders had 90 cross-split study-like prefixes.
 - Keep multimodal fusion as `Experimental Multimodal Integration` unless valid paired clinical-image data is found.
 - Do not commit raw CBIS-DDSM, runtime database, `.env`, or model weight artifacts.
@@ -39,18 +44,17 @@ Phase 2, manifest-driven DL pipeline. Do not start Deep Learning retraining unti
 
 ## Current blockers
 
-- No scientific blocker for Phase 1/2.
-- Phase 3 is intentionally deferred until the new training input contract is implemented.
+- The local workspace has the manifest but not the ignored processed CBIS images required to train.
 - Public deployment requires future VPS/domain credentials.
 
 ## Exact next command
 
-`PYTHONPATH=backend venv/bin/python -m pytest -q`
+`PYTHONPATH=backend venv/bin/python scripts/train_dl_finetune_calibrated.py --architecture custom_cnn --image-set images --epochs 25 --batch-size 16 --image-size 224`
 
-After the Phase 1 checkpoint, implement tests and a manifest parser for `scripts/train_dl_finetune_calibrated.py` before retraining.
+Run only after verifying that every manifest `relative_path` resolves to a local processed image.
 
 ## Latest commit and Git status
 
-Latest pre-checkpoint commit: `9270fa4`.
+Latest pushed checkpoint: `98b7724 research: document final dataset protocol and project overview`. The current Phase 2 changes are uncommitted pending this checkpoint.
 
-Run `git status --short` before continuing; this checkpoint deliberately creates uncommitted documentation files until they are reviewed and validated together.
+Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.
