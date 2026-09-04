@@ -1,114 +1,78 @@
-# Virtualenv
-venv/
-
-# Python cache
-__pycache__/
-*.py[cod]
-
-# Environment
-.env
-.env.*
-
-# macOS
+# OS/editor noise
 .DS_Store
-
-# Jupyter
-.ipynb_checkpoints/
-
-# Data and large artifacts
-/data/
-/models/deep_learning/
-/models/*.keras
-*.keras
-*.h5
-*.ckpt
-*.pth
-*.pt
-
-# Logs and results
-/logs/
-/results/
-
-# Editor settings
+.idea/
 .vscode/
-# Python
+*.swp
+*.swo
+*~
+
+# Python cache/build
 __pycache__/
 *.py[cod]
 *.class
 *.so
 .Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
-*.egg
+.eggs/
 
 # Virtual environments
 venv/
 env/
 ENV/
 .venv/
+.venv_min/
 
-# Jupyter
-.ipynb_checkpoints/
-.mplconfig/
-
-# Editors / OS
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# Environment / secrets
+# Local environment and secrets
 .env
+.env.*
+!.env.example
 secret.txt
 credentials.json
 
-# Runtime data
+# Jupyter/runtime scratch
+.ipynb_checkpoints/
+.mplconfig/
+
+# Runtime app data
 backend/data/app.db
+backend/data/*.db
 backend/data/outbox/
 frontend/results/
 logs/
 *.log
 
-# Large data artifacts
+# Large private datasets
 data/cbis_ddsm/
 data/raw/*.csv
-data/processed/*.csv
 data/processed/*.pkl
 data/processed/*.npy
+src/data/processed/*.pkl
+src/data/processed/*.npy
 
-# Heavy model artifacts
+# Heavy model artifacts. Keep code/config tracked; publish weights separately.
 *.keras
 *.h5
+*.ckpt
 *.pth
+*.pt
 *.onnx
 models/deep_learning/
-src/models/**/*.keras
-backend/*.keras
-
-# Experiment outputs
-experiments/results/
 models/*.pkl
-models/*.json
-/frontend/assets/
+models/*.joblib
+src/models/*.pkl
+src/models/*.joblib
+backend/*.keras
+src/models/**/*.keras
+
+# Generated research figures can be regenerated; keep selected CSV/JSON summaries tracked.
+experiments/results/*.png
+src/experiments/results/
+
+# Generated report/export bundles
 *.docx
 *.zip
-*.command
-*.sh
-*.md
-*.ipynb
-notebooks/
-*.pdf
