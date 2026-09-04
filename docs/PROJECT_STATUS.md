@@ -12,6 +12,7 @@
 | Final ML SHAP / XAI | DONE | Development-background LinearExplainer, frozen test global/local contribution analysis and deterministic TP/TN/FP/FN selection | `6dd14e8` |
 | Paper artifacts | DONE | Reproducible tables, 12 provenance-tracked figures, manifest, snapshot, and validation script generated from frozen final artifacts | `af4e160`, `6d52da6` |
 | Final research synthesis | DONE | Conservative modality-specific results synthesis and report update notes complete; no model promotion | - |
+| Final model promotion review | DONE | ML contract integrity-verified and approved for research/demo integration; DL integration blocked by missing frozen Platt runtime artifact | `3a75d4b` |
 | 11-18. Software and operations finalization | IN_PROGRESS | FastAPI, static web, Docker, Nginx, CI and artifact policy exist | `9270fa4` and earlier |
 | 19. VPS/domain/HTTPS | BLOCKED | Requires VPS and domain access from project owner | - |
 | 20-25. Production safety, CI, docs, release | IN_PROGRESS | Baseline safeguards and documentation exist; final release depends on research phases | - |
@@ -23,4 +24,4 @@
 - The manifest uses filename prefix before `__` as a conservative study-like group. It is not a verified patient-level split because the local processed snapshot lacks complete patient/case metadata.
 - The current `0.4 * ML + 0.6 * DL` fusion is an experimental software heuristic, not a validated multimodal research finding.
 - System framing: **Research / Educational Prototype - Not for clinical diagnosis.**
-- Next research governance step: **Final Model Promotion Review**. This is a review only; no runtime promotion has occurred.
+- Next engineering phase: **Final Model Runtime Integration** from the reviewed contract. No runtime promotion has occurred.

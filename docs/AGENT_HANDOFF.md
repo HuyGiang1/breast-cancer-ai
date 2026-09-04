@@ -2,18 +2,18 @@
 
 ## Last completed phase
 
-Final paper artifacts and research synthesis are complete on `research/final-paper-artifacts`. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai`; merge is pending PR review and CI.
+Final model promotion review is complete on `research/final-model-promotion-review`. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai`.
 
 ## Current phase
 
-ML and DL research are frozen. The next phase is **Final Model Promotion Review**; it must review evidence and deployment constraints without changing or promoting a runtime model automatically.
+ML and DL research are frozen. The next phase is **Final Model Runtime Integration** from this review branch; it must not retrain, recalibrate, reselect thresholds, or make a clinical promotion.
 
 ## Git workflow
 
-- Current branch: `research/final-paper-artifacts`
-- Current PR: not created; the configured GitHub CLI credential cannot create pull requests (`must be a collaborator`).
-- Branch commits: `af4e160 research: add reproducible final paper tables`; `6d52da6 research: add final paper figures and artifact manifest`; `13a2471 docs: synthesize final research results`.
-- Verification passed: `python3 -m compileall backend/app scripts tests`; `pytest -q` (5 passed); paper artifact regeneration; `scripts/validate_final_research_artifacts.py`.
+- Current branch: `research/final-model-promotion-review`
+- Base branch: `research/final-paper-artifacts`
+- Branch commits: `3a75d4b research: define final runtime model contract`; promotion review documentation commit pending.
+- Verification passed: `python3 -m compileall backend/app scripts tests`; `pytest -q` (5 passed); `scripts/validate_final_model_contract.py`.
 
 ## Files changed in this handoff checkpoint
 
@@ -80,6 +80,12 @@ ML and DL research are frozen. The next phase is **Final Model Promotion Review*
 - `experiments/final/FINAL_RESULTS_SNAPSHOT.json`
 - `docs/FINAL_RESEARCH_RESULTS.md`
 - `docs/REPORT_UPDATE_NOTES.md`
+- `models/model_registry.example.json`
+- `docs/FINAL_RUNTIME_MODEL_CONTRACT.md`
+- `docs/FINAL_MODEL_ARTIFACT_AUDIT.md`
+- `docs/FINAL_MODEL_PROMOTION_REVIEW.md`
+- `docs/FINAL_MODEL_RUNTIME_INTEGRATION_PLAN.md`
+- `scripts/validate_final_model_contract.py`
 
 ## Evidence and decisions
 
@@ -107,6 +113,8 @@ ML and DL research are frozen. The next phase is **Final Model Promotion Review*
 - The deterministic local selection includes one median-confidence TP, one TN, the only FP, and both FNs. Logistic Regression remains frozen and is not promoted to runtime.
 - Final paper artifacts read frozen `experiments/final` CSV/JSON only. They include 11 tables, 12 provenance-tracked figures, `paper_artifacts/MANIFEST.json`, and `experiments/final/FINAL_RESULTS_SNAPSHOT.json`.
 - The synthesis explicitly treats WDBC ML and CBIS-DDSM DL as distinct studies. There is no cross-dataset model ranking and no validated multimodal conclusion.
+- Promotion review verifies the final Logistic Regression pipeline, feature count/class ordering, raw probability, threshold 0.36, and artifact SHA-256. It is approved only for a future controlled research/demo integration.
+- Promotion review verifies EfficientNet-B0 full-image SHA-256, input, preprocessing policy, raw output, and raw threshold 0.515. DL integration is blocked because selected Platt calibration has no frozen standalone runtime-loadable artifact; legacy Custom CNN calibration profile is incompatible and must not be substituted.
 - Existing DL metrics and figures under `experiments/results/` are development/preliminary only, because legacy folders had 90 cross-split study-like prefixes.
 - Keep multimodal fusion as `Experimental Multimodal Integration` unless valid paired clinical-image data is found.
 - Do not commit raw CBIS-DDSM, runtime database, `.env`, or model weight artifacts.
@@ -122,14 +130,14 @@ ML and DL research are frozen. The next phase is **Final Model Promotion Review*
 ## Current blockers
 
 - Public deployment requires future VPS/domain credentials.
-- GitHub PR creation/merge requires a collaborator credential for `HuyGiang1/breast-cancer-ai`. No GitHub Actions run was listed for the pushed branch, so CI cannot yet be accepted as merge evidence.
+- Frozen DL Platt calibration parameters/artifact are not persisted for runtime loading. Do not refit or substitute a calibrator; resolve this contract gap before integrating DL.
 
 ## Exact next command
 
-Conduct Final Model Promotion Review from the frozen evidence and deployment constraints. Do not retrain, re-evaluate, or promote runtime models without an explicit approved promotion decision.
+Create `feat/final-model-runtime-integration` from `research/final-model-promotion-review` and implement only the reviewed research/demo runtime contract. Do not retrain, re-evaluate, or promote clinical use.
 
 ## Latest commit and Git status
 
-Latest branch documentation commit is `13a2471`; the handoff status update follows. Next action: create/review PR with a collaborator credential, confirm CI, then Final Model Promotion Review. No DL training, ML re-evaluation change, or runtime promotion is authorized.
+Latest branch contract commit is `3a75d4b`; the promotion-review documentation commit is pending. Next action: `feat/final-model-runtime-integration` from this branch. No DL training, ML re-evaluation change, or clinical/runtime promotion is authorized automatically.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.
