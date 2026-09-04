@@ -2,11 +2,18 @@
 
 ## Last completed phase
 
-Final WDBC ML SHAP/XAI is complete locally. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai` on branch `main`.
+Final paper artifacts and research synthesis are complete on `research/final-paper-artifacts`. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai`; merge is pending PR review and CI.
 
 ## Current phase
 
-DL research and final ML evaluation are frozen. The next research phase is paper artifacts and final research synthesis; do not promote a runtime model yet.
+ML and DL research are frozen. The next phase is **Final Model Promotion Review**; it must review evidence and deployment constraints without changing or promoting a runtime model automatically.
+
+## Git workflow
+
+- Current branch: `research/final-paper-artifacts`
+- Current PR: pending creation after branch push
+- Branch commits: `af4e160 research: add reproducible final paper tables`; `6d52da6 research: add final paper figures and artifact manifest`
+- Required verification before merge: `python3 -m compileall backend/app scripts tests`, `pytest -q`, paper artifact regeneration, and `scripts/validate_final_research_artifacts.py`.
 
 ## Files changed in this handoff checkpoint
 
@@ -67,6 +74,12 @@ DL research and final ML evaluation are frozen. The next research phase is paper
 - `experiments/final/figures/ml_shap_bar.png`
 - `experiments/final/figures/ml_shap_examples.png`
 - `docs/FINAL_ML_XAI_ANALYSIS.md`
+- `scripts/generate_paper_artifacts.py`
+- `scripts/validate_final_research_artifacts.py`
+- `paper_artifacts/`
+- `experiments/final/FINAL_RESULTS_SNAPSHOT.json`
+- `docs/FINAL_RESEARCH_RESULTS.md`
+- `docs/REPORT_UPDATE_NOTES.md`
 
 ## Evidence and decisions
 
@@ -92,6 +105,8 @@ DL research and final ML evaluation are frozen. The next research phase is paper
 - ML final test results are frozen. Subsequent SHAP/XAI is explanatory only and cannot change the selected model, calibrator, or threshold.
 - Final ML SHAP/XAI used `shap.LinearExplainer` on the frozen Logistic Regression classifier after its saved StandardScaler, with all 455 development samples as the background and all 114 frozen test samples as the explanation set. SHAP values are malignant-class log-odds contributions.
 - The deterministic local selection includes one median-confidence TP, one TN, the only FP, and both FNs. Logistic Regression remains frozen and is not promoted to runtime.
+- Final paper artifacts read frozen `experiments/final` CSV/JSON only. They include 11 tables, 12 provenance-tracked figures, `paper_artifacts/MANIFEST.json`, and `experiments/final/FINAL_RESULTS_SNAPSHOT.json`.
+- The synthesis explicitly treats WDBC ML and CBIS-DDSM DL as distinct studies. There is no cross-dataset model ranking and no validated multimodal conclusion.
 - Existing DL metrics and figures under `experiments/results/` are development/preliminary only, because legacy folders had 90 cross-split study-like prefixes.
 - Keep multimodal fusion as `Experimental Multimodal Integration` unless valid paired clinical-image data is found.
 - Do not commit raw CBIS-DDSM, runtime database, `.env`, or model weight artifacts.
@@ -110,10 +125,10 @@ DL research and final ML evaluation are frozen. The next research phase is paper
 
 ## Exact next command
 
-Begin paper artifacts and final research synthesis from the frozen final artifacts. Do not retrain, re-evaluate, or promote runtime models.
+Conduct Final Model Promotion Review from the frozen evidence and deployment constraints. Do not retrain, re-evaluate, or promote runtime models without an explicit approved promotion decision.
 
 ## Latest commit and Git status
 
-The next action is paper artifacts and final research synthesis. No DL training, ML re-evaluation change, or runtime promotion is authorized.
+Latest branch commits are `af4e160` and `6d52da6`; the synthesis documentation commit is pending. Next action: PR review/CI, then Final Model Promotion Review. No DL training, ML re-evaluation change, or runtime promotion is authorized.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.
