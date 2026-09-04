@@ -2,11 +2,11 @@
 
 ## Last completed phase
 
-Phase 2 manifest-driven DL pipeline is complete locally. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai` on branch `main`.
+Safe research reset gates are complete and the Custom CNN final candidate run is complete locally. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai` on branch `main`.
 
 ## Current phase
 
-Phase 3 final DL retraining is next, but blocked until the ignored CBIS-DDSM processed image files are restored/mounted at the paths recorded in the manifest.
+Phase 3 continues with ResNet50 and EfficientNet-B0 baseline runs using the same manifest and full-image representation.
 
 ## Files changed in this handoff checkpoint
 
@@ -20,6 +20,11 @@ Phase 3 final DL retraining is next, but blocked until the ignored CBIS-DDSM pro
 - `scripts/dl_manifest.py`
 - `tests/test_dl_manifest.py`
 - `scripts/train_dl_finetune_calibrated.py`
+- `scripts/verify_final_dl_dataset.py`
+- `docs/RESEARCH_RULES.md`
+- `docs/LEGACY_RESEARCH_ARTIFACTS.md`
+- `experiments/final/dataset_verification.json`
+- `experiments/final/runs/custom_cnn_full/`
 
 ## Evidence and decisions
 
@@ -30,6 +35,9 @@ Phase 3 final DL retraining is next, but blocked until the ignored CBIS-DDSM pro
 - `scripts/train_dl_finetune_calibrated.py` now reads `manifests/cbis_group_split_seed42.csv` directly and supports `--image-set images|images_roi`.
 - Tests assert 2,559 full-image records, 2,559 ROI records, deterministic split counts, and one split per group.
 - Standard final test evaluation no longer applies random TTA; model/threshold selection remains validation-based.
+- Gate A passed all 5,118 manifest records: zero missing paths, corrupt images, invalid rows, mixed-label groups and cross-split group overlaps.
+- Gate B passes: manifest-only split source, group validation, no validation/test random augmentation, validation-based checkpoint/threshold selection, fixed seed and saved config.
+- Custom CNN full-image candidate completed with final-run artifacts. It is not promoted; test ROC-AUC is 0.6153, sensitivity 0.4583 and FN 91, so it remains a comparison baseline rather than a selected production model.
 - Existing DL metrics and figures under `experiments/results/` are development/preliminary only, because legacy folders had 90 cross-split study-like prefixes.
 - Keep multimodal fusion as `Experimental Multimodal Integration` unless valid paired clinical-image data is found.
 - Do not commit raw CBIS-DDSM, runtime database, `.env`, or model weight artifacts.
@@ -44,17 +52,16 @@ Phase 3 final DL retraining is next, but blocked until the ignored CBIS-DDSM pro
 
 ## Current blockers
 
-- The local workspace has the manifest but not the ignored processed CBIS images required to train.
 - Public deployment requires future VPS/domain credentials.
 
 ## Exact next command
 
-`PYTHONPATH=backend venv/bin/python scripts/train_dl_finetune_calibrated.py --architecture custom_cnn --image-set images --epochs 25 --batch-size 16 --image-size 224`
+`MPLCONFIGDIR=/private/tmp/breast-cancer-ai-mpl PYTHONPATH=backend venv/bin/python scripts/train_dl_finetune_calibrated.py --architecture resnet50 --image-set images --epochs 25 --batch-size 16 --image-size 224 --learning-rate 0.0001 --output-stem resnet50_final_seed42 --run-dir experiments/final/runs/resnet50_full`
 
 Run only after verifying that every manifest `relative_path` resolves to a local processed image.
 
 ## Latest commit and Git status
 
-Latest pushed checkpoint: `9bcba28 research: make DL training manifest-driven`. Run `git status --short` before continuing; expected status after committing this handoff update is clean.
+Latest pushed checkpoint: `9d9cb1b docs: update phase handoff status`. Current safe-reset and Custom CNN changes are pending a logical checkpoint commit.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.

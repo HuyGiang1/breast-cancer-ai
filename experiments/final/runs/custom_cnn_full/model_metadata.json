@@ -1,0 +1,10 @@
+{
+  "version": "final-candidate",
+  "architecture": "custom_cnn",
+  "model_file": "/Users/GiangNguyenHuy/Documents/breast-cancer-ai/models/deep_learning/custom_cnn_final_seed42.keras",
+  "sha256": "7ea2f522c00f1c9cde2e8cc8ede9bcb10eb05191e36e25dacf1a15e1f9e6f143",
+  "training_manifest": "/Users/GiangNguyenHuy/Documents/breast-cancer-ai/manifests/cbis_group_split_seed42.csv",
+  "seed": 42,
+  "threshold": 0.49999999999999994,
+  "metrics_file": "experiments/final/runs/custom_cnn_full/metrics.json"
+}

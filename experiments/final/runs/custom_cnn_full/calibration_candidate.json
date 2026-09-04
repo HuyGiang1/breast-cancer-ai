@@ -1,0 +1,10 @@
+{
+  "model_name": "Custom CNN",
+  "threshold": 0.49999999999999994,
+  "validation_accuracy": 0.6282051282051282,
+  "validation_auc": 0.6372554347826086,
+  "spread_factor": 4.0,
+  "reference_threshold": 0.49999999999999994,
+  "centering_gain": 13.064146456519374,
+  "std_probability": 0.021432705223560333
+}

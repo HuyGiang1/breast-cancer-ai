@@ -1,0 +1,6 @@
+{
+  "threshold": 0.49999999999999994,
+  "selected_on": "validation",
+  "objective": "balanced_accuracy",
+  "validation_balanced_accuracy": 0.6115489130434784
+}

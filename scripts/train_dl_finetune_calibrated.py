@@ -13,6 +13,8 @@ Example:
 from __future__ import annotations
 
 import argparse
+import csv
+import hashlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
@@ -20,7 +22,17 @@ from typing import Dict, Tuple
 
 import numpy as np
 import tensorflow as tf
-from sklearn.metrics import accuracy_score, balanced_accuracy_score, roc_auc_score
+from sklearn.metrics import (
+    accuracy_score,
+    average_precision_score,
+    balanced_accuracy_score,
+    brier_score_loss,
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
 
 from dl_manifest import ManifestRecord, load_manifest_records, split_records
 
@@ -49,6 +61,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--learning-rate", type=float, default=1e-4)
     parser.add_argument("--image-set", choices=["images", "images_roi"], default="images")
     parser.add_argument("--manifest", type=Path, default=MANIFEST_PATH)
+    parser.add_argument("--run-dir", type=Path, default=None, help="Directory for final run config and outputs.")
     parser.add_argument("--patience", type=int, default=5)
     parser.add_argument("--reduce-lr-patience", type=int, default=2)
     parser.add_argument("--cache-dataset", action="store_true")
@@ -155,27 +168,6 @@ def collect_predictions(model: tf.keras.Model, dataset: tf.data.Dataset) -> Tupl
     return np.asarray(y_true, dtype=np.int32), np.asarray(y_prob, dtype=np.float32)
 
 
-def random_tta(images: tf.Tensor) -> tf.Tensor:
-    x = tf.image.random_flip_left_right(images)
-    x = tf.image.random_flip_up_down(x)
-    x = tf.image.random_brightness(x, max_delta=0.08)
-    x = tf.image.random_contrast(x, lower=0.9, upper=1.1)
-    return tf.clip_by_value(x, 0.0, 255.0)
-
-
-def collect_predictions_with_tta(model: tf.keras.Model, dataset: tf.data.Dataset, rounds: int) -> Tuple[np.ndarray, np.ndarray]:
-    y_true, y_prob = [], []
-    for x, y in dataset:
-        probs = []
-        for _ in range(max(rounds, 1)):
-            x_aug = random_tta(x)
-            probs.append(model.predict(x_aug, verbose=0).ravel())
-        p = np.mean(np.stack(probs, axis=0), axis=0)
-        y_prob.extend(p.tolist())
-        y_true.extend(y.numpy().ravel().tolist())
-    return np.asarray(y_true, dtype=np.int32), np.asarray(y_prob, dtype=np.float32)
-
-
 def best_threshold(y_true: np.ndarray, y_prob: np.ndarray) -> Tuple[float, float]:
     thresholds = np.linspace(0.05, 0.95, 181)
     best_t, best_bacc = 0.5, -1.0
@@ -186,6 +178,38 @@ def best_threshold(y_true: np.ndarray, y_prob: np.ndarray) -> Tuple[float, float
             best_bacc = float(bacc)
             best_t = float(t)
     return best_t, best_bacc
+
+
+def evaluate(y_true: np.ndarray, y_prob: np.ndarray, threshold: float) -> dict:
+    prediction = (y_prob >= threshold).astype(np.int32)
+    tn, fp, fn, tp = confusion_matrix(y_true, prediction, labels=[0, 1]).ravel()
+    return {
+        "threshold": float(threshold),
+        "accuracy": float(accuracy_score(y_true, prediction)),
+        "precision": float(precision_score(y_true, prediction, zero_division=0)),
+        "sensitivity": float(recall_score(y_true, prediction, zero_division=0)),
+        "specificity": float(tn / (tn + fp)) if tn + fp else 0.0,
+        "f1": float(f1_score(y_true, prediction, zero_division=0)),
+        "balanced_accuracy": float(balanced_accuracy_score(y_true, prediction)),
+        "roc_auc": float(roc_auc_score(y_true, y_prob)) if len(np.unique(y_true)) > 1 else 0.0,
+        "pr_auc": float(average_precision_score(y_true, y_prob)) if len(np.unique(y_true)) > 1 else 0.0,
+        "brier_score": float(brier_score_loss(y_true, y_prob)),
+        "tn": int(tn), "fp": int(fp), "fn": int(fn), "tp": int(tp),
+    }
+
+
+def write_predictions(path: Path, y_true: np.ndarray, y_prob: np.ndarray, threshold: float) -> None:
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=["index", "label", "malignant_probability", "prediction", "threshold"])
+        writer.writeheader()
+        for index, (label, probability) in enumerate(zip(y_true, y_prob)):
+            writer.writerow({
+                "index": index,
+                "label": int(label),
+                "malignant_probability": float(probability),
+                "prediction": int(probability >= threshold),
+                "threshold": float(threshold),
+            })
 
 
 def architecture_to_service_name(arch: str) -> str:
@@ -289,6 +313,24 @@ def main():
     model_name = architecture_to_service_name(args.architecture)
     output_stem = args.output_stem.strip() or f"{args.architecture}_finetuned_calibrated"
     out_model = MODEL_DIR / f"{output_stem}.keras"
+    run_dir = args.run_dir or PROJECT_ROOT / "experiments" / "final" / "runs" / f"{args.architecture}_full"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "config.json").write_text(
+        json.dumps({
+            "architecture": args.architecture,
+            "manifest": str(args.manifest),
+            "image_set": args.image_set,
+            "seed": args.seed,
+            "epochs": args.epochs,
+            "batch_size": args.batch_size,
+            "image_size": args.image_size,
+            "learning_rate": args.learning_rate,
+            "selection_split": "val",
+            "threshold_selection_split": "val",
+            "final_evaluation_split": "test",
+            "test_time_augmentation": "none",
+        }, indent=2) + "\n", encoding="utf-8"
+    )
 
     callbacks = [
         tf.keras.callbacks.EarlyStopping(monitor="val_auc", patience=args.patience, mode="max", restore_best_weights=True),
@@ -296,7 +338,7 @@ def main():
         tf.keras.callbacks.ModelCheckpoint(str(out_model), monitor="val_auc", mode="max", save_best_only=True),
     ]
 
-    model.fit(
+    history = model.fit(
         data.train,
         validation_data=data.val,
         epochs=args.epochs,
@@ -307,33 +349,43 @@ def main():
 
     val_y, val_prob = collect_predictions(model, data.val)
     threshold, val_bacc = best_threshold(val_y, val_prob)
-    val_auc = float(roc_auc_score(val_y, val_prob)) if len(np.unique(val_y)) > 1 else 0.0
-    val_acc = float(accuracy_score(val_y, (val_prob >= threshold).astype(np.int32)))
-
     test_y, test_prob = collect_predictions(model, data.test)
-    test_auc = float(roc_auc_score(test_y, test_prob)) if len(np.unique(test_y)) > 1 else 0.0
-    test_acc = float(accuracy_score(test_y, (test_prob >= threshold).astype(np.int32)))
+    val_metrics = evaluate(val_y, val_prob, threshold)
+    test_metrics = evaluate(test_y, test_prob, threshold)
+    val_auc, val_acc = val_metrics["roc_auc"], val_metrics["accuracy"]
 
     std_prob = float(np.std(val_prob))
     spread_factor = float(np.clip(0.20 / max(std_prob, 1e-6), 0.5, 4.0))
     reference_threshold = float(np.clip(threshold, 0.15, 0.85))
     centering_gain = float(np.clip(0.28 / max(std_prob, 1e-3), 4.0, 14.0))
 
-    update_profile(
-        args.architecture,
-        val_acc=val_acc,
-        val_auc=val_auc,
-        threshold=threshold,
-        spread_factor=spread_factor,
-        reference_threshold=reference_threshold,
-        centering_gain=centering_gain,
-        std_prob=std_prob,
-    )
+    # Promotion into the runtime calibration profile occurs only after final model selection.
+    candidate_profile = {
+        "model_name": model_name,
+        "threshold": threshold,
+        "validation_accuracy": val_acc,
+        "validation_auc": val_auc,
+        "spread_factor": spread_factor,
+        "reference_threshold": reference_threshold,
+        "centering_gain": centering_gain,
+        "std_probability": std_prob,
+    }
+    (run_dir / "calibration_candidate.json").write_text(json.dumps(candidate_profile, indent=2) + "\n", encoding="utf-8")
+    with (run_dir / "history.csv").open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.writer(handle)
+        keys = list(history.history)
+        writer.writerow(["epoch", *keys])
+        for epoch, values in enumerate(zip(*(history.history[key] for key in keys)), start=1):
+            writer.writerow([epoch, *values])
+    write_predictions(run_dir / "validation_predictions.csv", val_y, val_prob, threshold)
+    write_predictions(run_dir / "test_predictions.csv", test_y, test_prob, threshold)
+    (run_dir / "threshold.json").write_text(json.dumps({"threshold": threshold, "selected_on": "validation", "objective": "balanced_accuracy", "validation_balanced_accuracy": val_bacc}, indent=2) + "\n", encoding="utf-8")
+    (run_dir / "metrics.json").write_text(json.dumps({"validation": val_metrics, "test": test_metrics}, indent=2) + "\n", encoding="utf-8")
 
     summary = {
         "model_name": model_name,
         "model_path": str(out_model),
-        "calibration_profile": str(CALIB_PATH),
+        "run_dir": str(run_dir),
         "epochs": args.epochs,
         "batch_size": args.batch_size,
         "image_size": args.image_size,
@@ -345,8 +397,8 @@ def main():
         "val_balanced_accuracy": val_bacc,
         "val_accuracy": val_acc,
         "val_auc": val_auc,
-        "test_accuracy": test_acc,
-        "test_auc": test_auc,
+        "test_accuracy": test_metrics["accuracy"],
+        "test_auc": test_metrics["roc_auc"],
         "std_probability": std_prob,
         "spread_factor": spread_factor,
         "reference_threshold": reference_threshold,
@@ -360,6 +412,34 @@ def main():
     summary_path = MODEL_DIR / f"{output_stem}_summary.json"
     with summary_path.open("w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=True, indent=2)
+    (run_dir / "training.log").write_text(
+        "\n".join([
+            f"Final candidate run: {run_dir.name}",
+            f"Architecture: {model_name}",
+            f"Manifest: {args.manifest}",
+            f"Image set: {args.image_set}",
+            f"Seed: {args.seed}",
+            f"Epoch limit: {args.epochs}",
+            f"Batch size: {args.batch_size}",
+            f"Input size: {args.image_size}",
+            "Checkpoint selection: validation ROC-AUC",
+            "Threshold selection: validation balanced accuracy",
+            "Test-time augmentation: none",
+            "Completion: successful; detailed epoch history is stored in history.csv.",
+            "",
+        ]), encoding="utf-8"
+    )
+    model_sha256 = hashlib.sha256(out_model.read_bytes()).hexdigest()
+    (run_dir / "model_metadata.json").write_text(json.dumps({
+        "version": "final-candidate",
+        "architecture": args.architecture,
+        "model_file": str(out_model),
+        "sha256": model_sha256,
+        "training_manifest": str(args.manifest),
+        "seed": args.seed,
+        "threshold": threshold,
+        "metrics_file": str(run_dir / "metrics.json"),
+    }, indent=2) + "\n", encoding="utf-8")
     print(f"Saved summary to {summary_path}")
 
 
