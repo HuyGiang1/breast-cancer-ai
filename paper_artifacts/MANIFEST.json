@@ -1,0 +1,238 @@
+{
+  "schema_version": 1,
+  "generator": "scripts/generate_paper_artifacts.py",
+  "artifacts": [
+    {
+      "file": "paper_artifacts/figures/01_ml_roc_comparison.png",
+      "source": "experiments/final/figures/ml_roc_comparison.png",
+      "generated_by": "scripts/generate_paper_artifacts.py (reproducible copy)",
+      "research_phase": "Final WDBC ML evaluation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/figures/02_ml_pr_comparison.png",
+      "source": "experiments/final/figures/ml_pr_comparison.png",
+      "generated_by": "scripts/generate_paper_artifacts.py (reproducible copy)",
+      "research_phase": "Final WDBC ML evaluation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/figures/03_ml_confusion_matrix.png",
+      "source": "experiments/final/figures/ml_confusion_matrices.png",
+      "generated_by": "scripts/generate_paper_artifacts.py (reproducible copy)",
+      "research_phase": "Final WDBC ML evaluation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/figures/04_ml_calibration.png",
+      "source": "experiments/final/figures/ml_calibration_comparison.png",
+      "generated_by": "scripts/generate_paper_artifacts.py (reproducible copy)",
+      "research_phase": "Final WDBC ML evaluation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/figures/05_ml_shap_global.png",
+      "source": "experiments/final/figures/ml_shap_summary.png",
+      "generated_by": "scripts/generate_paper_artifacts.py (reproducible copy)",
+      "research_phase": "Final WDBC SHAP/XAI",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/figures/06_dl_roc_comparison.png",
+      "source": "experiments/final/figures/dl_roc_comparison.png",
+      "generated_by": "scripts/generate_paper_artifacts.py (reproducible copy)",
+      "research_phase": "Final DL baseline evaluation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/figures/07_dl_pr_comparison.png",
+      "source": "experiments/final/figures/dl_pr_comparison.png",
+      "generated_by": "scripts/generate_paper_artifacts.py (reproducible copy)",
+      "research_phase": "Final DL baseline evaluation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/figures/08_dl_confusion_matrix.png",
+      "source": "experiments/final/figures/dl_confusion_matrices.png",
+      "generated_by": "scripts/generate_paper_artifacts.py (reproducible copy)",
+      "research_phase": "Final DL baseline evaluation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/figures/09_dl_calibration.png",
+      "source": "experiments/final/figures/efficientnet_calibration_comparison.png",
+      "generated_by": "scripts/generate_paper_artifacts.py (reproducible copy)",
+      "research_phase": "Final DL reliability analysis",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/figures/10_dl_threshold_tradeoff.png",
+      "source": "experiments/final/figures/efficientnet_threshold_tradeoff.png",
+      "generated_by": "scripts/generate_paper_artifacts.py (reproducible copy)",
+      "research_phase": "Final DL reliability analysis",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/figures/11_dl_gradcam_examples.png",
+      "source": "experiments/final/figures/efficientnet_gradcam_examples.png",
+      "generated_by": "scripts/generate_paper_artifacts.py (reproducible copy)",
+      "research_phase": "Final DL Grad-CAM/XAI",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/figures/12_roi_ablation.png",
+      "source": [
+        "experiments/final/figures/efficientnet_full_vs_roi_roc.png",
+        "experiments/final/figures/efficientnet_full_vs_roi_pr.png"
+      ],
+      "generated_by": "scripts/generate_paper_artifacts.py (side-by-side composition of frozen final figures)",
+      "research_phase": "DL-04 ROI ablation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/tables/dataset_statistics.csv",
+      "source": [
+        "experiments/final/dataset_statistics.json",
+        "experiments/final/ml_dataset_statistics.json"
+      ],
+      "generated_by": "scripts/generate_paper_artifacts.py",
+      "research_phase": "Final paper artifact consolidation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/tables/ml_model_comparison.csv",
+      "source": [
+        "experiments/final/ml_metrics.csv"
+      ],
+      "generated_by": "scripts/generate_paper_artifacts.py",
+      "research_phase": "Final paper artifact consolidation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/tables/dl_model_comparison.csv",
+      "source": [
+        "experiments/final/dl_metrics.csv"
+      ],
+      "generated_by": "scripts/generate_paper_artifacts.py",
+      "research_phase": "Final paper artifact consolidation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/tables/roi_ablation.csv",
+      "source": [
+        "experiments/final/roi_ablation.csv"
+      ],
+      "generated_by": "scripts/generate_paper_artifacts.py",
+      "research_phase": "Final paper artifact consolidation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/tables/ml_calibration.csv",
+      "source": [
+        "experiments/final/ml_calibration_metrics.csv"
+      ],
+      "generated_by": "scripts/generate_paper_artifacts.py",
+      "research_phase": "Final paper artifact consolidation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/tables/dl_calibration.csv",
+      "source": [
+        "experiments/final/calibration_metrics.csv"
+      ],
+      "generated_by": "scripts/generate_paper_artifacts.py",
+      "research_phase": "Final paper artifact consolidation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/tables/ml_bootstrap_ci.csv",
+      "source": [
+        "experiments/final/ml_bootstrap_ci.csv"
+      ],
+      "generated_by": "scripts/generate_paper_artifacts.py",
+      "research_phase": "Final paper artifact consolidation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/tables/dl_bootstrap_ci.csv",
+      "source": [
+        "experiments/final/dl_bootstrap_ci.csv"
+      ],
+      "generated_by": "scripts/generate_paper_artifacts.py",
+      "research_phase": "Final paper artifact consolidation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/tables/ml_error_summary.csv",
+      "source": [
+        "experiments/final/ml_error_analysis.csv"
+      ],
+      "generated_by": "scripts/generate_paper_artifacts.py",
+      "research_phase": "Final paper artifact consolidation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/tables/dl_error_summary.csv",
+      "source": [
+        "experiments/final/dl_error_summary.json"
+      ],
+      "generated_by": "scripts/generate_paper_artifacts.py",
+      "research_phase": "Final paper artifact consolidation",
+      "final": true
+    },
+    {
+      "file": "paper_artifacts/tables/xai_summary.csv",
+      "source": [
+        "experiments/final/ml_shap_global.csv",
+        "experiments/final/gradcam/selection.json"
+      ],
+      "generated_by": "scripts/generate_paper_artifacts.py",
+      "research_phase": "Final paper artifact consolidation",
+      "final": true
+    },
+    {
+      "file": "experiments/final/FINAL_RESULTS_SNAPSHOT.json",
+      "source": {
+        "dataset_statistics.csv": [
+          "experiments/final/dataset_statistics.json",
+          "experiments/final/ml_dataset_statistics.json"
+        ],
+        "ml_model_comparison.csv": [
+          "experiments/final/ml_metrics.csv"
+        ],
+        "dl_model_comparison.csv": [
+          "experiments/final/dl_metrics.csv"
+        ],
+        "roi_ablation.csv": [
+          "experiments/final/roi_ablation.csv"
+        ],
+        "ml_calibration.csv": [
+          "experiments/final/ml_calibration_metrics.csv"
+        ],
+        "dl_calibration.csv": [
+          "experiments/final/calibration_metrics.csv"
+        ],
+        "ml_bootstrap_ci.csv": [
+          "experiments/final/ml_bootstrap_ci.csv"
+        ],
+        "dl_bootstrap_ci.csv": [
+          "experiments/final/dl_bootstrap_ci.csv"
+        ],
+        "ml_error_summary.csv": [
+          "experiments/final/ml_error_analysis.csv"
+        ],
+        "dl_error_summary.csv": [
+          "experiments/final/dl_error_summary.json"
+        ],
+        "xai_summary.csv": [
+          "experiments/final/ml_shap_global.csv",
+          "experiments/final/gradcam/selection.json"
+        ],
+        "snapshot": "frozen experiments/final CSV/JSON"
+      },
+      "generated_by": "scripts/generate_paper_artifacts.py",
+      "research_phase": "Final paper artifact consolidation",
+      "final": true
+    }
+  ]
+}
