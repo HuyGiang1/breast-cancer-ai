@@ -12,7 +12,7 @@ ML and DL research are frozen. The next phase is **Final Model Runtime Integrati
 
 - Current branch: `research/final-model-promotion-review`
 - Base branch: `research/final-paper-artifacts`
-- Branch commits: `3a75d4b research: define final runtime model contract`; promotion review documentation commit pending.
+- Branch commits: `3a75d4b research: define final runtime model contract`; `d54606c docs: review final model promotion readiness`.
 - Verification passed: `python3 -m compileall backend/app scripts tests`; `pytest -q` (5 passed); `scripts/validate_final_model_contract.py`.
 
 ## Files changed in this handoff checkpoint
@@ -138,6 +138,6 @@ Create `feat/final-model-runtime-integration` from `research/final-model-promoti
 
 ## Latest commit and Git status
 
-Latest branch contract commit is `3a75d4b`; the promotion-review documentation commit is pending. Next action: `feat/final-model-runtime-integration` from this branch. No DL training, ML re-evaluation change, or clinical/runtime promotion is authorized automatically.
+Latest branch documentation commit is `d54606c`; the preceding contract commit is `3a75d4b`. After this review branch is pushed, the next action is `feat/final-model-runtime-integration` from this branch. No DL training, ML re-evaluation change, or clinical/runtime promotion is authorized automatically.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.
