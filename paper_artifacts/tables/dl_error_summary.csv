@@ -1,0 +1,2 @@
+Model,TP,TN,FP,FN,Threshold,Borderline Errors (<0.10),High-confidence Errors (>=0.25)
+EfficientNet-B0 full,114,140,84,54,0.5149999999999999,130,0

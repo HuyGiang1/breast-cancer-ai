@@ -1,0 +1,4 @@
+Model,TP,TN,FP,FN,Borderline Errors (<0.10),High-confidence Errors (>=0.25)
+Logistic Regression,40,71,1,2,1,2
+Random Forest,39,71,1,3,1,2
+XGBoost,38,72,0,4,0,2
