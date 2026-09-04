@@ -2,11 +2,11 @@
 
 ## Last completed phase
 
-Final DL reliability and error analysis is complete locally. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai` on branch `main`.
+Final DL XAI / Grad-CAM is complete locally for the frozen EfficientNet-B0 full-image candidate. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai` on branch `main`.
 
 ## Current phase
 
-DL architecture and weights are frozen. The next research phase is Grad-CAM/XAI for the retained EfficientNet-B0 full-image candidate.
+DL architecture, weights, and threshold are frozen. The next research phase is final ML re-evaluation; Grad-CAM outputs must not drive more DL tuning.
 
 ## Files changed in this handoff checkpoint
 
@@ -41,6 +41,11 @@ DL architecture and weights are frozen. The next research phase is Grad-CAM/XAI 
 - `experiments/final/dl_error_analysis.csv`
 - `experiments/final/dl_bootstrap_ci.csv`
 - `docs/FINAL_DL_RELIABILITY_AND_ERROR_ANALYSIS.md`
+- `scripts/generate_final_dl_gradcam.py`
+- `experiments/final/gradcam/`
+- `experiments/final/gradcam_selection.json`
+- `experiments/final/figures/efficientnet_gradcam_examples.png`
+- `docs/FINAL_DL_XAI_ANALYSIS.md`
 
 ## Evidence and decisions
 
@@ -58,6 +63,8 @@ DL architecture and weights are frozen. The next research phase is Grad-CAM/XAI 
 - EfficientNet-B0 test ROC-AUC is 0.7229, PR-AUC 0.6564, sensitivity 0.6786, specificity 0.6250 and FN 54. It is the ROI-ablation candidate, not a runtime model.
 - ROI ablation is CASE ROI-C by validation-first comparison: validation ROC-AUC falls from 0.7044 to 0.6789 and sensitivity from 0.6813 to 0.5125. Full image remains the candidate representation. No runtime model is promoted.
 - Platt calibration is selected by 5-fold OOF validation Brier/log loss; final fitting used validation only. DL weights are frozen. The next action is XAI, not further training.
+- Grad-CAM is complete for the checksum-verified EfficientNet-B0 full-image `.keras` artifact. The script dynamically selected `top_conv`, reproduced frozen probabilities with the trainer's TensorFlow preprocessing, and deterministically selected two examples each from TP, TN, FP, and FN.
+- Grad-CAM is qualitative attention evidence only: no lesion localization, pathology, clinical causality, or tuning conclusion is claimed from it.
 - Existing DL metrics and figures under `experiments/results/` are development/preliminary only, because legacy folders had 90 cross-split study-like prefixes.
 - Keep multimodal fusion as `Experimental Multimodal Integration` unless valid paired clinical-image data is found.
 - Do not commit raw CBIS-DDSM, runtime database, `.env`, or model weight artifacts.
@@ -76,12 +83,12 @@ DL architecture and weights are frozen. The next research phase is Grad-CAM/XAI 
 
 ## Exact next command
 
-`PYTHONPATH=backend venv/bin/python scripts/generate_final_dl_gradcam.py`
+`PYTHONPATH=backend venv/bin/python scripts/train_ml_calibrated.py`
 
 Run only after verifying that every manifest `relative_path` resolves to a local processed image.
 
 ## Latest commit and Git status
 
-Reliability research artifact commit: `ff6e53a research: analyze final DL calibration and errors`. The next action remains final Grad-CAM/XAI; no DL training is authorized.
+Latest documentation checkpoint: `6a16ff0 docs: update final DL reliability handoff`. The next action is final ML re-evaluation; no DL training is authorized.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.

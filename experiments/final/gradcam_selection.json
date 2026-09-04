@@ -1,0 +1,250 @@
+{
+  "analysis": "Grad-CAM for frozen EfficientNet-B0 full-image candidate",
+  "model_path": "/Users/GiangNguyenHuy/Documents/breast-cancer-ai/models/deep_learning/efficientnetb0_final_seed42.keras",
+  "model_sha256": "dce9a5230afe1f1e4a8c0e908cd8467ae1b6526f3667e555c3a7db3c5f2f168b",
+  "manifest": "manifests/cbis_group_split_seed42.csv",
+  "image_set": "images",
+  "threshold": 0.5149999999999999,
+  "gradcam_layer": "top_conv",
+  "selection_rule": "Within each TP/TN/FP/FN outcome, choose one case nearest the median absolute distance from the frozen threshold and one remaining case with the greatest distance.",
+  "selection_counts": {
+    "TN": 140,
+    "FP": 84,
+    "FN": 54,
+    "TP": 114
+  },
+  "selected_cases": [
+    {
+      "test_index": 342,
+      "sample_id": "test_index_342",
+      "group_id": "1.3.6.1.4.1.9590.100.1.2.336166961113240798312931567861261557568",
+      "relative_path": "data/cbis_ddsm/processed/images/train/malignant/1.3.6.1.4.1.9590.100.1.2.336166961113240798312931567861261557568__1-127.png",
+      "true_label": 1,
+      "raw_probability": 0.5673957467079163,
+      "calibrated_probability": 0.5846390570401574,
+      "threshold": 0.5149999999999999,
+      "predicted_label": 1,
+      "outcome_type": "TP",
+      "distance_from_threshold": 0.05239574670791636,
+      "image_set": "images",
+      "calibration_note": "Platt transform fitted on frozen validation predictions only; not used for Grad-CAM or selection.",
+      "model_sha256": "dce9a5230afe1f1e4a8c0e908cd8467ae1b6526f3667e555c3a7db3c5f2f168b",
+      "selection_reason": "median confidence: nearest median absolute distance from frozen threshold",
+      "source_dimensions": [
+        3391,
+        6121
+      ],
+      "render_dimensions": [
+        224,
+        224
+      ],
+      "gradcam_layer": "top_conv",
+      "original_image": "experiments/final/gradcam/tp/test_342_median_confidence_original.png",
+      "heatmap_image": "experiments/final/gradcam/tp/test_342_median_confidence_heatmap.png",
+      "overlay_image": "experiments/final/gradcam/tp/test_342_median_confidence_overlay.png"
+    },
+    {
+      "test_index": 348,
+      "sample_id": "test_index_348",
+      "group_id": "1.3.6.1.4.1.9590.100.1.2.353990035212920979114287422741673614278",
+      "relative_path": "data/cbis_ddsm/processed/images/train/malignant/1.3.6.1.4.1.9590.100.1.2.353990035212920979114287422741673614278__1-288.png",
+      "true_label": 1,
+      "raw_probability": 0.7856716513633728,
+      "calibrated_probability": 0.9608653104296044,
+      "threshold": 0.5149999999999999,
+      "predicted_label": 1,
+      "outcome_type": "TP",
+      "distance_from_threshold": 0.2706716513633729,
+      "image_set": "images",
+      "calibration_note": "Platt transform fitted on frozen validation predictions only; not used for Grad-CAM or selection.",
+      "model_sha256": "dce9a5230afe1f1e4a8c0e908cd8467ae1b6526f3667e555c3a7db3c5f2f168b",
+      "selection_reason": "high confidence: greatest absolute distance from frozen threshold",
+      "source_dimensions": [
+        1593,
+        1129
+      ],
+      "render_dimensions": [
+        224,
+        224
+      ],
+      "gradcam_layer": "top_conv",
+      "original_image": "experiments/final/gradcam/tp/test_348_high_confidence_original.png",
+      "heatmap_image": "experiments/final/gradcam/tp/test_348_high_confidence_heatmap.png",
+      "overlay_image": "experiments/final/gradcam/tp/test_348_high_confidence_overlay.png"
+    },
+    {
+      "test_index": 2,
+      "sample_id": "test_index_2",
+      "group_id": "1.3.6.1.4.1.9590.100.1.2.1072634712087952820243050523494090271",
+      "relative_path": "data/cbis_ddsm/processed/images/train/benign/1.3.6.1.4.1.9590.100.1.2.1072634712087952820243050523494090271__1-291.png",
+      "true_label": 0,
+      "raw_probability": 0.4475875198841095,
+      "calibrated_probability": 0.22663653095096276,
+      "threshold": 0.5149999999999999,
+      "predicted_label": 0,
+      "outcome_type": "TN",
+      "distance_from_threshold": 0.0674124801158904,
+      "image_set": "images",
+      "calibration_note": "Platt transform fitted on frozen validation predictions only; not used for Grad-CAM or selection.",
+      "model_sha256": "dce9a5230afe1f1e4a8c0e908cd8467ae1b6526f3667e555c3a7db3c5f2f168b",
+      "selection_reason": "median confidence: nearest median absolute distance from frozen threshold",
+      "source_dimensions": [
+        278,
+        215
+      ],
+      "render_dimensions": [
+        224,
+        224
+      ],
+      "gradcam_layer": "top_conv",
+      "original_image": "experiments/final/gradcam/tn/test_002_median_confidence_original.png",
+      "heatmap_image": "experiments/final/gradcam/tn/test_002_median_confidence_heatmap.png",
+      "overlay_image": "experiments/final/gradcam/tn/test_002_median_confidence_overlay.png"
+    },
+    {
+      "test_index": 120,
+      "sample_id": "test_index_120",
+      "group_id": "1.3.6.1.4.1.9590.100.1.2.315208078112864433623473959972331190659",
+      "relative_path": "data/cbis_ddsm/processed/images/train/benign/1.3.6.1.4.1.9590.100.1.2.315208078112864433623473959972331190659__1-261.png",
+      "true_label": 0,
+      "raw_probability": 0.24531865119934082,
+      "calibrated_probability": 0.02029812892815438,
+      "threshold": 0.5149999999999999,
+      "predicted_label": 0,
+      "outcome_type": "TN",
+      "distance_from_threshold": 0.2696813488006591,
+      "image_set": "images",
+      "calibration_note": "Platt transform fitted on frozen validation predictions only; not used for Grad-CAM or selection.",
+      "model_sha256": "dce9a5230afe1f1e4a8c0e908cd8467ae1b6526f3667e555c3a7db3c5f2f168b",
+      "selection_reason": "high confidence: greatest absolute distance from frozen threshold",
+      "source_dimensions": [
+        185,
+        201
+      ],
+      "render_dimensions": [
+        224,
+        224
+      ],
+      "gradcam_layer": "top_conv",
+      "original_image": "experiments/final/gradcam/tn/test_120_high_confidence_original.png",
+      "heatmap_image": "experiments/final/gradcam/tn/test_120_high_confidence_heatmap.png",
+      "overlay_image": "experiments/final/gradcam/tn/test_120_high_confidence_overlay.png"
+    },
+    {
+      "test_index": 141,
+      "sample_id": "test_index_141",
+      "group_id": "1.3.6.1.4.1.9590.100.1.2.358994912111434595215730602840993726096",
+      "relative_path": "data/cbis_ddsm/processed/images/val/benign/1.3.6.1.4.1.9590.100.1.2.358994912111434595215730602840993726096__1-050.png",
+      "true_label": 0,
+      "raw_probability": 0.5430460572242737,
+      "calibrated_probability": 0.5057283741660235,
+      "threshold": 0.5149999999999999,
+      "predicted_label": 1,
+      "outcome_type": "FP",
+      "distance_from_threshold": 0.02804605722427378,
+      "image_set": "images",
+      "calibration_note": "Platt transform fitted on frozen validation predictions only; not used for Grad-CAM or selection.",
+      "model_sha256": "dce9a5230afe1f1e4a8c0e908cd8467ae1b6526f3667e555c3a7db3c5f2f168b",
+      "selection_reason": "median confidence: nearest median absolute distance from frozen threshold",
+      "source_dimensions": [
+        2491,
+        5206
+      ],
+      "render_dimensions": [
+        224,
+        224
+      ],
+      "gradcam_layer": "top_conv",
+      "original_image": "experiments/final/gradcam/fp/test_141_median_confidence_original.png",
+      "heatmap_image": "experiments/final/gradcam/fp/test_141_median_confidence_heatmap.png",
+      "overlay_image": "experiments/final/gradcam/fp/test_141_median_confidence_overlay.png"
+    },
+    {
+      "test_index": 149,
+      "sample_id": "test_index_149",
+      "group_id": "1.3.6.1.4.1.9590.100.1.2.371783004411526408311110038102127225772",
+      "relative_path": "data/cbis_ddsm/processed/images/train/benign/1.3.6.1.4.1.9590.100.1.2.371783004411526408311110038102127225772__1-267.png",
+      "true_label": 0,
+      "raw_probability": 0.6486431360244751,
+      "calibrated_probability": 0.8031382606597368,
+      "threshold": 0.5149999999999999,
+      "predicted_label": 1,
+      "outcome_type": "FP",
+      "distance_from_threshold": 0.1336431360244752,
+      "image_set": "images",
+      "calibration_note": "Platt transform fitted on frozen validation predictions only; not used for Grad-CAM or selection.",
+      "model_sha256": "dce9a5230afe1f1e4a8c0e908cd8467ae1b6526f3667e555c3a7db3c5f2f168b",
+      "selection_reason": "high confidence: greatest absolute distance from frozen threshold",
+      "source_dimensions": [
+        3408,
+        5976
+      ],
+      "render_dimensions": [
+        224,
+        224
+      ],
+      "gradcam_layer": "top_conv",
+      "original_image": "experiments/final/gradcam/fp/test_149_high_confidence_original.png",
+      "heatmap_image": "experiments/final/gradcam/fp/test_149_high_confidence_heatmap.png",
+      "overlay_image": "experiments/final/gradcam/fp/test_149_high_confidence_overlay.png"
+    },
+    {
+      "test_index": 229,
+      "sample_id": "test_index_229",
+      "group_id": "1.3.6.1.4.1.9590.100.1.2.109770857112401522419910719233905862254",
+      "relative_path": "data/cbis_ddsm/processed/images/val/malignant/1.3.6.1.4.1.9590.100.1.2.109770857112401522419910719233905862254__1-181.png",
+      "true_label": 1,
+      "raw_probability": 0.4675202965736389,
+      "calibrated_probability": 0.2756142023509613,
+      "threshold": 0.5149999999999999,
+      "predicted_label": 0,
+      "outcome_type": "FN",
+      "distance_from_threshold": 0.047479703426360986,
+      "image_set": "images",
+      "calibration_note": "Platt transform fitted on frozen validation predictions only; not used for Grad-CAM or selection.",
+      "model_sha256": "dce9a5230afe1f1e4a8c0e908cd8467ae1b6526f3667e555c3a7db3c5f2f168b",
+      "selection_reason": "median confidence: nearest median absolute distance from frozen threshold",
+      "source_dimensions": [
+        466,
+        200
+      ],
+      "render_dimensions": [
+        224,
+        224
+      ],
+      "gradcam_layer": "top_conv",
+      "original_image": "experiments/final/gradcam/fn/test_229_median_confidence_original.png",
+      "heatmap_image": "experiments/final/gradcam/fn/test_229_median_confidence_heatmap.png",
+      "overlay_image": "experiments/final/gradcam/fn/test_229_median_confidence_overlay.png"
+    },
+    {
+      "test_index": 272,
+      "sample_id": "test_index_272",
+      "group_id": "1.3.6.1.4.1.9590.100.1.2.208646034413990923732281266342483588551",
+      "relative_path": "data/cbis_ddsm/processed/images/test/malignant/1.3.6.1.4.1.9590.100.1.2.208646034413990923732281266342483588551__1-055.png",
+      "true_label": 1,
+      "raw_probability": 0.35072991251945496,
+      "calibrated_probability": 0.07613606676732641,
+      "threshold": 0.5149999999999999,
+      "predicted_label": 0,
+      "outcome_type": "FN",
+      "distance_from_threshold": 0.16427008748054495,
+      "image_set": "images",
+      "calibration_note": "Platt transform fitted on frozen validation predictions only; not used for Grad-CAM or selection.",
+      "model_sha256": "dce9a5230afe1f1e4a8c0e908cd8467ae1b6526f3667e555c3a7db3c5f2f168b",
+      "selection_reason": "high confidence: greatest absolute distance from frozen threshold",
+      "source_dimensions": [
+        81,
+        105
+      ],
+      "render_dimensions": [
+        224,
+        224
+      ],
+      "gradcam_layer": "top_conv",
+      "original_image": "experiments/final/gradcam/fn/test_272_high_confidence_original.png",
+      "heatmap_image": "experiments/final/gradcam/fn/test_272_high_confidence_heatmap.png",
+      "overlay_image": "experiments/final/gradcam/fn/test_272_high_confidence_overlay.png"
+    }
+  ]
+}
