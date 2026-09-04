@@ -1,0 +1,10 @@
+{
+  "version": "final-candidate",
+  "architecture": "resnet50",
+  "model_file": "/Users/GiangNguyenHuy/Documents/breast-cancer-ai/models/deep_learning/resnet50_final_seed42.keras",
+  "sha256": "e070949e2e667c81fa358f237ec4d3d1e29e3422ed7be4bcc47cf48ed40e87f8",
+  "training_manifest": "/Users/GiangNguyenHuy/Documents/breast-cancer-ai/manifests/cbis_group_split_seed42.csv",
+  "seed": 42,
+  "threshold": 0.4699999999999999,
+  "metrics_file": "experiments/final/runs/resnet50_full/metrics.json"
+}

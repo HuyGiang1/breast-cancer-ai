@@ -315,6 +315,11 @@ def main():
     out_model = MODEL_DIR / f"{output_stem}.keras"
     run_dir = args.run_dir or PROJECT_ROOT / "experiments" / "final" / "runs" / f"{args.architecture}_full"
     run_dir.mkdir(parents=True, exist_ok=True)
+    architecture_strategy = {
+        "custom_cnn": {"preprocessing": "Rescaling(1/255)", "backbone": "custom", "backbone_weights": None, "backbone_trainable": True},
+        "resnet50": {"preprocessing": "tf.keras.applications.resnet50.preprocess_input", "backbone": "ResNet50", "backbone_weights": "ImageNet", "backbone_trainable": False},
+        "efficientnetb0": {"preprocessing": "tf.keras.applications.efficientnet.preprocess_input", "backbone": "EfficientNetB0", "backbone_weights": "ImageNet", "backbone_trainable": False},
+    }[args.architecture]
     (run_dir / "config.json").write_text(
         json.dumps({
             "architecture": args.architecture,
@@ -329,6 +334,7 @@ def main():
             "threshold_selection_split": "val",
             "final_evaluation_split": "test",
             "test_time_augmentation": "none",
+            "architecture_strategy": architecture_strategy,
         }, indent=2) + "\n", encoding="utf-8"
     )
 

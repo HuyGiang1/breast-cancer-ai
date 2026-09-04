@@ -1,0 +1,20 @@
+{
+  "architecture": "resnet50",
+  "manifest": "/Users/GiangNguyenHuy/Documents/breast-cancer-ai/manifests/cbis_group_split_seed42.csv",
+  "image_set": "images",
+  "seed": 42,
+  "epochs": 25,
+  "batch_size": 16,
+  "image_size": 224,
+  "learning_rate": 0.0001,
+  "selection_split": "val",
+  "threshold_selection_split": "val",
+  "final_evaluation_split": "test",
+  "test_time_augmentation": "none",
+  "architecture_strategy": {
+    "preprocessing": "tf.keras.applications.resnet50.preprocess_input",
+    "backbone": "ResNet50",
+    "backbone_weights": "ImageNet",
+    "backbone_trainable": false
+  }
+}

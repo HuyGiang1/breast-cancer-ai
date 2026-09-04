@@ -1,0 +1,10 @@
+{
+  "model_name": "ResNet50",
+  "threshold": 0.4699999999999999,
+  "validation_accuracy": 0.6102564102564103,
+  "validation_auc": 0.6689945652173912,
+  "spread_factor": 3.144172862625525,
+  "reference_threshold": 0.4699999999999999,
+  "centering_gain": 4.401842007675735,
+  "std_probability": 0.06360973417758942
+}

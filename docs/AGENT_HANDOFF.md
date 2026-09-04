@@ -2,11 +2,11 @@
 
 ## Last completed phase
 
-Safe research reset gates are complete and the Custom CNN final candidate run is complete locally. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai` on branch `main`.
+All three final full-image DL baselines and their comparison are complete locally. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai` on branch `main`.
 
 ## Current phase
 
-Phase 3 continues with ResNet50 and EfficientNet-B0 baseline runs using the same manifest and full-image representation.
+Training is stopped after baseline comparison. The next research action is one controlled EfficientNet-B0 full-image versus ROI ablation.
 
 ## Files changed in this handoff checkpoint
 
@@ -25,6 +25,12 @@ Phase 3 continues with ResNet50 and EfficientNet-B0 baseline runs using the same
 - `docs/LEGACY_RESEARCH_ARTIFACTS.md`
 - `experiments/final/dataset_verification.json`
 - `experiments/final/runs/custom_cnn_full/`
+- `experiments/final/runs/resnet50_full/`
+- `experiments/final/runs/efficientnet_b0_full/`
+- `experiments/final/dl_metrics.csv`
+- `experiments/final/figures/`
+- `scripts/compare_final_dl_baselines.py`
+- `docs/FINAL_DL_EXPERIMENT_LOG.md`
 
 ## Evidence and decisions
 
@@ -38,6 +44,8 @@ Phase 3 continues with ResNet50 and EfficientNet-B0 baseline runs using the same
 - Gate A passed all 5,118 manifest records: zero missing paths, corrupt images, invalid rows, mixed-label groups and cross-split group overlaps.
 - Gate B passes: manifest-only split source, group validation, no validation/test random augmentation, validation-based checkpoint/threshold selection, fixed seed and saved config.
 - Custom CNN full-image candidate completed with final-run artifacts. It is not promoted; test ROC-AUC is 0.6153, sensitivity 0.4583 and FN 91, so it remains a comparison baseline rather than a selected production model.
+- ResNet50 test ROC-AUC is 0.6278; sensitivity is 0.7202 and FN 47, but specificity is 0.4152.
+- EfficientNet-B0 test ROC-AUC is 0.7229, PR-AUC 0.6564, sensitivity 0.6786, specificity 0.6250 and FN 54. It is the ROI-ablation candidate, not a runtime model.
 - Existing DL metrics and figures under `experiments/results/` are development/preliminary only, because legacy folders had 90 cross-split study-like prefixes.
 - Keep multimodal fusion as `Experimental Multimodal Integration` unless valid paired clinical-image data is found.
 - Do not commit raw CBIS-DDSM, runtime database, `.env`, or model weight artifacts.
@@ -56,12 +64,12 @@ Phase 3 continues with ResNet50 and EfficientNet-B0 baseline runs using the same
 
 ## Exact next command
 
-`MPLCONFIGDIR=/private/tmp/breast-cancer-ai-mpl PYTHONPATH=backend venv/bin/python scripts/train_dl_finetune_calibrated.py --architecture resnet50 --image-set images --epochs 25 --batch-size 16 --image-size 224 --learning-rate 0.0001 --output-stem resnet50_final_seed42 --run-dir experiments/final/runs/resnet50_full`
+`MPLBACKEND=Agg MPLCONFIGDIR=/private/tmp/breast-cancer-ai-mpl PYTHONPATH=backend venv/bin/python scripts/train_dl_finetune_calibrated.py --architecture efficientnetb0 --image-set images_roi --epochs 25 --batch-size 16 --image-size 224 --learning-rate 0.0001 --output-stem efficientnetb0_roi_final_seed42 --run-dir experiments/final/runs/roi_ablation`
 
 Run only after verifying that every manifest `relative_path` resolves to a local processed image.
 
 ## Latest commit and Git status
 
-Latest pushed checkpoint: `092fb15 research: add final dataset gates and custom CNN baseline`. Run `git status --short` before continuing; expected status is clean after committing the tracked training log and this handoff correction.
+Latest pushed checkpoint: `765a103 docs: retain final training log`. Current DL-02/DL-03/comparison changes are pending a logical checkpoint commit.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.
