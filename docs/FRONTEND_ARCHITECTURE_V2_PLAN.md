@@ -39,3 +39,13 @@ Completed on 2026-09-05 from research product checkpoint `d2b817c`.
 - A `390x844` screenshot exposed horizontal grid/table overflow and a missing mobile sidebar trigger. The focused responsive fix constrains grid children/table wrappers and adds an ARIA-controlled mobile menu.
 - Explainability intentionally renders no Grad-CAM case images or SHAP values without canonical case/vector metadata. Calibration displays frozen raw/Platt validation Brier and ECE and states that classification uses raw probability `>= 0.515`.
 - Static validation, all JS syntax checks, `24` backend tests, compileall, and final application verification passed.
+
+## Batch 4 Analysis Contracts And Verification
+
+- Canonical routes are `pages/ml-analysis.html`, `pages/dl-analysis.html`, and `pages/multimodal.html`; shared feature configuration prevents duplicated payload keys.
+- ML sends the exact 30-key `PredictionRequest` JSON to `POST /predict/`. Optional model/patient association uses query parameters. Backend preprocessing is unchanged and classification remains raw malignant probability `>= 0.36`.
+- DL sends multipart field `file` to `POST /predict/image/`; model/patient/explanation options are query parameters. Classification remains raw probability `>= 0.515`; Platt is displayed separately for reliability only.
+- Experimental multimodal sends `clinical_data` and `image_file` to `POST /predict/multimodal/`. Both component outputs stay visible; the 40% ML / 60% DL combined score is labeled an unvalidated heuristic over unpaired datasets.
+- Authenticated predictions are automatically persisted by the backend; V2 therefore does not present a fake Save action. Reports/history remain later Batch 5 destinations.
+- Nginx returned `200` for all three routes and sampled controllers/services/components/CSS. Chrome rendered the desktop ML workflow with correct active navigation and no missing assets.
+- All JS syntax checks, V2 static validation, `24` backend tests, compileall, final-application verification, and production-readiness verification passed. Responsive CSS stacks features and analysis/result columns for narrow screens; full interactive cross-device automation remains the final Batch 8 sweep.
