@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1] / "frontend"
-PAGES = ["index.html", "login.html", "register.html", "forgot-password.html", "reset-password.html", "pages/dashboard.html", "pages/research.html", "pages/model-comparison.html", "pages/datasets.html", "pages/explainability.html", "pages/calibration.html", "pages/ml-analysis.html", "pages/dl-analysis.html", "pages/multimodal.html", "pages/patients.html", "pages/patient-detail.html", "pages/history.html", "pages/reports.html"]
+PAGES = ["index.html", "login.html", "register.html", "forgot-password.html", "reset-password.html", "pages/dashboard.html", "pages/research.html", "pages/model-comparison.html", "pages/datasets.html", "pages/explainability.html", "pages/calibration.html", "pages/ml-analysis.html", "pages/dl-analysis.html", "pages/multimodal.html", "pages/patients.html", "pages/patient-detail.html", "pages/history.html", "pages/reports.html", "pages/advisor.html", "pages/model-status.html", "pages/profile.html"]
 
 def fail(message):
     raise SystemExit(f"FRONTEND V2 STATIC VALIDATION: FAIL\n{message}")
@@ -13,6 +13,7 @@ for relative in PAGES:
     if not page.exists(): fail(f"missing page: {relative}")
     content = page.read_text(encoding="utf-8")
     if "/Users/" in content: fail(f"absolute local path in {relative}")
+    if relative.startswith("pages/") and "../app.js" in content: fail(f"legacy monolith dependency in {relative}")
     for ref in re.findall(r'(?:src|href)="([^"]+)"', content):
         if ref.startswith(("#", "http://", "https://", "mailto:")): continue
         target = (page.parent / ref).resolve()
