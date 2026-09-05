@@ -19,6 +19,8 @@ RUN pip install --upgrade pip && pip install -r /app/requirements-runtime.txt
 
 COPY backend /app/backend
 COPY frontend /app/frontend
+COPY models/model_registry.example.json /app/models/model_registry.example.json
+COPY models/calibration/efficientnet_b0_platt_final_seed42.json /app/models/calibration/efficientnet_b0_platt_final_seed42.json
 
 WORKDIR /app/backend
 
