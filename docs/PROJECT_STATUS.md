@@ -15,7 +15,7 @@
 | Final research synthesis | DONE | Conservative modality-specific results synthesis and report update notes complete; no model promotion | - |
 | Final model promotion review | DONE | ML integrity review complete; DL initially blocked, then cleared by later metric-equivalent Platt artifact freeze | `3a75d4b` |
 | Final ML runtime integration | DONE | Registry/checksum-verified WDBC Logistic Regression runtime, canonical raw input vector, raw probability/0.36 decision, parity and API smoke verification | `eb80759` |
-| Final DL runtime integration | DONE | Registry/checksum-verified EfficientNet-B0 full-image runtime, exact TensorFlow preprocessing, raw 0.515 classification and frozen Platt display calibration | pending |
+| Final DL runtime integration | DONE | Registry/checksum-verified EfficientNet-B0 full-image runtime, exact TensorFlow preprocessing, raw 0.515 classification and frozen Platt display calibration | `b761cdf` |
 | 11-18. Software and operations finalization | IN_PROGRESS | FastAPI, static web, Docker, Nginx, CI and artifact policy exist | `9270fa4` and earlier |
 | 19. VPS/domain/HTTPS | BLOCKED | Requires VPS and domain access from project owner | - |
 | 20-25. Production safety, CI, docs, release | IN_PROGRESS | Baseline safeguards and documentation exist; final release depends on research phases | - |
