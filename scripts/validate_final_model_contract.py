@@ -47,7 +47,7 @@ def main() -> None:
     require(abs(float(dl_threshold) - 0.515) < 1e-12 and dl_entry["decision"]["threshold_probability_space"] == "raw", "DL threshold contract mismatch.")
     calibration = json.loads((FINAL / "calibration_selection.json").read_text(encoding="utf-8"))
     require(calibration["selected_method"] == "Platt" and "raw-probability operating points" in calibration["note"], "DL calibration decision mismatch.")
-    require(ml_entry["status"] == "promotion_candidate" and dl_entry["status"] == "blocked", "Registry promotion status mismatch.")
+    require(ml_entry["status"] == "promotion_candidate" and dl_entry["status"] == "approved_for_integration", "Registry promotion status mismatch.")
     print("Final model contract validated")
 
 

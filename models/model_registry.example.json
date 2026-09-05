@@ -32,7 +32,7 @@
     },
     {
       "id": "cbis-efficientnetb0-full-v1",
-      "status": "blocked",
+      "status": "approved_for_integration",
       "study": "CBIS-DDSM imaging DL",
       "artifact_filename": "models/deep_learning/efficientnetb0_final_seed42.keras",
       "sha256": "dce9a5230afe1f1e4a8c0e908cd8467ae1b6526f3667e555c3a7db3c5f2f168b",
@@ -47,9 +47,13 @@
         "type": "raw sigmoid output"
       },
       "calibration": {
-        "method": "Platt selected for reliability",
-        "runtime_artifact": "not persisted; do not substitute legacy calibration_profile.json",
-        "integration_blocker": "frozen fitted Platt parameters/artifact are unavailable"
+        "method": "Platt",
+        "artifact": "models/calibration/efficientnet_b0_platt_final_seed42.json",
+        "sha256": "7f9a06f54d6146b57952bcc38704022e27c9953a1a6a9e98af7eb3b457632c5d",
+        "input_probability_space": "raw",
+        "output_probability_space": "calibrated",
+        "fitting_split": "validation",
+        "legacy_profile": "models/deep_learning/calibration_profile.json is incompatible and must not be used"
       },
       "decision": {
         "threshold": 0.515,

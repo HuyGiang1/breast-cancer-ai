@@ -1,0 +1,30 @@
+{
+  "C": 1000000.0,
+  "classes": [
+    0,
+    1
+  ],
+  "coefficient": 13.098001802204282,
+  "decision_probability_space": "raw",
+  "decision_threshold": 0.5149999999999999,
+  "fit_input_transform": "identity",
+  "fitting_split": "validation",
+  "id": "efficientnet-b0-platt-final-seed42",
+  "input_probability_space": "raw_malignant_probability",
+  "intercept": -7.0899037369408395,
+  "method": "platt_logistic_regression",
+  "model_id": "cbis-efficientnetb0-full-v1",
+  "model_sha256": "dce9a5230afe1f1e4a8c0e908cd8467ae1b6526f3667e555c3a7db3c5f2f168b",
+  "notes": "Calibration is for reliability/display; frozen classification operating point remains raw-space. Validation calibrated predictions reproduce the historical 5-fold OOF selection procedure; test predictions use this full-validation frozen transform.",
+  "output_probability_space": "platt_calibrated_malignant_probability",
+  "python_implementation": "CPython",
+  "schema_version": 1,
+  "selection_method": "5-fold OOF validation",
+  "sklearn_version": "1.8.0",
+  "solver": "lbfgs",
+  "source_script": "scripts/analyze_final_dl_reliability.py",
+  "source_selection": "experiments/final/calibration_selection.json",
+  "source_validation_predictions": "experiments/final/runs/efficientnet_b0_full/validation_predictions.csv",
+  "study": "CBIS-DDSM imaging DL",
+  "validation_sample_count": 390
+}
