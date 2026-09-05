@@ -12,7 +12,7 @@ ML and DL research are frozen. The WDBC Logistic Regression runtime contract is 
 
 - Current branch: `research/freeze-dl-calibration-artifact`
 - Base branch: `feat/final-model-runtime-integration`
-- Branch commits: calibration freeze implementation and documentation commits pending.
+- Branch commits: `13909bb research: freeze final EfficientNet Platt calibration`; `9fd883a docs: document frozen DL calibration artifact`.
 - Verification passed: `python3 -m compileall backend/app scripts tests`; `pytest -q`; `scripts/validate_final_model_contract.py`; `scripts/validate_frozen_dl_calibration.py`; `scripts/freeze_final_dl_calibration.py` twice.
 
 ## Files changed in this handoff checkpoint
@@ -151,6 +151,6 @@ Create `feat/final-dl-runtime-integration` from `research/freeze-dl-calibration-
 
 ## Latest commit and Git status
 
-Calibration-freeze commits are pending. After this branch is pushed, the next action is `feat/final-dl-runtime-integration` from this branch. No DL training, ML re-evaluation change, or clinical/runtime promotion is authorized automatically.
+Latest branch documentation commit is `9fd883a`; the calibration freeze implementation is `13909bb`. After this branch is pushed, the next action is `feat/final-dl-runtime-integration` from this branch. No DL training, ML re-evaluation change, or clinical/runtime promotion is authorized automatically.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.
