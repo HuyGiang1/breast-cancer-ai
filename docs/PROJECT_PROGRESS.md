@@ -4,11 +4,11 @@ Last updated: 2026-09-05
 
 ## Current stage
 
-**Final Model Runtime Integration**
+**Production / Release Hardening**
 
-- Current branch: `feat/final-dl-runtime-integration`
-- Base branch: `research/freeze-dl-calibration-artifact`
-- Next branch: `feat/system-finalization`
+- Current branch: `feat/system-finalization`
+- Base branch: `feat/final-dl-runtime-integration`
+- Next branch: `ops/production-readiness`
 
 ## Completed major milestones
 
@@ -27,6 +27,8 @@ Last updated: 2026-09-05
 - [x] Keep classification in raw probability space at threshold `0.515`.
 - [x] Use the frozen Platt transform only for calibrated display/reliability probability.
 - [x] Expose unified final ML/DL model status without promoting clinical use.
+- [x] Final research dashboard and frontend final-runtime integration.
+- [x] Research/demo safety and application verification.
 
 ## Blockers
 
@@ -42,8 +44,8 @@ Last updated: 2026-09-05
 - [x] Final ML runtime
 - [x] Final DL runtime
 - [x] Unified model status
-- [ ] Final research dashboard
-- [ ] Frontend polish
+- [x] Final research dashboard
+- [x] Frontend polish
 
 ### Production
 

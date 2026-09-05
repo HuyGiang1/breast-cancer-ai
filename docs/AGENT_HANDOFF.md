@@ -2,17 +2,17 @@
 
 ## Last completed phase
 
-Final DL runtime integration is complete on `feat/final-dl-runtime-integration`. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai`.
+System application finalization is complete on `feat/system-finalization`. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai`.
 
 ## Current phase
 
-ML and DL research are frozen and both final candidates are integrated for research/demo use only. The next phase is **System Finalization**; it must not retrain, recalibrate, reselect thresholds, or make a clinical promotion.
+ML and DL research are frozen and both final candidates are integrated for research/demo use only. The next phase is **Production Readiness**; it must not retrain, recalibrate, reselect thresholds, or make a clinical promotion.
 
 ## Git workflow
 
-- Current branch: `feat/final-dl-runtime-integration`
-- Base branch: `research/freeze-dl-calibration-artifact`
-- Branch commits: `b761cdf feat: integrate checksum-verified final EfficientNet runtime`; `7f6d274 docs: document final DL runtime integration`.
+- Current branch: `feat/system-finalization`
+- Base branch: `feat/final-dl-runtime-integration`
+- Branch commits: application finalization commits pending.
 - Verification passed: `python3 -m compileall backend/app scripts tests`; `pytest -q`; `scripts/validate_final_model_contract.py`; `scripts/validate_frozen_dl_calibration.py`; `scripts/freeze_final_dl_calibration.py` twice.
 
 ## Files changed in this handoff checkpoint
