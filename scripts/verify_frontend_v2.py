@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1] / "frontend"
-PAGES = ["index.html", "login.html", "register.html", "forgot-password.html", "reset-password.html", "pages/dashboard.html", "pages/research.html", "pages/model-comparison.html", "pages/datasets.html", "pages/explainability.html", "pages/calibration.html", "pages/ml-analysis.html", "pages/dl-analysis.html", "pages/multimodal.html"]
+PAGES = ["index.html", "login.html", "register.html", "forgot-password.html", "reset-password.html", "pages/dashboard.html", "pages/research.html", "pages/model-comparison.html", "pages/datasets.html", "pages/explainability.html", "pages/calibration.html", "pages/ml-analysis.html", "pages/dl-analysis.html", "pages/multimodal.html", "pages/patients.html", "pages/patient-detail.html", "pages/history.html", "pages/reports.html"]
 
 def fail(message):
     raise SystemExit(f"FRONTEND V2 STATIC VALIDATION: FAIL\n{message}")

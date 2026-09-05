@@ -1,1 +1,1 @@
-import { API_BASE } from '../core/config.js'; import { auth } from '../core/auth.js'; export const reportService={url:(id)=>`${API_BASE}/predictions/${id}/report/`,headers:()=>auth.token()?{Authorization:`Bearer ${auth.token()}`}:{}};
+import { API_BASE } from '../core/config.js';import{request}from'../core/api.js';export const reportService={url:(id)=>`${API_BASE}/predictions/${encodeURIComponent(id)}/report/`,history:()=>request('/predictions/history/')};
