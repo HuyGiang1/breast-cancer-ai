@@ -12,7 +12,7 @@ ML and DL research are frozen. The WDBC Logistic Regression runtime contract is 
 
 - Current branch: `feat/final-model-runtime-integration`
 - Base branch: `research/final-model-promotion-review`
-- Branch commits: `eb80759 feat: load checksum-verified final WDBC model`; documentation handoff update pending.
+- Branch commits: `eb80759 feat: load checksum-verified final WDBC model`; `9cc3b78 fix: expose final model unavailability`; `3259efa docs: document final ML runtime integration`.
 - Verification passed: `python3 -m compileall backend/app scripts tests`; `pytest -q`; `scripts/validate_final_model_contract.py`; `scripts/verify_final_ml_runtime_parity.py`.
 
 ## Files changed in this handoff checkpoint
@@ -145,6 +145,6 @@ Create `research/freeze-dl-calibration-artifact` from `feat/final-model-runtime-
 
 ## Latest commit and Git status
 
-Latest implementation commit is `eb80759`; documentation handoff update is pending. After this branch is pushed, the next action is `research/freeze-dl-calibration-artifact` from this branch. No DL training, ML re-evaluation change, or clinical/runtime promotion is authorized automatically.
+Latest branch documentation commit is `3259efa`; the final-model implementation and failure handling commits are `eb80759` and `9cc3b78`. After this branch is pushed, the next action is `research/freeze-dl-calibration-artifact` from this branch. No DL training, ML re-evaluation change, or clinical/runtime promotion is authorized automatically.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.
