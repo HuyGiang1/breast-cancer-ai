@@ -2,18 +2,18 @@
 
 ## Last completed phase
 
-Final ML runtime integration is complete on `feat/final-model-runtime-integration`. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai`.
+Final DL calibration artifact freeze is complete on `research/freeze-dl-calibration-artifact`. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai`.
 
 ## Current phase
 
-ML and DL research are frozen. The WDBC Logistic Regression runtime contract is now integrated for research/demo use only. The next phase is **Freeze DL Calibration Artifact**; it must not retrain, recalibrate, reselect thresholds, or make a clinical promotion.
+ML and DL research are frozen. The WDBC Logistic Regression runtime contract is integrated for research/demo use only, and the exact final DL Platt artifact is now frozen. The next phase is **Final DL Runtime Integration**; it must not retrain, recalibrate, reselect thresholds, or make a clinical promotion.
 
 ## Git workflow
 
-- Current branch: `feat/final-model-runtime-integration`
-- Base branch: `research/final-model-promotion-review`
-- Branch commits: `eb80759 feat: load checksum-verified final WDBC model`; `9cc3b78 fix: expose final model unavailability`; `3259efa docs: document final ML runtime integration`.
-- Verification passed: `python3 -m compileall backend/app scripts tests`; `pytest -q`; `scripts/validate_final_model_contract.py`; `scripts/verify_final_ml_runtime_parity.py`.
+- Current branch: `research/freeze-dl-calibration-artifact`
+- Base branch: `feat/final-model-runtime-integration`
+- Branch commits: calibration freeze implementation and documentation commits pending.
+- Verification passed: `python3 -m compileall backend/app scripts tests`; `pytest -q`; `scripts/validate_final_model_contract.py`; `scripts/validate_frozen_dl_calibration.py`; `scripts/freeze_final_dl_calibration.py` twice.
 
 ## Files changed in this handoff checkpoint
 
@@ -90,6 +90,13 @@ ML and DL research are frozen. The WDBC Logistic Regression runtime contract is 
 - `scripts/verify_final_ml_runtime_parity.py`
 - `tests/test_final_ml_runtime.py`
 - `docs/FINAL_ML_RUNTIME_INTEGRATION.md`
+- `models/calibration/efficientnet_b0_platt_final_seed42.json`
+- `experiments/final/dl_calibration/`
+- `backend/app/services/final_dl_calibration.py`
+- `scripts/freeze_final_dl_calibration.py`
+- `scripts/validate_frozen_dl_calibration.py`
+- `tests/test_frozen_dl_calibration.py`
+- `docs/FINAL_DL_CALIBRATION_ARTIFACT.md`
 
 ## Evidence and decisions
 
@@ -118,10 +125,10 @@ ML and DL research are frozen. The WDBC Logistic Regression runtime contract is 
 - Final paper artifacts read frozen `experiments/final` CSV/JSON only. They include 11 tables, 12 provenance-tracked figures, `paper_artifacts/MANIFEST.json`, and `experiments/final/FINAL_RESULTS_SNAPSHOT.json`.
 - The synthesis explicitly treats WDBC ML and CBIS-DDSM DL as distinct studies. There is no cross-dataset model ranking and no validated multimodal conclusion.
 - Promotion review verifies the final Logistic Regression pipeline, feature count/class ordering, raw probability, threshold 0.36, and artifact SHA-256. It is approved only for a future controlled research/demo integration.
-- Promotion review verifies EfficientNet-B0 full-image SHA-256, input, preprocessing policy, raw output, and raw threshold 0.515. DL integration is blocked because selected Platt calibration has no frozen standalone runtime-loadable artifact; legacy Custom CNN calibration profile is incompatible and must not be substituted.
+- Promotion review verifies EfficientNet-B0 full-image SHA-256, input, preprocessing policy, raw output, and raw threshold 0.515. The prior missing Platt artifact is now resolved by a deterministic full-validation freeze: coefficient `13.098001802204282`, intercept `-7.0899037369408395`, artifact SHA `7f9a06f54d6146b57952bcc38704022e27c9953a1a6a9e98af7eb3b457632c5d`, and exact historical metric reproduction.
 - Final ML runtime uses only the registry-selected final `.joblib`, verifies SHA-256 and pipeline structure at startup, maps the 30 API fields explicitly, sends raw values to the embedded scaler/pipeline, uses raw `predict_proba(...)[1]`, and classifies at the frozen threshold 0.36. There is no auto-discovery, double scaling, rank transform, 0.50 threshold, or fallback training in the final path.
 - Runtime parity passed for frozen test TP sample 250, TN sample 120, and FN sample 73; maximum raw-probability delta was `2.776e-17`. API smoke checks passed for health, readiness, ML/DL status and the representative benign/malignant ML predictions.
-- DL status endpoint now records the final EfficientNet-B0 candidate as `BLOCKED`; existing Custom CNN handling remains legacy/development and is not a final substitute.
+- DL runtime remains unmodified and unintegrated. Existing Custom CNN handling is legacy/development and is not a final substitute. A future DL runtime must use raw `0.515` for classification and the frozen Platt artifact only for display/reliability.
 - Existing DL metrics and figures under `experiments/results/` are development/preliminary only, because legacy folders had 90 cross-split study-like prefixes.
 - Keep multimodal fusion as `Experimental Multimodal Integration` unless valid paired clinical-image data is found.
 - Do not commit raw CBIS-DDSM, runtime database, `.env`, or model weight artifacts.
@@ -137,14 +144,13 @@ ML and DL research are frozen. The WDBC Logistic Regression runtime contract is 
 ## Current blockers
 
 - Public deployment requires future VPS/domain credentials.
-- Frozen DL Platt calibration parameters/artifact are not persisted for runtime loading. Do not refit or substitute a calibrator; resolve this contract gap before integrating DL.
 
 ## Exact next command
 
-Create `research/freeze-dl-calibration-artifact` from `feat/final-model-runtime-integration` and resolve only the missing frozen Platt calibration artifact/metadata. Do not retrain, re-evaluate, or promote clinical use.
+Create `feat/final-dl-runtime-integration` from `research/freeze-dl-calibration-artifact` and implement only the frozen EfficientNet-B0 full-image runtime contract. Do not retrain, refit Platt, re-evaluate, or promote clinical use.
 
 ## Latest commit and Git status
 
-Latest branch documentation commit is `3259efa`; the final-model implementation and failure handling commits are `eb80759` and `9cc3b78`. After this branch is pushed, the next action is `research/freeze-dl-calibration-artifact` from this branch. No DL training, ML re-evaluation change, or clinical/runtime promotion is authorized automatically.
+Calibration-freeze commits are pending. After this branch is pushed, the next action is `feat/final-dl-runtime-integration` from this branch. No DL training, ML re-evaluation change, or clinical/runtime promotion is authorized automatically.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.

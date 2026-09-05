@@ -82,13 +82,13 @@ Use `experiments/final/ml_metrics.csv`, `experiments/final/ml_model_selection.js
 
 ### Output and calibration
 
-The sigmoid output is the raw malignant probability. Platt was selected by validation OOF reliability, but the frozen fitted Platt parameters were not saved as a standalone runtime-loadable artifact. `models/deep_learning/calibration_profile.json` is a legacy Custom CNN/Isotonic/empirical profile and is not an acceptable substitute.
+The sigmoid output is `raw_probability`, the raw malignant probability. Platt was selected by validation OOF reliability and is now frozen as `models/calibration/efficientnet_b0_platt_final_seed42.json` (SHA-256 `7f9a06f54d6146b57952bcc38704022e27c9953a1a6a9e98af7eb3b457632c5d`). It is a Logistic Regression on the identity scalar raw probability, fitted once on all frozen validation rows. It returns `calibrated_probability` only for reliability/display. `models/deep_learning/calibration_profile.json` is a legacy Custom CNN/Isotonic/empirical profile and is not an acceptable substitute.
 
 ### Decision
 
 - Positive class: malignant.
-- Probability space used by the frozen balanced threshold: **raw** sigmoid probability.
-- Frozen balanced threshold: 0.515.
+- `predicted_class` uses **raw** sigmoid probability, never the calibrated probability.
+- Frozen balanced threshold: 0.515 raw probability.
 - Decision: `raw_malignant_probability >= 0.515`.
 - The 0.48 sensitivity-oriented point is research-only and must never silently become a runtime default.
 
@@ -98,4 +98,4 @@ Use `experiments/final/runs/efficientnet_b0_full/metrics.json`, `experiments/fin
 
 ## Integration status
 
-The ML artifact is technically eligible for a controlled research/demo integration because artifact, scaler, class ordering, raw probability, and threshold are all integrity-verifiable. DL integration is blocked until a versioned frozen Platt artifact/parameters and an explicit product probability-display contract are supplied; no calibrator may be refit or replaced with the current legacy profile.
+The ML artifact is technically eligible for a controlled research/demo integration because artifact, scaler, class ordering, raw probability, and threshold are all integrity-verifiable. The DL calibration artifact is technically eligible for a future controlled research/demo integration because its historical transform is versioned and metric-equivalent. DL runtime integration remains a separate phase; no calibrator may be refit or replaced with the legacy profile.
