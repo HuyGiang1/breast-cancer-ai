@@ -49,3 +49,13 @@ Completed on 2026-09-05 from research product checkpoint `d2b817c`.
 - Authenticated predictions are automatically persisted by the backend; V2 therefore does not present a fake Save action. Reports/history remain later Batch 5 destinations.
 - Nginx returned `200` for all three routes and sampled controllers/services/components/CSS. Chrome rendered the desktop ML workflow with correct active navigation and no missing assets.
 - All JS syntax checks, V2 static validation, `24` backend tests, compileall, final-application verification, and production-readiness verification passed. Responsive CSS stacks features and analysis/result columns for narrow screens; full interactive cross-device automation remains the final Batch 8 sweep.
+
+## Batch 5 Workspace Contracts And Verification
+
+- Canonical authenticated routes are `pages/patients.html`, `pages/patient-detail.html?id=<id>`, `pages/history.html`, and `pages/reports.html`. Only numeric patient ids enter query strings; patient data is not persisted in URLs or local storage.
+- Patient CRUD uses backend fields `full_name`, `date_of_birth`, `gender`, and `notes`. Listing and mutations are doctor-protected by the backend. Search is explicitly client-side over the complete currently loaded response; the API has no search or pagination contract.
+- Prediction history is automatically persisted for authenticated predictions and returns at most 100 records. Patient-specific history uses `GET /predictions/history/?patient_id=<id>` and retains stored raw probability fields without reconstructing missing calibrated values.
+- The backend has no report registry or PDF generator. Reports Library derives entries from persisted history and opens live authenticated HTML from `GET /predictions/{id}/report/`. Shared shell code fetches report HTML with the bearer header and opens a Blob URL, keeping credentials out of URLs.
+- Dynamic patient/history values are HTML-escaped and no patient records are logged. Authentication guards protect canonical workspace pages; backend `401`, `403`, `404`, and validation messages are rendered as controlled text.
+- Patient detail analysis links pass only a validated numeric `patient_id`; both ML and DL controllers forward it through the existing prediction-service query contract so authenticated predictions retain their patient association.
+- Nginx returned `200` for all workspace routes, controllers, and shared components. Static validation, JavaScript syntax checks, `24` backend tests, and compileall passed. Desktop rows collapse into mobile cards via semantic responsive CSS.
