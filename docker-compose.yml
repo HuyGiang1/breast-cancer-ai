@@ -10,16 +10,22 @@ services:
       - "8000"
     volumes:
       - ./backend/data:/app/backend/data
-      - ./models:/app/models
-      - ./src/models:/app/src/models
+      - ./runtime_models:/app/runtime_models:ro
       - ./frontend/results:/app/frontend/results
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 90s
 
   web:
     image: nginx:1.27-alpine
     container_name: breast_cancer_web
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     ports:
       - "80:80"
     volumes:

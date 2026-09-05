@@ -443,7 +443,7 @@ def _best_ablation_condition(rows: Any, metric: str) -> Optional[Dict[str, Any]]
 
 def _build_research_evidence() -> Dict[str, Any]:
     root = Path(__file__).resolve().parents[3]
-    snapshot = _load_json_file(root / "experiments" / "final" / "FINAL_RESULTS_SNAPSHOT.json")
+    snapshot = _load_json_file(root / "backend" / "app" / "static" / "final_results_snapshot.json")
     if isinstance(snapshot, dict):
         ml = snapshot.get("ml", {})
         dl = snapshot.get("dl", {})
