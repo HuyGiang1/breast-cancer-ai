@@ -6,9 +6,9 @@ Last updated: 2026-09-05
 
 **Final Model Runtime Integration**
 
-- Current branch: `research/freeze-dl-calibration-artifact`
-- Base branch: `feat/final-model-runtime-integration`
-- Next branch: `feat/final-dl-runtime-integration`
+- Current branch: `feat/final-dl-runtime-integration`
+- Base branch: `research/freeze-dl-calibration-artifact`
+- Next branch: `feat/system-finalization`
 
 ## Completed major milestones
 
@@ -23,14 +23,14 @@ Last updated: 2026-09-05
 
 ## Current work
 
-- [ ] Integrate the frozen EfficientNet-B0 full-image candidate into the research/demo runtime.
-- [ ] Keep classification in raw probability space at threshold `0.515`.
-- [ ] Use the frozen Platt transform only for calibrated display/reliability probability.
-- [ ] Expose unified final ML/DL model status without promoting clinical use.
+- [x] Integrate the frozen EfficientNet-B0 full-image candidate into the research/demo runtime.
+- [x] Keep classification in raw probability space at threshold `0.515`.
+- [x] Use the frozen Platt transform only for calibrated display/reliability probability.
+- [x] Expose unified final ML/DL model status without promoting clinical use.
 
 ## Blockers
 
-- DL runtime integration has not yet been implemented; it must not reuse legacy Custom CNN calibration or refit Platt.
+- DL runtime is research/demo only; it must not reuse legacy Custom CNN calibration or refit Platt.
 - Public deployment still requires VPS, domain, and HTTPS access from the project owner.
 - The project remains a research/educational prototype, not a clinical diagnostic system.
 
@@ -40,8 +40,8 @@ Last updated: 2026-09-05
 
 - [x] FastAPI base system, authentication, patient management, and prediction history
 - [x] Final ML runtime
-- [ ] Final DL runtime
-- [ ] Unified model status
+- [x] Final DL runtime
+- [x] Unified model status
 - [ ] Final research dashboard
 - [ ] Frontend polish
 

@@ -2,17 +2,17 @@
 
 ## Last completed phase
 
-Final DL calibration artifact freeze is complete on `research/freeze-dl-calibration-artifact`. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai`.
+Final DL runtime integration is complete on `feat/final-dl-runtime-integration`. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai`.
 
 ## Current phase
 
-ML and DL research are frozen. The WDBC Logistic Regression runtime contract is integrated for research/demo use only, and the exact final DL Platt artifact is now frozen. The next phase is **Final DL Runtime Integration**; it must not retrain, recalibrate, reselect thresholds, or make a clinical promotion.
+ML and DL research are frozen and both final candidates are integrated for research/demo use only. The next phase is **System Finalization**; it must not retrain, recalibrate, reselect thresholds, or make a clinical promotion.
 
 ## Git workflow
 
-- Current branch: `research/freeze-dl-calibration-artifact`
-- Base branch: `feat/final-model-runtime-integration`
-- Branch commits: `13909bb research: freeze final EfficientNet Platt calibration`; `9fd883a docs: document frozen DL calibration artifact`.
+- Current branch: `feat/final-dl-runtime-integration`
+- Base branch: `research/freeze-dl-calibration-artifact`
+- Branch commits: final DL runtime implementation and documentation commits pending.
 - Verification passed: `python3 -m compileall backend/app scripts tests`; `pytest -q`; `scripts/validate_final_model_contract.py`; `scripts/validate_frozen_dl_calibration.py`; `scripts/freeze_final_dl_calibration.py` twice.
 
 ## Files changed in this handoff checkpoint
@@ -97,6 +97,10 @@ ML and DL research are frozen. The WDBC Logistic Regression runtime contract is 
 - `scripts/validate_frozen_dl_calibration.py`
 - `tests/test_frozen_dl_calibration.py`
 - `docs/FINAL_DL_CALIBRATION_ARTIFACT.md`
+- `backend/app/services/final_dl_runtime.py`
+- `scripts/verify_final_dl_runtime_parity.py`
+- `tests/test_final_dl_runtime.py`
+- `docs/FINAL_DL_RUNTIME_INTEGRATION.md`
 
 ## Evidence and decisions
 
