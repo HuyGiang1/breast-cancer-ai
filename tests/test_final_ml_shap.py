@@ -1,4 +1,4 @@
-from scripts.generate_final_ml_shap import select_cases
+from scripts.ml_shap_selection import select_cases
 
 
 def test_shap_case_selection_is_deterministic_and_includes_all_errors():

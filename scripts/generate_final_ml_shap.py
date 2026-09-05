@@ -17,6 +17,7 @@ import numpy as np
 import shap
 from PIL import Image
 from sklearn.datasets import load_breast_cancer
+from scripts.ml_shap_selection import select_cases
 
 ROOT = Path(__file__).resolve().parent.parent
 FINAL = ROOT / "experiments" / "final"
@@ -51,21 +52,6 @@ def outcome(true_label: int, predicted_label: int) -> str:
     return "FP" if predicted_label else "FN"
 
 
-def select_cases(rows: list[dict]) -> list[dict]:
-    """Select median-confidence TP/TN, the FP, and every FN deterministically."""
-    selected = []
-    for wanted in ("TP", "TN"):
-        candidates = [row for row in rows if row["outcome"] == wanted]
-        distances = np.asarray([row["confidence_distance_from_threshold"] for row in candidates])
-        median = float(np.median(distances))
-        selected.append(dict(min(candidates, key=lambda row: (abs(row["confidence_distance_from_threshold"] - median), row["sample_index"])), selection_reason="median confidence: nearest median absolute distance from frozen threshold"))
-    false_positives = [row for row in rows if row["outcome"] == "FP"]
-    if len(false_positives) != 1:
-        raise RuntimeError(f"Expected one frozen LR false positive, found {len(false_positives)}.")
-    selected.append(dict(false_positives[0], selection_reason="all false positives: only frozen LR false positive"))
-    for row in sorted((row for row in rows if row["outcome"] == "FN"), key=lambda row: row["sample_index"]):
-        selected.append(dict(row, selection_reason="all false negatives: frozen LR final test has two false negatives"))
-    return selected
 
 
 def validate_feature_order(feature_names: list[str], model) -> None:
