@@ -196,10 +196,10 @@ const ABOUT_ML_LIST = [
 ];
 
 const ABOUT_DL_LIST = [
-    'Custom CNN — mô hình DL đang hoạt động hiện tại cho phân tích ảnh nhũ ảnh trên website.',
-    'Grad-CAM / heatmap — lớp giải thích vùng ảnh mà hệ thống chú ý khi tạo dự đoán.',
-    'ResNet50 và EfficientNet-B0 — các hướng thử nghiệm trước đó, hiện không dùng trong luồng dự đoán chính.',
-    'Mục tiêu hiện tại là giữ một pipeline DL ổn định, dễ kiểm soát và nhất quán với phần thống kê thực tế.',
+    'EfficientNet-B0 full image — mô hình DL final cho luồng research/demo.',
+    'Ngưỡng phân loại dùng xác suất thô 0.515; Platt chỉ hiệu chỉnh xác suất hiển thị.',
+    'Custom CNN và ResNet50 là baseline nghiên cứu/development, không phải fallback final.',
+    'Grad-CAM là bằng chứng hậu kiểm nghiên cứu, không phải định vị tổn thương lâm sàng.',
 ];
 
 const DL_RESEARCH_BENCHMARKS = [
@@ -860,7 +860,10 @@ function renderStatsPage() {
     setText('statMlCount', mlCount || '—');
     setText('statDlCount', dlCount || '—');
     setText('statPredCount', state.predictionCount || '—');
-    setText('homeStatsText', mlCount ? `${mlCount} ML + ${dlCount} DL model` : 'Đang tải thống kê...');
+    const finalStatus = state.finalModelStatus || {};
+    const mlStatus = finalStatus.ml?.status === 'research_demo' ? 'ML final available' : 'ML final unavailable';
+    const dlStatus = finalStatus.dl?.status === 'research_demo' ? 'DL final available' : 'DL final unavailable';
+    setText('homeStatsText', mlCount ? `${mlStatus} · ${dlStatus} · Research/demo only` : 'Đang tải trạng thái final models...');
 
     let bestAcc = 0;
     const benchKeys = Object.keys(state.benchmarks || {});
@@ -914,7 +917,7 @@ function renderStatsPage() {
             dlCards.innerHTML = state.dlModels.map(name => `
                 <div class="stat-card">
                     <div class="stat-card-value" style="font-size:1.1rem;">${name}</div>
-                    <div class="stat-card-label">${name === 'Custom CNN' ? 'Model DL đang dùng trong hệ thống' : 'Model DL đã nạp'}</div>
+                    <div class="stat-card-label">Final research/demo runtime</div>
                 </div>`).join('');
         }
     }
@@ -976,60 +979,33 @@ function renderResearchEvidencePanel() {
         return;
     }
 
-    const highlights = Array.isArray(evidence.highlights) ? evidence.highlights : [];
-    const mlRows = Array.isArray(evidence.ml_retrain) ? evidence.ml_retrain : [];
-    const dlBest = evidence.dl_best_model || null;
-    const interpretation = Array.isArray(evidence.clinical_interpretation) ? evidence.clinical_interpretation : [];
-    const sources = evidence.sources || {};
+    const mlRows = Array.isArray(evidence.ml_metrics) ? evidence.ml_metrics : [];
+    const dlRows = Array.isArray(evidence.dl_metrics) ? evidence.dl_metrics : [];
+    const metricRows = (rows, modelKey, aucKey) => rows.map(row => `<tr><td>${escapeHtml(row[modelKey] || '—')}</td><td>${formatPercent(row[aucKey])}</td><td>${formatPercent(row.Sensitivity ?? row.sensitivity)}</td><td>${formatPercent(row.Specificity ?? row.specificity)}</td></tr>`).join('');
 
     panel.innerHTML = `
-        <div class="research-evidence-grid">
-            ${highlights.length ? highlights.map(item => `
-                <article class="research-evidence-card">
-                    <span>${escapeHtml(item.label || 'Evidence')}</span>
-                    <strong>${escapeHtml(String(item.value ?? 'N/A'))}</strong>
-                    <h4>${escapeHtml(item.title || 'Kết quả nghiên cứu')}</h4>
-                    <p>${escapeHtml(item.text || '')}</p>
-                </article>
-            `).join('') : '<div class="result-empty">Chưa có highlight nghiên cứu.</div>'}
-        </div>
         <div class="research-evidence-split">
             <article class="research-evidence-block">
-                <h4>ML retrain evidence</h4>
+                <h4>WDBC ML study · Candidate: ${escapeHtml(evidence.ml_candidate || '—')}</h4>
                 ${mlRows.length ? `
                     <div class="mini-table-wrap">
                         <table class="mini-table">
-                            <thead><tr><th>Model</th><th>ROC-AUC</th><th>Artifact</th></tr></thead>
-                            <tbody>
-                                ${mlRows.map(row => `
-                                    <tr>
-                                        <td>${escapeHtml(row.model || '—')}</td>
-                                        <td>${formatMetricPercentValue(row.roc_auc_percent)}</td>
-                                        <td>${escapeHtml(row.artifact || '—')}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
+                            <thead><tr><th>Model</th><th>ROC-AUC</th><th>Sensitivity</th><th>Specificity</th></tr></thead>
+                            <tbody>${metricRows(mlRows, 'model', 'roc_auc')}</tbody>
                         </table>
                     </div>
-                ` : '<p class="result-empty">Không có report retrain ML.</p>'}
+                ` : '<p class="result-empty">Chưa có final ML metrics.</p>'}
             </article>
             <article class="research-evidence-block">
-                <h4>DL screening evidence</h4>
-                ${dlBest ? `
-                    <ul class="research-metric-list">
-                        <li>Model: <strong>${escapeHtml(dlBest.name || '—')}</strong></li>
-                        <li>Threshold: <strong>${escapeHtml(dlBest.threshold ?? '—')}</strong></li>
-                        <li>Sensitivity: <strong>${formatMetricPercentValue(dlBest.sensitivity_percent)}</strong></li>
-                        <li>Specificity: <strong>${formatMetricPercentValue(dlBest.specificity_percent)}</strong></li>
-                        <li>ROC-AUC: <strong>${formatMetricPercentValue(dlBest.roc_auc_percent)}</strong></li>
-                    </ul>
-                ` : '<p class="result-empty">Không có summary DL.</p>'}
+                <h4>CBIS-DDSM DL study · Candidate: ${escapeHtml(evidence.dl_candidate || '—')}</h4>
+                ${dlRows.length ? `<div class="mini-table-wrap"><table class="mini-table"><thead><tr><th>Model</th><th>ROC-AUC</th><th>Sensitivity</th><th>Specificity</th></tr></thead><tbody>${metricRows(dlRows, 'Model', 'ROC-AUC')}</tbody></table></div>` : '<p class="result-empty">Chưa có final DL metrics.</p>'}
             </article>
         </div>
         <div class="research-interpretation">
-            ${interpretation.map(text => `<div class="check-item">${escapeHtml(text)}</div>`).join('')}
+            <div class="check-item">${escapeHtml(evidence.scope || '')}</div>
+            <div class="check-item">ROI decision: ${escapeHtml(evidence.roi_decision || '—')}. Calibration and confidence intervals are reported from frozen final artifacts.</div>
         </div>
-        <p class="result-note">Nguồn: ${Object.values(sources).filter(Boolean).map(src => escapeHtml(src)).join(' · ') || 'Chưa đủ thông tin nguồn.'}</p>
+        <p class="result-note">Nguồn final: ${escapeHtml(evidence.source || '—')}. Research / Educational Prototype - Not for clinical diagnosis.</p>
     `;
 }
 
@@ -1341,16 +1317,18 @@ async function syncCurrentUser() {
 
 async function loadModels() {
     try {
-        const [mlRes, benchRes, dlRes, evidenceRes] = await Promise.all([
+        const [mlRes, benchRes, dlRes, evidenceRes, finalStatusRes] = await Promise.all([
             fetch(`${API_BASE_URL}/models/`),
             fetch(`${API_BASE_URL}/models/benchmarks/`),
             fetch(`${API_BASE_URL}/models/dl/`),
             fetch(`${API_BASE_URL}/research/evidence/`),
+            fetch(`${API_BASE_URL}/models/final/status/`),
         ]);
         state.mlModels = mlRes.ok ? await mlRes.json() : [];
         state.benchmarks = benchRes.ok ? await benchRes.json() : {};
         state.dlModels = dlRes.ok ? await dlRes.json() : [];
         state.researchEvidence = evidenceRes.ok ? await evidenceRes.json() : null;
+        state.finalModelStatus = finalStatusRes.ok ? await finalStatusRes.json() : null;
         
         renderModels();
         renderStatsPage();
@@ -1841,14 +1819,15 @@ function renderResultHtml(result, type = 'ml') {
                         <span class="result-badge ${diagClass}">${escapeHtml(diagnosis)}</span>
                         <strong class="result-primary-probability">${formatPercent(result.probability)}</strong>
                     </div>
-                    <p class="result-note">Xác suất hiển thị cho người dùng.</p>
+                    <p class="result-note">Model output for research/demo only, not a clinical diagnosis.</p>
                 </article>
                 <article class="result-block">
                     <h4>Tóm tắt nguy cơ</h4>
                     <ul class="result-list">
                         <li>Nguy cơ hiện tại: <strong>${escapeHtml(riskBand)}</strong></li>
                         <li>Xác suất hiển thị: <strong>${formatPercent(result.probability)}</strong></li>
-                        <li>Xác suất gốc của mô hình: <strong>${formatPercent(result.raw_probability)}</strong></li>
+                        <li>Xác suất thô của mô hình: <strong>${formatPercent(result.raw_probability)}</strong></li>
+                        ${type === 'dl' ? `<li>Xác suất hiệu chỉnh Platt: <strong>${formatPercent(result.calibrated_probability)}</strong></li><li>Ngưỡng phân loại (raw): <strong>${result.decision_threshold ?? '0.515'}</strong></li>` : ''}
                     </ul>
                 </article>
                 <article class="result-block">
@@ -1868,6 +1847,7 @@ function renderResultHtml(result, type = 'ml') {
                     <span>Chế độ hiệu chỉnh: <strong>${escapeHtml(result.calibration_mode || 'N/A')}</strong></span>
                 </div>
                 <p>${analysis ? escapeHtml(analysis).replace(/\n/g, '<br>') : 'Chưa có nhận định chi tiết cho lần dự đoán này.'}</p>
+                <p class="result-note">Research / Educational Prototype - Not for clinical diagnosis. Consult a qualified healthcare professional for clinical evaluation.</p>
             </article>
         </div>
     `;

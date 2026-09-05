@@ -443,6 +443,21 @@ def _best_ablation_condition(rows: Any, metric: str) -> Optional[Dict[str, Any]]
 
 def _build_research_evidence() -> Dict[str, Any]:
     root = Path(__file__).resolve().parents[3]
+    snapshot = _load_json_file(root / "experiments" / "final" / "FINAL_RESULTS_SNAPSHOT.json")
+    if isinstance(snapshot, dict):
+        ml = snapshot.get("ml", {})
+        dl = snapshot.get("dl", {})
+        return {
+            "source": "experiments/final/FINAL_RESULTS_SNAPSHOT.json",
+            "ml_candidate": ml.get("primary_candidate"),
+            "ml_metrics": ml.get("final_test_metrics", []),
+            "dl_candidate": dl.get("retained_candidate"),
+            "dl_metrics": dl.get("final_test_metrics", []),
+            "roi_decision": (snapshot.get("roi", {}) or {}).get("decision"),
+            "calibration": snapshot.get("calibration", {}),
+            "limitations": snapshot.get("limitations", []),
+            "scope": "Separate WDBC structured-data and CBIS-DDSM imaging studies; not a head-to-head comparison.",
+        }
     phase2 = _load_json_file(root / "experiments/results/phase2_summary.json") or {}
     phase3 = _load_json_file(root / "experiments/results/phase3_statistical_analysis.json") or {}
     ml_retrain = _load_json_file(root / "models/ml_retrain_report_20260404.json") or {}
