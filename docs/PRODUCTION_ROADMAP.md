@@ -4,7 +4,7 @@
 
 - [x] Final ML/DL runtime artifacts are checksum-verified and fail closed.
 - [x] Packaged research snapshot is byte-checked against the frozen source.
-- [x] CI import/dependency boundary is green for `dfc264d`.
+- [x] CI production-readiness validation is green for `8fce90d` (`33945903158`).
 - [x] SQLite backup plus safe temporary restore rehearsal.
 - [x] Final local system benchmark.
 - [x] Production-readiness validator.
@@ -15,7 +15,6 @@
 
 - [ ] Docker build, compose startup, health/readiness, mounted artifacts, snapshot, prediction smoke, restart persistence, and shutdown verification.
   Blocked: Docker daemon is unavailable locally.
-- [ ] Push production-readiness commits and wait for a green GitHub Actions run.
 
 ## External deployment work
 

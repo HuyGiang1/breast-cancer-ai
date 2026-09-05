@@ -10,7 +10,7 @@
 
 ## Completed on this branch
 
-- CI import-path and SHAP dependency boundaries were fixed. GitHub Actions run `33945050609` is green for `dfc264d`.
+- CI import-path and SHAP dependency boundaries were fixed. GitHub Actions run `33945903158` is green for production-readiness commit `8fce90d`.
 - Final application imports direct final ML/DL services, not legacy `prediction.py` or `prediction_dl.py`.
 - Uncertainty messages use the actual frozen ML raw threshold `0.36` and DL raw threshold `0.515`; multimodal `0.5` is explicitly probability ambiguity only.
 - Added `scripts/restore_database.py`, verified it on a temporary database, and documented it in `docs/DATABASE_BACKUP.md`.

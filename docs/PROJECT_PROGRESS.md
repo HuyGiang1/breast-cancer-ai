@@ -17,7 +17,7 @@ Last updated: 2026-09-05
 - [x] Final WDBC ML study, SHAP analysis, paper artifacts, and research synthesis
 - [x] Frozen Logistic Regression and EfficientNet-B0 research/demo runtimes
 - [x] Unified final model status and research dashboard
-- [x] CI release validation for runtime-import boundary (`33945050609`, commit `dfc264d`)
+- [x] CI release validation for production-readiness (`33945903158`, commit `8fce90d`)
 - [x] SQLite backup and safe temporary-database restore rehearsal
 - [x] Final local runtime benchmark and production-readiness validator
 - [x] Operational safety review and deployment runbook
@@ -25,7 +25,6 @@ Last updated: 2026-09-05
 ## Current work
 
 - [ ] Start Docker Desktop/daemon and execute actual `docker compose build`, `up`, health, mounted-artifact, snapshot, prediction-smoke, restart, and `down` gates.
-- [ ] Wait for CI on the production-readiness commits after they are pushed.
 
 ## Blockers
 
@@ -45,7 +44,7 @@ Last updated: 2026-09-05
 - [x] End-to-end local benchmark
 - [ ] Docker final verification (blocked: Docker daemon unavailable)
 - [x] Safety review
-- [ ] CI validation for the final production-readiness commit set
+- [x] CI validation for the production-readiness commit set
 - [ ] Deployment (blocked: VPS not provisioned)
 - [ ] HTTPS (blocked: domain/VPS not provisioned)
 
