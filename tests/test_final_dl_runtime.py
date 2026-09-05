@@ -6,7 +6,11 @@ from app.services.final_dl_runtime import FinalDLRuntimeService, InvalidFinalDLI
 
 
 def test_final_dl_status_is_research_demo_when_local_artifacts_exist():
-    status = FinalDLRuntimeService().get_model_status()
+    service = FinalDLRuntimeService()
+    configured_path = service._model_path(service._registry_entry())
+    if not configured_path.is_file():
+        pytest.skip("Final DL model artifact is not available in weight-free CI.")
+    status = service.get_model_status()
     assert status["status"] == "research_demo"
     assert status["artifact_verified"] is True
     assert status["decision_threshold"] == 0.515
