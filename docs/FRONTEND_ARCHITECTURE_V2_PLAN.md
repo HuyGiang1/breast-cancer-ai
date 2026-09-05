@@ -28,3 +28,14 @@ Completed on 2026-09-05 for commit `116cde8`.
 - Chrome headless rendered the landing successfully through `http://127.0.0.1/` at desktop viewport. The host Chrome emitted its known display/updater permission noise but produced a valid screenshot; no application asset failure was observed.
 - Auth smoke was non-destructive: invalid login returned controlled `401 {"detail":"Invalid email or password"}`. Forgot-password with a non-existent email returned the intended generic `200` response with no reset token.
 - Browser interaction checks at tablet/mobile remain a final full-browser QA gate for Batch 8. Batch 2's HTTP/module/auth gate is complete.
+
+## Batch 3 Verification
+
+Completed on 2026-09-05 from research product checkpoint `d2b817c`.
+
+- Nginx returned `200` for the landing, dashboard, Research Center, Model Comparison, Dataset Explorer, Explainability, Calibration, sampled controllers/services/components/CSS, and `/api/v1/research/evidence/`.
+- All research pages consume `researchService.studies()`, which adapts the central frozen evidence endpoint. WDBC and CBIS-DDSM remain separate and no combined leaderboard is rendered.
+- Chrome rendered Research Center through Nginx at `1440x900`; metrics and tables resolved without `NaN`, `undefined`, missing modules, or broken images. Host display/updater messages were Chrome infrastructure noise.
+- A `390x844` screenshot exposed horizontal grid/table overflow and a missing mobile sidebar trigger. The focused responsive fix constrains grid children/table wrappers and adds an ARIA-controlled mobile menu.
+- Explainability intentionally renders no Grad-CAM case images or SHAP values without canonical case/vector metadata. Calibration displays frozen raw/Platt validation Brier and ECE and states that classification uses raw probability `>= 0.515`.
+- Static validation, all JS syntax checks, `24` backend tests, compileall, and final application verification passed.
