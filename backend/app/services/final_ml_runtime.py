@@ -202,3 +202,6 @@ class FinalMLRuntimeService:
             "analysis_text": "Runtime explanation is not finally integrated for the frozen model.",
             "top_features": [],
         }
+
+
+final_ml_runtime_service = FinalMLRuntimeService()

@@ -25,8 +25,7 @@ from app.api.schemas import (
     SavedChatMessage,
     ClinicalExtractionResponse,
 )
-from app.services.prediction import prediction_service
-from app.services.final_ml_runtime import FinalModelUnavailableError
+from app.services.final_ml_runtime import FinalModelUnavailableError, final_ml_runtime_service
 from app.services.prediction_dl import STATIC_RESULTS_DIR
 from app.services.final_dl_runtime import FinalDLUnavailableError, InvalidFinalDLImageError, final_dl_runtime_service
 from app.services.ai_advisor import ai_advisor_service
@@ -910,22 +909,22 @@ def get_research_evidence():
 
 @router.get("/models/", response_model=List[str])
 def list_available_models():
-    return prediction_service.get_available_models()
+    return final_ml_runtime_service.get_available_models()
 
 @router.get("/models/benchmarks/", response_model=Dict[str, Any])
 def get_model_benchmarks():
-    return prediction_service.get_model_benchmarks()
+    return final_ml_runtime_service.get_model_benchmarks()
 
 
 @router.get("/models/status/", response_model=Dict[str, Any])
 def get_ml_model_status():
-    return prediction_service.get_model_status()
+    return final_ml_runtime_service.get_model_status()
 
 
 @router.get("/models/final/status/", response_model=Dict[str, Any])
 def get_final_model_status():
     return {
-        "ml": prediction_service.get_model_status(),
+        "ml": final_ml_runtime_service.get_model_status(),
         "dl": final_dl_runtime_service.get_model_status(),
         "clinical_use": False,
         "multimodal_status": "experimental_only",
@@ -962,7 +961,7 @@ def predict_diagnosis(
     current_user: Optional[dict] = Depends(get_optional_current_user),
 ):
     try:
-        result = prediction_service.predict(request, model_name=model_name)
+        result = final_ml_runtime_service.predict(request, model_name=model_name)
         _attach_uncertainty(result, "ML lâm sàng")
         advice_result = ai_advisor_service.advice_for_single(result, mode="ml")
         result["advice"] = advice_result["advice"]
@@ -1087,7 +1086,7 @@ async def predict_multimodal(
         # 1. Process Clinical Data
         data_json = json.loads(clinical_data)
         request = PredictionRequest(**data_json)
-        ml_res = prediction_service.predict(request, model_name=ml_model)
+        ml_res = final_ml_runtime_service.predict(request, model_name=ml_model)
         
         # 2. Process Image
         image_bytes = await _read_validated_image_upload(image_file)
