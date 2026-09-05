@@ -2,18 +2,18 @@
 
 ## Last completed phase
 
-Final model promotion review is complete on `research/final-model-promotion-review`. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai`.
+Final ML runtime integration is complete on `feat/final-model-runtime-integration`. The canonical repository is `https://github.com/HuyGiang1/breast-cancer-ai`.
 
 ## Current phase
 
-ML and DL research are frozen. The next phase is **Final Model Runtime Integration** from this review branch; it must not retrain, recalibrate, reselect thresholds, or make a clinical promotion.
+ML and DL research are frozen. The WDBC Logistic Regression runtime contract is now integrated for research/demo use only. The next phase is **Freeze DL Calibration Artifact**; it must not retrain, recalibrate, reselect thresholds, or make a clinical promotion.
 
 ## Git workflow
 
-- Current branch: `research/final-model-promotion-review`
-- Base branch: `research/final-paper-artifacts`
-- Branch commits: `3a75d4b research: define final runtime model contract`; `d54606c docs: review final model promotion readiness`.
-- Verification passed: `python3 -m compileall backend/app scripts tests`; `pytest -q` (5 passed); `scripts/validate_final_model_contract.py`.
+- Current branch: `feat/final-model-runtime-integration`
+- Base branch: `research/final-model-promotion-review`
+- Branch commits: `eb80759 feat: load checksum-verified final WDBC model`; documentation handoff update pending.
+- Verification passed: `python3 -m compileall backend/app scripts tests`; `pytest -q`; `scripts/validate_final_model_contract.py`; `scripts/verify_final_ml_runtime_parity.py`.
 
 ## Files changed in this handoff checkpoint
 
@@ -86,6 +86,10 @@ ML and DL research are frozen. The next phase is **Final Model Runtime Integrati
 - `docs/FINAL_MODEL_PROMOTION_REVIEW.md`
 - `docs/FINAL_MODEL_RUNTIME_INTEGRATION_PLAN.md`
 - `scripts/validate_final_model_contract.py`
+- `backend/app/services/final_ml_runtime.py`
+- `scripts/verify_final_ml_runtime_parity.py`
+- `tests/test_final_ml_runtime.py`
+- `docs/FINAL_ML_RUNTIME_INTEGRATION.md`
 
 ## Evidence and decisions
 
@@ -115,6 +119,9 @@ ML and DL research are frozen. The next phase is **Final Model Runtime Integrati
 - The synthesis explicitly treats WDBC ML and CBIS-DDSM DL as distinct studies. There is no cross-dataset model ranking and no validated multimodal conclusion.
 - Promotion review verifies the final Logistic Regression pipeline, feature count/class ordering, raw probability, threshold 0.36, and artifact SHA-256. It is approved only for a future controlled research/demo integration.
 - Promotion review verifies EfficientNet-B0 full-image SHA-256, input, preprocessing policy, raw output, and raw threshold 0.515. DL integration is blocked because selected Platt calibration has no frozen standalone runtime-loadable artifact; legacy Custom CNN calibration profile is incompatible and must not be substituted.
+- Final ML runtime uses only the registry-selected final `.joblib`, verifies SHA-256 and pipeline structure at startup, maps the 30 API fields explicitly, sends raw values to the embedded scaler/pipeline, uses raw `predict_proba(...)[1]`, and classifies at the frozen threshold 0.36. There is no auto-discovery, double scaling, rank transform, 0.50 threshold, or fallback training in the final path.
+- Runtime parity passed for frozen test TP sample 250, TN sample 120, and FN sample 73; maximum raw-probability delta was `2.776e-17`. API smoke checks passed for health, readiness, ML/DL status and the representative benign/malignant ML predictions.
+- DL status endpoint now records the final EfficientNet-B0 candidate as `BLOCKED`; existing Custom CNN handling remains legacy/development and is not a final substitute.
 - Existing DL metrics and figures under `experiments/results/` are development/preliminary only, because legacy folders had 90 cross-split study-like prefixes.
 - Keep multimodal fusion as `Experimental Multimodal Integration` unless valid paired clinical-image data is found.
 - Do not commit raw CBIS-DDSM, runtime database, `.env`, or model weight artifacts.
@@ -134,10 +141,10 @@ ML and DL research are frozen. The next phase is **Final Model Runtime Integrati
 
 ## Exact next command
 
-Create `feat/final-model-runtime-integration` from `research/final-model-promotion-review` and implement only the reviewed research/demo runtime contract. Do not retrain, re-evaluate, or promote clinical use.
+Create `research/freeze-dl-calibration-artifact` from `feat/final-model-runtime-integration` and resolve only the missing frozen Platt calibration artifact/metadata. Do not retrain, re-evaluate, or promote clinical use.
 
 ## Latest commit and Git status
 
-Latest branch documentation commit is `d54606c`; the preceding contract commit is `3a75d4b`. After this review branch is pushed, the next action is `feat/final-model-runtime-integration` from this branch. No DL training, ML re-evaluation change, or clinical/runtime promotion is authorized automatically.
+Latest implementation commit is `eb80759`; documentation handoff update is pending. After this branch is pushed, the next action is `research/freeze-dl-calibration-artifact` from this branch. No DL training, ML re-evaluation change, or clinical/runtime promotion is authorized automatically.
 
 Run `git status --short` before continuing. Expected status after this handoff checkpoint is clean.

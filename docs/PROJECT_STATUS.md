@@ -13,6 +13,7 @@
 | Paper artifacts | DONE | Reproducible tables, 12 provenance-tracked figures, manifest, snapshot, and validation script generated from frozen final artifacts | `af4e160`, `6d52da6` |
 | Final research synthesis | DONE | Conservative modality-specific results synthesis and report update notes complete; no model promotion | - |
 | Final model promotion review | DONE | ML contract integrity-verified and approved for research/demo integration; DL integration blocked by missing frozen Platt runtime artifact | `3a75d4b` |
+| Final ML runtime integration | DONE | Registry/checksum-verified WDBC Logistic Regression runtime, canonical raw input vector, raw probability/0.36 decision, parity and API smoke verification | `eb80759` |
 | 11-18. Software and operations finalization | IN_PROGRESS | FastAPI, static web, Docker, Nginx, CI and artifact policy exist | `9270fa4` and earlier |
 | 19. VPS/domain/HTTPS | BLOCKED | Requires VPS and domain access from project owner | - |
 | 20-25. Production safety, CI, docs, release | IN_PROGRESS | Baseline safeguards and documentation exist; final release depends on research phases | - |
@@ -24,4 +25,4 @@
 - The manifest uses filename prefix before `__` as a conservative study-like group. It is not a verified patient-level split because the local processed snapshot lacks complete patient/case metadata.
 - The current `0.4 * ML + 0.6 * DL` fusion is an experimental software heuristic, not a validated multimodal research finding.
 - System framing: **Research / Educational Prototype - Not for clinical diagnosis.**
-- Next engineering phase: **Final Model Runtime Integration** from the reviewed contract. No runtime promotion has occurred.
+- Final WDBC Logistic Regression is integrated only as a checksum-verified **research/demo** runtime; it is not clinical use. The next research phase is **Freeze DL Calibration Artifact**. DL remains blocked and no DL runtime promotion has occurred.
