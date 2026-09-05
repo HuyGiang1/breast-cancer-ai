@@ -4,10 +4,10 @@ Last updated: 2026-09-05
 
 ## Current stage
 
-**Final Documentation / Release Preparation**
+**Premium Frontend Redesign**
 
-- Current branch: `ops/production-readiness`
-- Base branch: `feat/system-finalization`
+- Current branch: `feat/frontend-premium-redesign`
+- Base branch: `ops/production-readiness`
 - Next branch: `docs/final-documentation` (do not create automatically)
 
 ## Completed major milestones
@@ -22,6 +22,7 @@ Last updated: 2026-09-05
 - [x] Final local runtime benchmark and production-readiness validator
 - [x] Operational safety review and deployment runbook
 - [x] Docker final verification: build, healthy compose stack, mounted model checksums, ML/DL smoke, snapshot provenance, restart persistence, Nginx assets, and safe shutdown
+- [x] Premium responsive frontend redesign with evidence-first research dashboard, grouped ML inputs, DL upload UX, and threshold-aware result display
 
 ## Blockers
 
@@ -33,7 +34,7 @@ Last updated: 2026-09-05
 ### Application
 
 - [x] FastAPI base system, authentication, patient management, and prediction history
-- [x] Final ML/DL runtimes, unified status, dashboard, and frontend polish
+- [x] Final ML/DL runtimes, unified status, and premium frontend redesign
 
 ### Production
 

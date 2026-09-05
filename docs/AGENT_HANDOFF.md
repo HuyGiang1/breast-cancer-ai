@@ -3,12 +3,18 @@
 ## Current state
 
 - Repository: `https://github.com/HuyGiang1/breast-cancer-ai`
-- Current branch: `ops/production-readiness`
-- Base branch: `feat/system-finalization`
-- Do not create a new branch.
+- Current branch: `feat/frontend-premium-redesign`
+- Base branch: `ops/production-readiness`
+- Next branch: `docs/final-documentation` (do not create automatically).
 - Research is frozen. Do not retrain, recalibrate, change split/model/threshold, or promote clinical use.
 
 ## Completed on this branch
+
+- Added `docs/FRONTEND_REDESIGN_PLAN.md` and `docs/FRONTEND_REDESIGN.md`.
+- Rebuilt the static frontend shell with an accessible desktop sidebar, tablet collapse, and mobile drawer while preserving existing `data-page`, element ids, routes, API payloads, authentication, patient controls, history, chat, and demo flows.
+- Presented WDBC Logistic Regression and CBIS-DDSM EfficientNet-B0 as separate frozen studies. Removed stale hard-coded Custom CNN selection claims from the research page and use packaged research evidence for the DL comparison.
+- Grouped ML's 30 inputs into mean/error/worst sections with completion feedback. Added DL file drag/drop, preview metadata, removal, and an explicit raw-threshold probability marker for DL results.
+- No model, threshold, calibration, API, dataset, or backend behavior changed.
 
 - CI import-path and SHAP dependency boundaries were fixed. GitHub Actions run `33945903158` is green for production-readiness commit `8fce90d`.
 - Final application imports direct final ML/DL services, not legacy `prediction.py` or `prediction_dl.py`.
