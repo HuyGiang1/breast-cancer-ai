@@ -33,26 +33,15 @@ PYTHONPATH=.:backend AI_ADVISOR_PROVIDER=local DL_PRELOAD_ON_STARTUP=false venv/
 
 The shell has no `python` alias; use `venv/bin/python` for Python commands that require the project environment.
 
-## Docker blocker and exact next steps
+## Docker verification and exact next steps
 
-`runtime_models/` exists locally, is Git-ignored, and contains checksum-verified copies of the frozen ML/DL artifacts. Docker compose config passes. `docker compose build` cannot run because Docker Desktop daemon is not running.
+Docker verification is complete locally with Docker Desktop 28.5.1 aarch64, Compose v2.40.3, and the Python 3.11-slim API image. The earlier BuildKit I/O issue was host storage pressure and was resolved before the successful build.
 
-When Docker is available, remain on this branch and run exactly:
+- API became healthy and Nginx served port 80.
+- `/healthz`, `/readyz`, final model status, and frozen research evidence passed through Nginx.
+- `/app/runtime_models` was read-only. ML, DL, and frozen Platt SHA-256 values matched their contracts.
+- ML and DL benign/malignant requests followed raw thresholds `0.36` and `0.515`; invalid ML returned `422` and corrupt DL upload returned `400`.
+- Packaged snapshot matched frozen source SHA `81df4458274dd4f2fdea771fc1bd961e4007e2a683e108f4da0ba6cb8692ce13` without an `experiments` mount.
+- After `docker compose restart`, database counts remained `users=3`, `predictions=14`, integrity was `ok`, and final models reloaded healthy. Stack was then stopped with `docker compose down`, without `-v`.
 
-```bash
-docker compose config
-docker compose build
-docker compose up -d
-docker compose ps
-curl -fsS http://127.0.0.1/healthz
-curl -fsS http://127.0.0.1/readyz
-curl -fsS http://127.0.0.1/api/v1/models/final/status/
-curl -fsS http://127.0.0.1/api/v1/research/evidence/
-docker compose restart
-docker compose ps
-docker compose down
-```
-
-Also run benign/malignant ML and DL container requests plus invalid ML/corrupt image requests. Confirm read-only `/app/runtime_models` mount, both artifact checksums, frozen Platt checksum, ML raw `0.36`, DL raw `0.515`, `clinical_use: false`, and `multimodal_status: experimental_only`.
-
-After Docker passes, push the branch, wait for GitHub Actions success on the latest commit, update trackers, and only then report `docs/final-documentation` as the next branch. Do not create that branch automatically.
+The next phase is `docs/final-documentation`; do not create it automatically. VPS/domain/HTTPS are still blocked external deployment tasks.

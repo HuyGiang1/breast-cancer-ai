@@ -13,8 +13,7 @@
 
 ## Required before release preparation
 
-- [ ] Docker build, compose startup, health/readiness, mounted artifacts, snapshot, prediction smoke, restart persistence, and shutdown verification.
-  Blocked: Docker daemon is unavailable locally.
+- [x] Docker build, compose startup, health/readiness, read-only mounted artifacts, snapshot provenance, prediction smoke, restart persistence, Nginx smoke, log review, and shutdown verification.
 
 ## External deployment work
 
@@ -26,4 +25,4 @@
 
 ## Release boundary
 
-Begin `docs/final-documentation` only after the two release-preparation gates above are completed. This remains a research/educational prototype and is not clinical software.
+`ops/production-readiness` is ready to close after its final documentation evidence commit is pushed and GitHub Actions is green. The next branch is `docs/final-documentation`; do not create it automatically. This remains a research/educational prototype and is not clinical software.

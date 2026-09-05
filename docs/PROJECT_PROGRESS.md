@@ -4,11 +4,11 @@ Last updated: 2026-09-05
 
 ## Current stage
 
-**Production Readiness - Docker verification blocked locally**
+**Final Documentation / Release Preparation**
 
 - Current branch: `ops/production-readiness`
 - Base branch: `feat/system-finalization`
-- Next branch: not authorized until the Docker gate is verified; then `docs/final-documentation`
+- Next branch: `docs/final-documentation` (do not create automatically)
 
 ## Completed major milestones
 
@@ -21,14 +21,10 @@ Last updated: 2026-09-05
 - [x] SQLite backup and safe temporary-database restore rehearsal
 - [x] Final local runtime benchmark and production-readiness validator
 - [x] Operational safety review and deployment runbook
-
-## Current work
-
-- [ ] Start Docker Desktop/daemon and execute actual `docker compose build`, `up`, health, mounted-artifact, snapshot, prediction-smoke, restart, and `down` gates.
+- [x] Docker final verification: build, healthy compose stack, mounted model checksums, ML/DL smoke, snapshot provenance, restart persistence, Nginx assets, and safe shutdown
 
 ## Blockers
 
-- Docker daemon is unavailable on the current machine, so containerized verification has not run.
 - VPS, domain, and HTTPS credentials have not been provided.
 - The project remains a research/educational prototype, not a clinical diagnostic system.
 
@@ -42,7 +38,7 @@ Last updated: 2026-09-05
 ### Production
 
 - [x] End-to-end local benchmark
-- [ ] Docker final verification (blocked: Docker daemon unavailable)
+- [x] Docker final verification
 - [x] Safety review
 - [x] CI validation for the production-readiness commit set
 - [ ] Deployment (blocked: VPS not provisioned)

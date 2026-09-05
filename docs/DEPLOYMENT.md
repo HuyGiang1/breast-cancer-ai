@@ -1,6 +1,6 @@
 # Deployment Runbook
 
-Status on 2026-09-05: local operational packaging is prepared. VPS provisioning, domain, and HTTPS are blocked because no server or DNS credentials have been provided. This research/educational prototype is not for clinical diagnosis.
+Status on 2026-09-05: local container verification passed with Docker Desktop 28.5.1 aarch64, Compose v2.40.3, and the Python 3.11-slim API image. VPS provisioning, domain, and HTTPS are blocked because no server or DNS credentials have been provided. This research/educational prototype is not for clinical diagnosis.
 
 ## Prerequisites
 
@@ -100,7 +100,7 @@ docker compose down
 
 ## Network Status
 
-`deploy/nginx.conf` serves the frontend, proxies `/api/` and `/results/`, forwards standard proxy headers, caps uploads at 20 MB, and allows 180 seconds for DL inference. It intentionally contains no TLS certificate configuration and does not expose host paths.
+`deploy/nginx.conf` serves the frontend, proxies `/api/`, `/results/`, `/healthz`, and `/readyz`, forwards standard proxy headers, caps uploads at 20 MB, and allows 180 seconds for DL inference. It intentionally contains no TLS certificate configuration and does not expose host paths.
 
 - VPS: **BLOCKED** - not yet provisioned.
 - Domain: **BLOCKED** - no DNS record or domain supplied.
