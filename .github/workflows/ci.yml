@@ -10,7 +10,7 @@ jobs:
   backend-checks:
     runs-on: ubuntu-latest
     env:
-      PYTHONPATH: backend
+      PYTHONPATH: .:backend
       DL_PRELOAD_ON_STARTUP: "false"
       AI_ADVISOR_PROVIDER: local
     steps:
@@ -32,7 +32,7 @@ jobs:
         run: python -m compileall backend/app scripts tests
 
       - name: Run unit tests
-        run: pytest -q
+        run: python -m pytest -q
 
       - name: Import FastAPI app
         run: python -c "from app.main import app; print(app.title)"
