@@ -26,6 +26,7 @@ from app.api.schemas import (
     ClinicalExtractionResponse,
 )
 from app.services.prediction import prediction_service
+from app.services.final_ml_runtime import FinalModelUnavailableError
 from app.services.prediction_dl import dl_prediction_service, STATIC_RESULTS_DIR
 from app.services.ai_advisor import ai_advisor_service
 from app.core.database import db, future_iso, utc_now_iso
@@ -964,6 +965,8 @@ def predict_diagnosis(
         return PredictionResponse(**result)
     except HTTPException:
         raise
+    except FinalModelUnavailableError as exc:
+        raise HTTPException(status_code=503, detail=f"Final ML model unavailable: {exc}") from exc
     except Exception as e:
         print(f"Prediction error: {e}")
         raise _internal_error("Prediction failed.")
@@ -1128,6 +1131,8 @@ async def predict_multimodal(
     except ValidationError as e:
         print(f"Fusion clinical validation error: {e}")
         raise HTTPException(status_code=400, detail="Invalid clinical_data payload.")
+    except FinalModelUnavailableError as exc:
+        raise HTTPException(status_code=503, detail=f"Final ML model unavailable: {exc}") from exc
     except Exception as e:
         print(f"Fusion prediction error: {e}")
         raise _internal_error("Fusion prediction failed.")
