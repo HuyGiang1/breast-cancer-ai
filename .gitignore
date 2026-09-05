@@ -39,6 +39,7 @@ credentials.json
 .mplconfig/
 
 # Runtime app data
+runtime_models/
 backend/data/app.db
 backend/data/*.db
 backend/data/outbox/

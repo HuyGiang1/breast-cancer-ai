@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="premium.css">
 </head>
 
 <body>
@@ -38,33 +39,36 @@
         </div>
     </div>
 
-    <div class="app-shell">
-        <!-- =================== TOPBAR =================== -->
-        <header class="topbar">
-            <!-- Brand -->
-            <div class="brand-block" id="brandHomeBtn">
+    <div class="app-shell premium-shell">
+        <aside class="app-sidebar" aria-label="Điều hướng ứng dụng">
+            <div class="sidebar-brand" id="brandHomeBtn" role="button" tabindex="0">
                 <div class="brand-mark">BC</div>
-                <div>
-                    <div class="brand-name">BreastCare Mint</div>
-                    <div class="brand-tagline">AI · Sàng lọc ung thư vú</div>
-                </div>
+                <div><strong>BreastCare AI</strong><span>Research platform</span></div>
             </div>
-
-            <!-- Desktop Nav -->
-            <nav class="topbar-nav" id="desktopNav">
-                <button class="topbar-nav-link active" data-page="home">Trang chủ</button>
-                <button class="topbar-nav-link" data-page="learn">Kiến thức</button>
-                <button class="topbar-nav-link" data-page="care">Chăm sóc</button>
-                <button class="topbar-nav-link" data-page="videos">Video</button>
-                <button class="topbar-nav-link" data-page="assistant">Hỏi AI</button>
-                <button class="topbar-nav-link" data-page="prediction">Dự đoán</button>
-                <button class="topbar-nav-link" data-page="stats">Thống kê</button>
-                <button class="topbar-nav-link" data-page="about">Về chúng tôi</button>
-                <button class="topbar-nav-link hidden" data-page="history" id="historyNavBtn">Lịch sử</button>
-                <button class="topbar-nav-link hidden" data-page="patients" id="patientsNavBtn">Bệnh nhân</button>
+            <nav class="sidebar-nav">
+                <p class="nav-group-label">Overview</p>
+                <button class="sidebar-link active" data-page="home"><span class="nav-icon">OV</span>Overview</button>
+                <p class="nav-group-label">AI Analysis</p>
+                <button class="sidebar-link" data-predict-route="ml"><span class="nav-icon">ML</span>Structured ML</button>
+                <button class="sidebar-link" data-predict-route="dl"><span class="nav-icon">DL</span>Mammography DL</button>
+                <button class="sidebar-link" data-predict-route="fusion"><span class="nav-icon">EX</span>Experimental Multimodal</button>
+                <p class="nav-group-label">Research</p>
+                <button class="sidebar-link" data-page="stats"><span class="nav-icon">RD</span>Research Dashboard</button>
+                <button class="sidebar-link" data-page="stats"><span class="nav-icon">PM</span>Model Performance</button>
+                <button class="sidebar-link" data-page="stats"><span class="nav-icon">XA</span>Explainability</button>
+                <p class="nav-group-label">Clinical Workspace</p>
+                <button class="sidebar-link hidden" data-page="patients" id="patientsNavBtn"><span class="nav-icon">PT</span>Patients</button>
+                <button class="sidebar-link hidden" data-page="history" id="historyNavBtn"><span class="nav-icon">HI</span>Prediction History</button>
+                <button class="sidebar-link" data-page="history"><span class="nav-icon">RP</span>Reports</button>
+                <p class="nav-group-label">System</p>
+                <button class="sidebar-link" data-page="stats"><span class="nav-icon">ST</span>Model Status</button>
+                <button class="sidebar-link" data-page="account"><span class="nav-icon">SE</span>Settings & Profile</button>
             </nav>
-
-            <!-- Right side -->
+            <div class="sidebar-safety"><strong>Research / Educational</strong><span>Not for clinical diagnosis</span></div>
+        </aside>
+        <div class="app-content">
+        <header class="topbar premium-topbar">
+            <div class="topbar-context"><span class="eyebrow">Research workspace</span><strong id="topbarPageTitle">Overview</strong></div>
             <div class="topbar-right">
                 <!-- Guest -->
                 <div class="guest-actions" id="guestActions">
@@ -98,8 +102,7 @@
                     </div>
                 </div>
 
-                <!-- Mobile hamburger -->
-                <button class="mobile-nav-toggle" id="mobileNavToggle" title="Mở menu">☰</button>
+                <button class="mobile-nav-toggle" id="mobileNavToggle" title="Mở menu điều hướng" aria-label="Mở menu điều hướng">☰</button>
             </div>
         </header>
 
@@ -108,59 +111,33 @@
 
             <!-- ========== HOME ========== -->
             <section class="page is-active" id="page-home">
-                <!-- Hero -->
-                <div class="card hero-card">
+                <div class="premium-hero">
                     <div class="hero-copy">
-                        <p class="eyebrow">BreastCare Mint</p>
-                        <h2>Phát hiện sớm — bước đầu tiên để chăm sóc tốt hơn</h2>
-                        <p class="section-copy">
-                            Nền tảng kết hợp AI lâm sàng, phân tích ảnh nhũ ảnh và kiến thức y khoa giúp bạn hiểu rõ hơn
-                            về tình trạng sức khỏe và biết bước tiếp theo nên làm gì.
-                        </p>
+                        <p class="eyebrow">Breast Cancer AI Research Platform</p>
+                        <h1>Evidence-led AI analysis for breast cancer research.</h1>
+                        <p class="section-copy">Machine-learning and deep-learning research prototype for breast tumor classification and explainable AI analysis. WDBC and CBIS-DDSM evidence remain separate studies.</p>
                         <div class="hero-actions">
-                            <button class="btn btn-primary" data-nav-target="prediction">Dự đoán ngay</button>
-                            <button class="btn btn-secondary" data-nav-target="learn">Xem dấu hiệu cần chú ý</button>
+                            <button class="btn btn-primary" data-page="stats">Explore Research</button>
+                            <button class="btn btn-secondary" data-predict-route="ml">Try Demo</button>
                         </div>
                     </div>
-                    <div class="hero-visual">
-                        <img src="assets/image/1639013521.jpg" alt="Nâng cao nhận thức về ung thư vú">
-                    </div>
-                    <div class="hero-panel">
-                        <div class="metric-card">
-                            <span class="metric-label">Đừng chờ quá lâu</span>
-                            <strong>Khối cứng · Tiết dịch · Da lõm</strong>
-                            <p>Những dấu hiệu này cần được kiểm tra sớm, không nên tự chờ xem.</p>
-                        </div>
-                        <div class="metric-card">
-                            <span class="metric-label">AI hỗ trợ sàng lọc</span>
-                            <strong>ML lâm sàng + DL ảnh nhũ ảnh</strong>
-                            <p>Kết quả AI là lớp tham khảo, không thay thế chẩn đoán của bác sĩ.</p>
-                        </div>
-                        <div class="metric-card">
-                            <span class="metric-label">Hiệu suất đã xác thực</span>
-                            <strong id="homeStatsText">Đang tải thống kê…</strong>
-                            <p>Các model được đánh giá trên tập dữ liệu lâm sàng chuẩn.</p>
-                        </div>
+                    <div class="hero-evidence-panel">
+                        <div class="safety-badge"><span>RESEARCH / EDUCATIONAL PROTOTYPE</span><strong>Not for clinical diagnosis</strong></div>
+                        <div class="hero-model-row"><span>Study A · WDBC</span><strong>Logistic Regression</strong><b>ROC-AUC 99.54%</b></div>
+                        <div class="hero-model-row"><span>Study B · CBIS-DDSM</span><strong>EfficientNet-B0</strong><b>ROC-AUC 72.29%</b></div>
+                        <div class="hero-system-line"><i></i><span id="homeStatsText">Checking final runtime status…</span></div>
                     </div>
                 </div>
-
-                <!-- Visual strip -->
-                <div class="visual-strip">
-                    <div class="visual-strip-item">
-                        <div class="strip-title">Dự đoán lâm sàng (ML)</div>
-                        <p class="strip-text">Nhập chỉ số lâm sàng từ kết quả FNA để phân tích nguy cơ.</p>
-                    </div>
-                    <div class="visual-strip-item">
-                        <div class="strip-title">Phân tích ảnh nhũ ảnh (DL)</div>
-                        <p class="strip-text">Tải ảnh lên để model DL làm rõ vùng nghi ngờ trên phim nhũ ảnh.</p>
-                    </div>
-                    <div class="visual-strip-item">
-                        <div class="strip-title">Kiến thức y khoa</div>
-                        <p class="strip-text">Tổng hợp thông tin về dấu hiệu, dinh dưỡng và phục hồi.</p>
-                    </div>
+                <div class="dashboard-kpi-grid" id="premiumKpiGrid"></div>
+                <div class="grid two-col premium-home-grid">
+                    <article class="card evidence-card"><p class="eyebrow">Research overview</p><h3>Two independent studies</h3><p>WDBC structured features and CBIS-DDSM mammography images are presented as separate evidence streams, never as a shared leaderboard.</p><button class="text-action" data-page="stats">View research dashboard</button></article>
+                    <article class="card evidence-card"><p class="eyebrow">Explainability & reliability</p><h3>Interpret outputs with their limits</h3><p>SHAP and Grad-CAM explain model behaviour; calibration, uncertainty and error analysis support cautious research interpretation.</p><button class="text-action" data-page="stats">Explore evidence</button></article>
                 </div>
-
-                <!-- Highlight cards (rendered by JS) -->
+                <div class="home-evidence-grid">
+                    <article><span>Final models</span><strong>Logistic Regression · EfficientNet-B0</strong></article>
+                    <article><span>Reliability</span><strong>Calibration · uncertainty · error analysis</strong></article>
+                    <article><span>Architecture</span><strong>Frontend → FastAPI → frozen ML/DL runtime</strong></article>
+                </div>
                 <div class="grid three-col" id="homeHighlights"></div>
             </section>
 
@@ -177,14 +154,14 @@
 
                 <div class="grid two-col">
                     <article class="embed-card">
-                        <img class="care-image" src="assets/image/image-20241024092947-1.jpeg"
+                        <img class="care-image" src="assets/image/ung-thu-vu-co-di-truyen-khong.jpg"
                             alt="Dấu hiệu cần chú ý ở ung thư vú">
                         <strong>Dấu hiệu nên đi khám sớm</strong>
                         <p>Khối cứng, da lõm, tụt núm vú mới xuất hiện hoặc tiết dịch bất thường cần được kiểm tra
                             chuyên khoa sớm.</p>
                     </article>
                     <article class="embed-card">
-                        <img class="care-image" src="assets/image/images.jpeg" alt="Tự theo dõi thay đổi ở vú">
+                        <img class="care-image" src="assets/image/1639013521.jpg" alt="Tự theo dõi thay đổi ở vú">
                         <strong>Tự theo dõi tại nhà</strong>
                         <p>Tự quan sát giúp phát hiện thay đổi sớm hơn, nhưng không thay thế cho chẩn đoán của bác sĩ
                             khi đã có dấu hiệu.</p>
@@ -218,7 +195,7 @@
 
                 <div class="grid two-col">
                     <article class="embed-card">
-                        <img class="care-image" src="assets/image/thap-che-do-dinh-duong-cho-nguoi-benh-ung-thu.webp"
+                        <img class="care-image" src="assets/image/tuc-gian-ung-thu-vu1.jpg"
                             alt="Tháp dinh dưỡng cho người bệnh ung thư">
                         <strong>Tháp dinh dưỡng tham khảo</strong>
                         <p>Ưu tiên nước, rau xanh, trái cây, đạm nạc và ngũ cốc nguyên hạt; hạn chế đồ ngọt, đồ chiên và
@@ -418,6 +395,10 @@
                         <p class="section-copy" style="margin-bottom:14px;font-size:0.92rem;">
                             Nếu người dùng có ảnh chụp tờ phiếu xét nghiệm chứa 30 chỉ số, hệ thống có thể dùng AI để nhận diện và tự điền vào form ML.
                         </p>
+                        <div class="form-progress" aria-live="polite">
+                            <strong id="mlFeatureProgress">0 / 30 features supplied</strong>
+                            <span>All fields are required for the frozen ML runtime.</span>
+                        </div>
                         <div class="feature-grid" id="featuresForm"></div>
                         <div class="inline-actions">
                             <button class="btn btn-secondary btn-sm" id="sampleBenignBtn">Mẫu lành tính</button>
@@ -437,11 +418,13 @@
                             </div>
                             <select id="dlModelSelect" class="input compact-input"></select>
                         </div>
-                        <label class="upload-shell" for="imageInput">
+                        <label class="upload-shell" id="dlUploadShell" for="imageInput">
                             <input type="file" id="imageInput" accept="image/*" hidden>
                             <div class="upload-copy">
+                                <span class="upload-icon" aria-hidden="true">UP</span>
                                 <p class="upload-title">Kéo thả hoặc bấm để tải ảnh nhũ ảnh</p>
                                 <p class="upload-subtitle">Hỗ trợ JPEG / PNG.</p>
+                                <p class="upload-file-meta" id="dlFileMeta" aria-live="polite">Chưa có ảnh được chọn.</p>
                             </div>
                             <img id="imagePreview" alt="Ảnh nhũ ảnh đã chọn">
                         </label>
@@ -456,6 +439,7 @@
                             </div>
                         </div>
                         <div class="inline-actions dl-primary-action">
+                            <button class="btn btn-secondary btn-sm hidden" id="removeDlImageBtn" type="button">Bỏ ảnh</button>
                             <button class="btn btn-primary" id="predictDlBtn">Chạy dự đoán</button>
                         </div>
                     </div>
@@ -542,8 +526,7 @@
                         <p class="eyebrow">Thống kê AI</p>
                         <h2>Hiệu suất và thông tin các mô hình</h2>
                     </div>
-                    <p class="section-copy">Tổng hợp chỉ số đánh giá của các model ML và DL đang hoạt động trên nền
-                        tảng.</p>
+                        <p class="section-copy">WDBC clinical ML and CBIS-DDSM mammography DL are reported as separate frozen research studies.</p>
                 </div>
 
                 <!-- Quick stats row -->
@@ -598,7 +581,7 @@
                     <div class="section-head compact" style="margin-bottom:18px;">
                         <div>
                             <p class="eyebrow">So sánh DL</p>
-                            <h3>Các mô hình DL đã từng nghiên cứu trước khi chọn CNN</h3>
+                            <h3>DL evidence and final selection</h3>
                         </div>
                     </div>
                     <div id="dlBenchmarkTable">
@@ -753,8 +736,7 @@
                     </div>
                     <div class="card" style="text-align:center;">
                         <h3 style="margin-bottom:8px;">Phương pháp</h3>
-                        <p class="section-copy" style="font-size:0.88rem;">Kết hợp ML trên dữ liệu Wisconsin WDBC với DL
-                            ảnh nhũ ảnh đang hoạt động thực tế là Custom CNN và lớp giải thích heatmap.</p>
+                        <p class="section-copy" style="font-size:0.88rem;">Trình bày hai nghiên cứu độc lập: ML trên Wisconsin WDBC và DL EfficientNet-B0 trên CBIS-DDSM; heatmap là giải thích hậu kiểm.</p>
                     </div>
                     <div class="card" style="text-align:center;">
                         <h3 style="margin-bottom:8px;">An toàn & Minh bạch</h3>
@@ -981,6 +963,7 @@
             </section>
 
         </main><!-- end .page-stack -->
+        </div><!-- end .app-content -->
     </div><!-- end .app-shell -->
 
     <!-- =================== STATUS TOAST =================== -->

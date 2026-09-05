@@ -25,8 +25,8 @@ from app.api.schemas import (
     SavedChatMessage,
     ClinicalExtractionResponse,
 )
-from app.services.prediction import prediction_service
-from app.services.prediction_dl import dl_prediction_service, STATIC_RESULTS_DIR
+from app.services.final_ml_runtime import FinalModelUnavailableError, final_ml_runtime_service
+from app.services.final_dl_runtime import FinalDLUnavailableError, InvalidFinalDLImageError, final_dl_runtime_service
 from app.services.ai_advisor import ai_advisor_service
 from app.core.database import db, future_iso, utc_now_iso
 from app.core.mailer import send_password_reset_email, send_welcome_email
@@ -45,6 +45,9 @@ import os
 from pathlib import Path
 
 router = APIRouter()
+
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+STATIC_RESULTS_DIR = PROJECT_ROOT / "frontend" / "results"
 
 MAX_IMAGE_UPLOAD_BYTES = int(os.getenv("APP_MAX_IMAGE_UPLOAD_MB", "20")) * 1024 * 1024
 ALLOWED_IMAGE_CONTENT_TYPES = {
@@ -92,11 +95,8 @@ def _risk_band(probability: float) -> str:
 
 
 def _displayed_malignant_probability(result: Dict[str, Any]) -> float:
-    probability = float(result.get("probability", 0.0))
-    diagnosis = str(result.get("diagnosis") or "")
-    if diagnosis == "Benign":
-        return 1.0 - probability
-    return probability
+    """Both final runtimes expose a malignant-class probability, even for benign results."""
+    return float(result.get("probability", 0.0))
 
 
 def _reliability_from_margin(margin: float) -> str:
@@ -110,24 +110,31 @@ def _reliability_from_margin(margin: float) -> str:
 def _build_uncertainty_payload(
     *,
     displayed_malignant_probability: float,
+    decision_probability: Optional[float] = None,
+    decision_threshold: Optional[float] = None,
     label: str = "kết quả",
     extra_reasons: Optional[list[str]] = None,
 ) -> Dict[str, Any]:
     p = max(0.0, min(1.0, float(displayed_malignant_probability)))
-    margin = abs(p - 0.5)
+    has_frozen_threshold = decision_probability is not None and decision_threshold is not None
+    reference_probability = p if decision_probability is None else max(0.0, min(1.0, float(decision_probability)))
+    reference = 0.5 if decision_threshold is None else float(decision_threshold)
+    margin = abs(reference_probability - reference)
     reasons = list(extra_reasons or [])
     reliability = _reliability_from_margin(margin)
 
+    if has_frozen_threshold:
+        threshold_text = f"{reference * 100:g}%"
+        near_message = f"Xác suất {label} nằm rất gần ngưỡng phân loại đã đóng băng {threshold_text}, nên cần thận trọng khi diễn giải."
+        medium_message = f"Xác suất {label} chưa cách xa ngưỡng phân loại đã đóng băng {threshold_text}, nên xem đây là tín hiệu hỗ trợ thay vì kết luận chắc chắn."
+    else:
+        near_message = f"Xác suất {label} nằm gần 50%, biểu thị xác suất mơ hồ chứ không phải ngưỡng phân loại của model, nên cần thận trọng khi diễn giải."
+        medium_message = f"Xác suất {label} chưa cách xa mức mơ hồ 50%; đây là tín hiệu hỗ trợ thay vì kết luận chắc chắn."
+
     if margin < 0.08:
-        reasons.insert(
-            0,
-            f"Xác suất {label} nằm rất gần ngưỡng quyết định 50%, nên cần thận trọng khi diễn giải.",
-        )
+        reasons.insert(0, near_message)
     elif margin < 0.18:
-        reasons.insert(
-            0,
-            f"Xác suất {label} chưa cách xa ngưỡng quyết định, nên xem đây là tín hiệu hỗ trợ thay vì kết luận chắc chắn.",
-        )
+        reasons.insert(0, medium_message)
 
     warning = None
     if reasons:
@@ -149,6 +156,8 @@ def _attach_uncertainty(result: Dict[str, Any], label: str) -> Dict[str, Any]:
     result.update(
         _build_uncertainty_payload(
             displayed_malignant_probability=_displayed_malignant_probability(result),
+            decision_probability=float(result.get("raw_probability", result.get("probability", 0.0))),
+            decision_threshold=result.get("decision_threshold"),
             label=label,
         )
     )
@@ -441,6 +450,21 @@ def _best_ablation_condition(rows: Any, metric: str) -> Optional[Dict[str, Any]]
 
 def _build_research_evidence() -> Dict[str, Any]:
     root = Path(__file__).resolve().parents[3]
+    snapshot = _load_json_file(root / "backend" / "app" / "static" / "final_results_snapshot.json")
+    if isinstance(snapshot, dict):
+        ml = snapshot.get("ml", {})
+        dl = snapshot.get("dl", {})
+        return {
+            "source": "experiments/final/FINAL_RESULTS_SNAPSHOT.json",
+            "ml_candidate": ml.get("primary_candidate"),
+            "ml_metrics": ml.get("final_test_metrics", []),
+            "dl_candidate": dl.get("retained_candidate"),
+            "dl_metrics": dl.get("final_test_metrics", []),
+            "roi_decision": (snapshot.get("roi", {}) or {}).get("decision"),
+            "calibration": snapshot.get("calibration", {}),
+            "limitations": snapshot.get("limitations", []),
+            "scope": "Separate WDBC structured-data and CBIS-DDSM imaging studies; not a head-to-head comparison.",
+        }
     phase2 = _load_json_file(root / "experiments/results/phase2_summary.json") or {}
     phase3 = _load_json_file(root / "experiments/results/phase3_statistical_analysis.json") or {}
     ml_retrain = _load_json_file(root / "models/ml_retrain_report_20260404.json") or {}
@@ -893,25 +917,40 @@ def get_research_evidence():
 
 @router.get("/models/", response_model=List[str])
 def list_available_models():
-    return prediction_service.get_available_models()
+    return final_ml_runtime_service.get_available_models()
 
 @router.get("/models/benchmarks/", response_model=Dict[str, Any])
 def get_model_benchmarks():
-    return prediction_service.get_model_benchmarks()
+    return final_ml_runtime_service.get_model_benchmarks()
+
+
+@router.get("/models/status/", response_model=Dict[str, Any])
+def get_ml_model_status():
+    return final_ml_runtime_service.get_model_status()
+
+
+@router.get("/models/final/status/", response_model=Dict[str, Any])
+def get_final_model_status():
+    return {
+        "ml": final_ml_runtime_service.get_model_status(),
+        "dl": final_dl_runtime_service.get_model_status(),
+        "clinical_use": False,
+        "multimodal_status": "experimental_only",
+    }
 
 @router.get("/models/dl/", response_model=List[str])
 def list_available_dl_models():
-    return dl_prediction_service.get_available_models()
+    return final_dl_runtime_service.get_available_models()
 
 
 @router.get("/models/dl/status/", response_model=Dict[str, Any])
 def get_dl_model_status():
-    return dl_prediction_service.get_model_status()
+    return final_dl_runtime_service.get_model_status()
 
 
 @router.post("/models/dl/warmup/", response_model=Dict[str, Any])
 def warmup_dl_models(model_name: Optional[str] = None):
-    return dl_prediction_service.preload_models(model_name=model_name)
+    return final_dl_runtime_service.preload_models(model_name=model_name)
 
 
 @router.get("/results/{filename}")
@@ -930,7 +969,7 @@ def predict_diagnosis(
     current_user: Optional[dict] = Depends(get_optional_current_user),
 ):
     try:
-        result = prediction_service.predict(request, model_name=model_name)
+        result = final_ml_runtime_service.predict(request, model_name=model_name)
         _attach_uncertainty(result, "ML lâm sàng")
         advice_result = ai_advisor_service.advice_for_single(result, mode="ml")
         result["advice"] = advice_result["advice"]
@@ -959,6 +998,8 @@ def predict_diagnosis(
         return PredictionResponse(**result)
     except HTTPException:
         raise
+    except FinalModelUnavailableError as exc:
+        raise HTTPException(status_code=503, detail=f"Final ML model unavailable: {exc}") from exc
     except Exception as e:
         print(f"Prediction error: {e}")
         raise _internal_error("Prediction failed.")
@@ -973,7 +1014,7 @@ async def predict_diagnosis_image(
 ):
     try:
         image_bytes = await _read_validated_image_upload(file)
-        result = dl_prediction_service.predict(
+        result = final_dl_runtime_service.predict(
             image_bytes,
             model_name=model_name,
             include_explanation=include_explanation,
@@ -1010,6 +1051,10 @@ async def predict_diagnosis_image(
         return PredictionResponse(**result)
     except HTTPException:
         raise
+    except InvalidFinalDLImageError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except FinalDLUnavailableError as exc:
+        raise HTTPException(status_code=503, detail=f"Final DL model unavailable: {exc}") from exc
     except Exception as e:
         print(f"Image prediction error: {e}")
         raise _internal_error("Image prediction failed.")
@@ -1049,11 +1094,11 @@ async def predict_multimodal(
         # 1. Process Clinical Data
         data_json = json.loads(clinical_data)
         request = PredictionRequest(**data_json)
-        ml_res = prediction_service.predict(request, model_name=ml_model)
+        ml_res = final_ml_runtime_service.predict(request, model_name=ml_model)
         
         # 2. Process Image
         image_bytes = await _read_validated_image_upload(image_file)
-        dl_res = dl_prediction_service.predict(
+        dl_res = final_dl_runtime_service.predict(
             image_bytes,
             model_name=dl_model,
             include_explanation=include_explanation,
@@ -1123,6 +1168,8 @@ async def predict_multimodal(
     except ValidationError as e:
         print(f"Fusion clinical validation error: {e}")
         raise HTTPException(status_code=400, detail="Invalid clinical_data payload.")
+    except FinalModelUnavailableError as exc:
+        raise HTTPException(status_code=503, detail=f"Final ML model unavailable: {exc}") from exc
     except Exception as e:
         print(f"Fusion prediction error: {e}")
         raise _internal_error("Fusion prediction failed.")

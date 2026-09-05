@@ -6,20 +6,29 @@ services:
     container_name: breast_cancer_api
     env_file:
       - .env
+    environment:
+      FINAL_ML_MODEL_PATH: /app/runtime_models/logistic_regression_final_seed42.joblib
+      FINAL_DL_MODEL_PATH: /app/runtime_models/efficientnetb0_final_seed42.keras
     expose:
       - "8000"
     volumes:
       - ./backend/data:/app/backend/data
-      - ./models:/app/models
-      - ./src/models:/app/src/models
+      - ./runtime_models:/app/runtime_models:ro
       - ./frontend/results:/app/frontend/results
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 90s
 
   web:
     image: nginx:1.27-alpine
     container_name: breast_cancer_web
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     ports:
       - "80:80"
     volumes:

@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "purpose": "Example registry for frozen research candidates; no model weights are stored in Git.",
+  "models": [
+    {
+      "id": "wdbc-logistic-regression-v1",
+      "status": "promotion_candidate",
+      "study": "WDBC structured ML",
+      "artifact_filename": "experiments/final/ml_runs/logistic_regression/logistic_regression_final_seed42.joblib",
+      "sha256": "15a67b8580ba8729eebce9dd1330413905e7caa6ad2a022214769698e8b84755",
+      "framework": "scikit-learn",
+      "verified_sklearn_version": "1.8.0",
+      "input": {
+        "feature_count": 30,
+        "feature_order_source": "sklearn.datasets.load_breast_cancer().feature_names; docs/FINAL_RUNTIME_MODEL_CONTRACT.md",
+        "pipeline": ["StandardScaler", "LogisticRegression"]
+      },
+      "probability": {
+        "positive_class": "malignant",
+        "positive_class_label": 1,
+        "predict_proba_index": 1,
+        "type": "raw"
+      },
+      "calibration": {
+        "method": "none"
+      },
+      "decision": {
+        "threshold": 0.36,
+        "threshold_probability_space": "raw"
+      },
+      "metrics_source": "experiments/final/ml_metrics.csv"
+    },
+    {
+      "id": "cbis-efficientnetb0-full-v1",
+      "status": "approved_for_integration",
+      "study": "CBIS-DDSM imaging DL",
+      "artifact_filename": "models/deep_learning/efficientnetb0_final_seed42.keras",
+      "sha256": "dce9a5230afe1f1e4a8c0e908cd8467ae1b6526f3667e555c3a7db3c5f2f168b",
+      "framework": "TensorFlow/Keras",
+      "input": {
+        "representation": "full processed image (images)",
+        "dimensions": [224, 224, 3],
+        "preprocessing": "decode RGB; cast float32; tf.image.resize(224, 224); saved-model EfficientNet preprocessing"
+      },
+      "probability": {
+        "positive_class": "malignant",
+        "type": "raw sigmoid output"
+      },
+      "calibration": {
+        "method": "Platt",
+        "artifact": "models/calibration/efficientnet_b0_platt_final_seed42.json",
+        "sha256": "7f9a06f54d6146b57952bcc38704022e27c9953a1a6a9e98af7eb3b457632c5d",
+        "input_probability_space": "raw",
+        "output_probability_space": "calibrated",
+        "fitting_split": "validation",
+        "legacy_profile": "models/deep_learning/calibration_profile.json is incompatible and must not be used"
+      },
+      "decision": {
+        "threshold": 0.515,
+        "threshold_probability_space": "raw",
+        "sensitivity_oriented_threshold": 0.48,
+        "sensitivity_oriented_status": "research-only; never default silently"
+      },
+      "metrics_source": "experiments/final/runs/efficientnet_b0_full/metrics.json",
+      "manifest_source": "manifests/cbis_group_split_seed42.csv",
+      "split_limitation": "inferred study-like grouping; not verified patient-level"
+    }
+  ]
+}

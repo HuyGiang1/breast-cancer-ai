@@ -11,7 +11,8 @@ load_dotenv(project_root / ".env")
 
 from app.api import endpoints
 from app.core.database import db
-from app.services.prediction_dl import dl_prediction_service
+from app.services.final_dl_runtime import final_dl_runtime_service
+from app.services.final_ml_runtime import final_ml_runtime_service
 
 app = FastAPI(
     title="Breast Cancer AI Prediction API",
@@ -63,10 +64,7 @@ app.mount("/results", StaticFiles(directory=str(results_dir)), name="results")
 def init_database():
     db.init()
     if os.getenv("DL_PRELOAD_ON_STARTUP", "true").strip().lower() == "true":
-        try:
-            dl_prediction_service.preload_models()
-        except Exception as exc:
-            print(f"DL preload skipped: {exc}")
+        final_dl_runtime_service.preload_models()
 
 
 @app.get("/healthz")
@@ -79,7 +77,8 @@ def readyz():
     return {
         "status": "ready",
         "database": "ok" if db.db_path.exists() else "missing",
-        "dl_models_discovered": len(dl_prediction_service.model_paths),
+        "final_ml": final_ml_runtime_service.get_model_status()["status"],
+        "final_dl": final_dl_runtime_service.get_model_status()["status"],
     }
 
 

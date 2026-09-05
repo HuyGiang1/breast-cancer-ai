@@ -1,179 +1,107 @@
-# Deployment Guide
+# Deployment Runbook
 
-Target: Ubuntu VPS + Docker Compose + Nginx + HTTPS + domain.
+Status on 2026-09-05: local container verification passed with Docker Desktop 28.5.1 aarch64, Compose v2.40.3, and the Python 3.11-slim API image. VPS provisioning, domain, and HTTPS are blocked because no server or DNS credentials have been provided. This research/educational prototype is not for clinical diagnosis.
 
-## 1. Prepare Server
+## Prerequisites
 
-Use Ubuntu 22.04 or 24.04. Recommended minimum for DL inference:
-
-- 2 CPU cores
-- 4 GB RAM minimum, 8 GB preferred
-- 20 GB disk plus space for model artifacts and SQLite backups
-
-## 2. Install Docker
-
-Follow Docker's official Ubuntu installation guide, then verify:
+On an Ubuntu 22.04/24.04 host, install Docker Engine and the Docker Compose plugin. For the final DL runtime, use at least 2 CPU cores, 8 GB RAM preferred, and disk space for images, `runtime_models`, SQLite data, and off-host backups.
 
 ```bash
 docker --version
 docker compose version
-```
-
-## 3. Clone Repository
-
-```bash
-git clone https://github.com/giangnguyenhuy87/breast-cancer-ai.git
+git clone https://github.com/HuyGiang1/breast-cancer-ai.git
 cd breast-cancer-ai
 ```
 
-Do not clone or run from a directory that contains secrets committed to Git.
+## Configure Runtime Secrets and Artifacts
 
-## 4. Configure Environment
+Create the server-only environment file. Do not commit it.
 
 ```bash
 cp .env.example .env
-nano .env
+mkdir -p runtime_models
 ```
 
-Production recommendations:
+For a public deployment set `APP_ENV=production`, an HTTPS frontend URL/CORS origin once a domain exists, `APP_MAIL_MODE=smtp`, SMTP values, and `AI_ADVISOR_PROVIDER=local` unless an approved provider key is configured. Keep `DL_PRELOAD_ON_STARTUP=true` for readiness to prove the model is loadable.
 
-```env
-APP_ENV=production
-APP_FRONTEND_URL=https://your-domain.example
-APP_CORS_ORIGINS=https://your-domain.example
-APP_MAIL_MODE=smtp
-DL_PRELOAD_ON_STARTUP=false
-AI_ADVISOR_PROVIDER=local
-```
-
-Add provider API keys only on the server `.env`, never in Git.
-
-## 5. Place Model Artifacts
-
-Heavy model files should not live in Git. Use one of these simple strategies:
-
-- Recommended for student project: upload model artifacts to the server `models/` directory with `scp`.
-- Alternative: publish model weights in a private GitHub Release and download them during deployment.
-- Alternative: use Git LFS only if repository storage/bandwidth limits are acceptable.
-
-Expected paths:
+Copy the frozen artifacts into exactly these untracked paths:
 
 ```text
-models/
-models/deep_learning/
+runtime_models/logistic_regression_final_seed42.joblib
+runtime_models/efficientnetb0_final_seed42.keras
 ```
 
-After placement, verify:
+Verify their byte-level contracts before starting:
 
 ```bash
-find models -maxdepth 3 -type f
+shasum -a 256 runtime_models/logistic_regression_final_seed42.joblib
+# 15a67b8580ba8729eebce9dd1330413905e7caa6ad2a022214769698e8b84755
+shasum -a 256 runtime_models/efficientnetb0_final_seed42.keras
+# dce9a5230afe1f1e4a8c0e908cd8467ae1b6526f3667e555c3a7db3c5f2f168b
+git ls-files runtime_models
+# Expected: no output
 ```
 
-## 6. Build and Start
+## Build and Start
 
 ```bash
-docker compose up -d --build
-docker compose ps
-docker compose logs -f api
-```
-
-The web service exposes port `80`.
-
-## 7. Health Checks
-
-From the server:
-
-```bash
-curl http://127.0.0.1/healthz
-curl http://127.0.0.1/readyz
-```
-
-Through Nginx compose proxy, API paths are available under `/api/` for app calls and backend direct docs are inside the API container.
-
-## 8. Domain
-
-Create DNS `A` record:
-
-```text
-your-domain.example -> VPS_PUBLIC_IP
-```
-
-Update `.env`:
-
-```env
-APP_FRONTEND_URL=https://your-domain.example
-APP_CORS_ORIGINS=https://your-domain.example
-```
-
-## 9. HTTPS
-
-Simplest options:
-
-- Use Cloudflare proxy with Full/Strict SSL if you manage DNS there.
-- Or install host-level Nginx + Certbot and reverse proxy to the Docker web service.
-
-Certbot example for host-level Nginx:
-
-```bash
-sudo apt install nginx certbot python3-certbot-nginx
-sudo certbot --nginx -d your-domain.example
-```
-
-If using host-level Nginx, map Docker web to a local port such as `127.0.0.1:8080:80` instead of public `80:80`.
-
-## 10. Logs
-
-```bash
-docker compose logs -f api
-docker compose logs -f web
-```
-
-Avoid logging passwords, tokens, API keys, or unnecessary patient data.
-
-## 11. SQLite Backup
-
-For research/demo scale, SQLite is acceptable. Back up:
-
-```bash
-mkdir -p backups
-cp backend/data/app.db "backups/app-$(date +%Y%m%d-%H%M%S).db"
-```
-
-Restore:
-
-```bash
-docker compose down
-cp backups/app-YYYYMMDD-HHMMSS.db backend/data/app.db
+docker compose config
+docker compose build
 docker compose up -d
+docker compose ps
+curl -fsS http://127.0.0.1/healthz
+curl -fsS http://127.0.0.1/readyz
+curl -fsS http://127.0.0.1/api/v1/models/final/status/
+curl -fsS http://127.0.0.1/api/v1/research/evidence/
 ```
 
-If the app becomes a public multi-user service, plan PostgreSQL migration.
+The final status must show ML and DL `research_demo`, `artifact_verified: true`, `clinical_use: false`, and `multimodal_status: experimental_only`. The API container mounts only `./runtime_models` read-only at `/app/runtime_models`; it does not mount `experiments/`.
 
-## 12. Update Deployment
+For smoke predictions, use the authenticated UI with synthetic/demo data. Confirm ML classification uses raw `predict_proba` class-1 value and threshold `0.36`; confirm DL returns `raw_probability`, a Platt-calibrated display probability, and classification from raw `>= 0.515`. Submit one malformed image and one invalid ML payload to confirm controlled `400`/`422` responses without traceback.
+
+## Operations
+
+Inspect logs without placing patient data in tickets:
+
+```bash
+docker compose logs --tail=200 api
+docker compose logs --tail=200 web
+```
+
+Create a database backup and test restores only on a temporary database as described in [DATABASE_BACKUP.md](DATABASE_BACKUP.md):
+
+```bash
+python3 scripts/backup_database.py --database backend/data/app.db --output-dir backups
+```
+
+For an application update, back up first, then use only fast-forward Git updates:
 
 ```bash
 git pull --ff-only
-docker compose up -d --build
-docker compose logs -f api
+docker compose build
+docker compose up -d
+docker compose ps
 ```
 
-Run a smoke check:
+To roll back application code, select a known-good commit, rebuild, and start again. Restore SQLite only when the backup and schema are known compatible:
 
 ```bash
-curl http://127.0.0.1/api/v1/models/
-curl http://127.0.0.1/healthz
+git log --oneline -10
+git checkout <known-good-commit>
+docker compose build
+docker compose up -d
 ```
 
-## 13. Rollback
+To shut down services without deleting persisted host data or model artifacts:
 
 ```bash
-git log --oneline -5
-git checkout <previous-good-commit>
-docker compose up -d --build
+docker compose down
 ```
 
-Restore database only if schema/data changed and the current DB is not compatible.
+## Network Status
 
-## 14. Public Demo Privacy Rule
+`deploy/nginx.conf` serves the frontend, proxies `/api/`, `/results/`, `/healthz`, and `/readyz`, forwards standard proxy headers, caps uploads at 20 MB, and allows 180 seconds for DL inference. It intentionally contains no TLS certificate configuration and does not expose host paths.
 
-Do not invite users to upload real patient data. Use synthetic/demo records and show the research-only disclaimer clearly.
+- VPS: **BLOCKED** - not yet provisioned.
+- Domain: **BLOCKED** - no DNS record or domain supplied.
+- HTTPS: **BLOCKED** - configure a certificate only after VPS/domain provisioning, then update `APP_FRONTEND_URL` and `APP_CORS_ORIGINS` to the HTTPS origin.

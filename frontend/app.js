@@ -196,49 +196,10 @@ const ABOUT_ML_LIST = [
 ];
 
 const ABOUT_DL_LIST = [
-    'Custom CNN — mô hình DL đang hoạt động hiện tại cho phân tích ảnh nhũ ảnh trên website.',
-    'Grad-CAM / heatmap — lớp giải thích vùng ảnh mà hệ thống chú ý khi tạo dự đoán.',
-    'ResNet50 và EfficientNet-B0 — các hướng thử nghiệm trước đó, hiện không dùng trong luồng dự đoán chính.',
-    'Mục tiêu hiện tại là giữ một pipeline DL ổn định, dễ kiểm soát và nhất quán với phần thống kê thực tế.',
-];
-
-const DL_RESEARCH_BENCHMARKS = [
-    {
-        name: 'EfficientNet-B0',
-        variant: 'Baseline transfer learning',
-        accuracy: 0.419689,
-        sensitivity: 1.0,
-        specificity: 0.0,
-        roc_auc: 0.5,
-        decision: 'Không chọn làm model chính vì gần như nghiêng hẳn về một phía trên tập đánh giá.',
-    },
-    {
-        name: 'ResNet50',
-        variant: 'Baseline transfer learning',
-        accuracy: 0.458549,
-        sensitivity: 0.956790,
-        specificity: 0.098214,
-        roc_auc: 0.546737,
-        decision: 'Có học được tín hiệu ảnh nhưng độ đặc hiệu thấp, dễ báo động quá mức.',
-    },
-    {
-        name: 'Custom CNN',
-        variant: 'Baseline',
-        accuracy: 0.476684,
-        sensitivity: 0.956790,
-        specificity: 0.129464,
-        roc_auc: 0.604608,
-        decision: 'Tốt hơn hai baseline còn lại và dễ kiểm soát hơn trong pipeline hiện tại.',
-    },
-    {
-        name: 'Custom CNN v2',
-        variant: 'ROI-tuned / fine-tuned',
-        accuracy: 0.505181,
-        sensitivity: 0.950617,
-        specificity: 0.183036,
-        roc_auc: 0.583636,
-        decision: 'Là hướng CNN được giữ lại để triển khai vì cân bằng tốt hơn giữa hiệu suất và khả năng vận hành.',
-    },
+    'EfficientNet-B0 full image — mô hình DL final cho luồng research/demo.',
+    'Ngưỡng phân loại dùng xác suất thô 0.515; Platt chỉ hiệu chỉnh xác suất hiển thị.',
+    'Custom CNN và ResNet50 là baseline nghiên cứu/development, không phải fallback final.',
+    'Grad-CAM là bằng chứng hậu kiểm nghiên cứu, không phải định vị tổn thương lâm sàng.',
 ];
 
 const DL_DEMO_IMAGES = {
@@ -417,6 +378,9 @@ function resetPredictionWorkspace() {
 
     const predictDlBtn = el('predictDlBtn');
     if (predictDlBtn) predictDlBtn.disabled = true;
+    setText('dlFileMeta', 'Chưa có ảnh được chọn.');
+    el('removeDlImageBtn')?.classList.add('hidden');
+    updateMlFeatureProgress();
 
     state.fusionClinicalData = null;
     state.selectedFusionImageFile = null;
@@ -457,8 +421,22 @@ function setSelectedDlImage(file, previewSrc, message) {
         preview.src = previewSrc;
         shell?.classList.add('has-image');
     }
+    setText('dlFileMeta', `${file.name} · ${Math.max(1, Math.round(file.size / 1024))} KB`);
+    el('removeDlImageBtn')?.classList.remove('hidden');
     if (el('predictDlBtn')) el('predictDlBtn').disabled = false;
     if (message) showToast(message, 'success');
+}
+
+function clearSelectedDlImage() {
+    state.selectedDlImageFile = null;
+    const input = el('imageInput');
+    if (input) input.value = '';
+    const preview = el('imagePreview');
+    preview?.removeAttribute('src');
+    preview?.closest('.upload-shell')?.classList.remove('has-image');
+    setText('dlFileMeta', 'Chưa có ảnh được chọn.');
+    el('removeDlImageBtn')?.classList.add('hidden');
+    if (el('predictDlBtn')) el('predictDlBtn').disabled = true;
 }
 
 function setSelectedFusionImage(file, previewSrc, message) {
@@ -661,6 +639,12 @@ async function apiFetch(url, options = {}) {
 
 const VALID_PAGES = ['home','learn','care','videos','assistant','prediction','stats','about',
                      'history','patients','login','register','recovery','account'];
+const PAGE_TITLES = {
+    home: 'Overview', learn: 'Knowledge Hub', care: 'Care Guidance', videos: 'Video Library',
+    assistant: 'AI Assistant', prediction: 'AI Analysis', stats: 'Research Dashboard', about: 'About',
+    history: 'Prediction History', patients: 'Patients', login: 'Sign in', register: 'Create account',
+    recovery: 'Account recovery', account: 'Settings & Profile',
+};
 
 function navigate(page) {
     if (!VALID_PAGES.includes(page)) page = 'home';
@@ -675,9 +659,10 @@ function navigate(page) {
     });
 
     // Desktop nav active state
-    document.querySelectorAll('.topbar-nav-link, .mobile-nav-link').forEach(btn => {
+    document.querySelectorAll('.topbar-nav-link, .mobile-nav-link, .sidebar-link[data-page]').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.page === page);
     });
+    setText('topbarPageTitle', PAGE_TITLES[page] || 'Overview');
 
     window.location.hash = page;
     // Close mobile nav if open
@@ -827,11 +812,45 @@ function bindFaqToggle() {
 function renderFeatureForm() {
     const container = el('featuresForm');
     if (!container) return;
-    container.innerHTML = FEATURES.map(feature => `
-        <label class="field">
-            <span>${formatFeatureLabel(feature)}</span>
-            <input class="input" type="number" step="any" id="feature-${feature}" placeholder="0.0">
-        </label>`).join('');
+    const groups = [
+        ['Mean measurements', 'Core morphology measurements', FEATURES.slice(0, 10)],
+        ['Measurement errors', 'Estimated measurement uncertainty', FEATURES.slice(10, 20)],
+        ['Worst measurements', 'Largest observed measurements', FEATURES.slice(20, 30)],
+    ];
+    container.innerHTML = groups.map(([title, help, features]) => `
+        <section class="feature-group">
+            <div class="feature-group-header"><strong>${title}</strong><span>${help}</span></div>
+            <div class="feature-group-fields">${features.map(feature => `
+                <label class="field">
+                    <span>${formatFeatureLabel(feature)}</span>
+                    <input class="input" type="number" step="any" id="feature-${feature}" placeholder="0.0">
+                </label>`).join('')}</div>
+        </section>`).join('');
+    updateMlFeatureProgress();
+}
+
+function updateMlFeatureProgress() {
+    const filled = FEATURES.filter(feature => String(el(`feature-${feature}`)?.value || '').trim() !== '').length;
+    setText('mlFeatureProgress', `${filled} / ${FEATURES.length} features supplied`);
+}
+
+function renderPremiumOverview() {
+    const container = el('premiumKpiGrid');
+    if (!container) return;
+    const finalStatus = state.finalModelStatus || {};
+    const mlReady = finalStatus.ml?.status === 'research_demo';
+    const dlReady = finalStatus.dl?.status === 'research_demo';
+    const cards = [
+        ['WDBC final ML', 'Logistic Regression', 'ROC-AUC 99.54%'],
+        ['CBIS-DDSM final DL', 'EfficientNet-B0', 'ROC-AUC 72.29%'],
+        ['ML sensitivity', '95.24%', 'Frozen final test evidence'],
+        ['DL sensitivity', '67.86%', 'Frozen final test evidence'],
+        ['Runtime status', mlReady && dlReady ? 'Ready' : 'Checking', mlReady && dlReady ? 'ML and DL research demo' : 'Loading final model status'],
+    ];
+    container.innerHTML = cards.map(([label, value, detail], index) => `
+        <article class="premium-kpi ${index === 4 && mlReady && dlReady ? 'status-good' : ''}">
+            <span class="kpi-label">${label}</span><strong>${value}</strong><span>${detail}</span>
+        </article>`).join('');
 }
 
 // ================================================================
@@ -860,7 +879,11 @@ function renderStatsPage() {
     setText('statMlCount', mlCount || '—');
     setText('statDlCount', dlCount || '—');
     setText('statPredCount', state.predictionCount || '—');
-    setText('homeStatsText', mlCount ? `${mlCount} ML + ${dlCount} DL model` : 'Đang tải thống kê...');
+    const finalStatus = state.finalModelStatus || {};
+    const mlStatus = finalStatus.ml?.status === 'research_demo' ? 'ML final available' : 'ML final unavailable';
+    const dlStatus = finalStatus.dl?.status === 'research_demo' ? 'DL final available' : 'DL final unavailable';
+    setText('homeStatsText', mlCount ? `${mlStatus} · ${dlStatus} · Research/demo only` : 'Đang tải trạng thái final models...');
+    renderPremiumOverview();
 
     let bestAcc = 0;
     const benchKeys = Object.keys(state.benchmarks || {});
@@ -914,51 +937,20 @@ function renderStatsPage() {
             dlCards.innerHTML = state.dlModels.map(name => `
                 <div class="stat-card">
                     <div class="stat-card-value" style="font-size:1.1rem;">${name}</div>
-                    <div class="stat-card-label">${name === 'Custom CNN' ? 'Model DL đang dùng trong hệ thống' : 'Model DL đã nạp'}</div>
+                    <div class="stat-card-label">Final research/demo runtime</div>
                 </div>`).join('');
         }
     }
 
     const dlBenchmarkTable = el('dlBenchmarkTable');
-    if (dlBenchmarkTable) {
-        dlBenchmarkTable.innerHTML = `
-            <div style="overflow-x:auto;">
-                <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
-                    <thead>
-                        <tr style="background:var(--mint-100); text-align:left;">
-                            <th style="padding:10px 14px; border-radius:8px 0 0 8px;">Model</th>
-                            <th style="padding:10px 14px;">Biến thể</th>
-                            <th style="padding:10px 14px;">Accuracy</th>
-                            <th style="padding:10px 14px;">Sensitivity</th>
-                            <th style="padding:10px 14px;">Specificity</th>
-                            <th style="padding:10px 14px; border-radius:0 8px 8px 0;">ROC-AUC</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${DL_RESEARCH_BENCHMARKS.map((item) => `
-                            <tr style="border-bottom:1px solid var(--line);">
-                                <td style="padding:10px 14px; font-weight:700;">${item.name}</td>
-                                <td style="padding:10px 14px;">${item.variant}</td>
-                                <td style="padding:10px 14px;">${(item.accuracy * 100).toFixed(1)}%</td>
-                                <td style="padding:10px 14px;">${(item.sensitivity * 100).toFixed(1)}%</td>
-                                <td style="padding:10px 14px;">${(item.specificity * 100).toFixed(1)}%</td>
-                                <td style="padding:10px 14px;">${(item.roc_auc * 100).toFixed(1)}%</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-        `;
-    }
-
     const dlSelectionSummary = el('dlSelectionSummary');
-    if (dlSelectionSummary) {
-        dlSelectionSummary.innerHTML = DL_RESEARCH_BENCHMARKS.map((item) => `
-            <div class="check-item">
-                <strong>${item.name}${item.variant ? ` (${item.variant})` : ''}</strong>: ${item.decision}
-            </div>
-        `).join('');
+    const dlRows = Array.isArray(state.researchEvidence?.dl_metrics) ? state.researchEvidence.dl_metrics : [];
+    if (dlBenchmarkTable) {
+        dlBenchmarkTable.innerHTML = dlRows.length
+            ? `<p class="section-copy">Final CBIS-DDSM comparison is rendered from the packaged research evidence above; the selected runtime is EfficientNet-B0.</p>`
+            : '<div class="result-empty">Không có dữ liệu DL evidence.</div>';
     }
+    if (dlSelectionSummary) dlSelectionSummary.innerHTML = '<div class="check-item"><strong>Selection rule:</strong> EfficientNet-B0 was selected by validation performance; test metrics remain confirmatory only.</div>';
 }
 
 function formatMetricPercentValue(value) {
@@ -976,60 +968,33 @@ function renderResearchEvidencePanel() {
         return;
     }
 
-    const highlights = Array.isArray(evidence.highlights) ? evidence.highlights : [];
-    const mlRows = Array.isArray(evidence.ml_retrain) ? evidence.ml_retrain : [];
-    const dlBest = evidence.dl_best_model || null;
-    const interpretation = Array.isArray(evidence.clinical_interpretation) ? evidence.clinical_interpretation : [];
-    const sources = evidence.sources || {};
+    const mlRows = Array.isArray(evidence.ml_metrics) ? evidence.ml_metrics : [];
+    const dlRows = Array.isArray(evidence.dl_metrics) ? evidence.dl_metrics : [];
+    const metricRows = (rows, modelKey, aucKey) => rows.map(row => `<tr><td>${escapeHtml(row[modelKey] || '—')}</td><td>${formatPercent(row[aucKey])}</td><td>${formatPercent(row.Sensitivity ?? row.sensitivity)}</td><td>${formatPercent(row.Specificity ?? row.specificity)}</td></tr>`).join('');
 
     panel.innerHTML = `
-        <div class="research-evidence-grid">
-            ${highlights.length ? highlights.map(item => `
-                <article class="research-evidence-card">
-                    <span>${escapeHtml(item.label || 'Evidence')}</span>
-                    <strong>${escapeHtml(String(item.value ?? 'N/A'))}</strong>
-                    <h4>${escapeHtml(item.title || 'Kết quả nghiên cứu')}</h4>
-                    <p>${escapeHtml(item.text || '')}</p>
-                </article>
-            `).join('') : '<div class="result-empty">Chưa có highlight nghiên cứu.</div>'}
-        </div>
         <div class="research-evidence-split">
             <article class="research-evidence-block">
-                <h4>ML retrain evidence</h4>
+                <h4>WDBC ML study · Candidate: ${escapeHtml(evidence.ml_candidate || '—')}</h4>
                 ${mlRows.length ? `
                     <div class="mini-table-wrap">
                         <table class="mini-table">
-                            <thead><tr><th>Model</th><th>ROC-AUC</th><th>Artifact</th></tr></thead>
-                            <tbody>
-                                ${mlRows.map(row => `
-                                    <tr>
-                                        <td>${escapeHtml(row.model || '—')}</td>
-                                        <td>${formatMetricPercentValue(row.roc_auc_percent)}</td>
-                                        <td>${escapeHtml(row.artifact || '—')}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
+                            <thead><tr><th>Model</th><th>ROC-AUC</th><th>Sensitivity</th><th>Specificity</th></tr></thead>
+                            <tbody>${metricRows(mlRows, 'model', 'roc_auc')}</tbody>
                         </table>
                     </div>
-                ` : '<p class="result-empty">Không có report retrain ML.</p>'}
+                ` : '<p class="result-empty">Chưa có final ML metrics.</p>'}
             </article>
             <article class="research-evidence-block">
-                <h4>DL screening evidence</h4>
-                ${dlBest ? `
-                    <ul class="research-metric-list">
-                        <li>Model: <strong>${escapeHtml(dlBest.name || '—')}</strong></li>
-                        <li>Threshold: <strong>${escapeHtml(dlBest.threshold ?? '—')}</strong></li>
-                        <li>Sensitivity: <strong>${formatMetricPercentValue(dlBest.sensitivity_percent)}</strong></li>
-                        <li>Specificity: <strong>${formatMetricPercentValue(dlBest.specificity_percent)}</strong></li>
-                        <li>ROC-AUC: <strong>${formatMetricPercentValue(dlBest.roc_auc_percent)}</strong></li>
-                    </ul>
-                ` : '<p class="result-empty">Không có summary DL.</p>'}
+                <h4>CBIS-DDSM DL study · Candidate: ${escapeHtml(evidence.dl_candidate || '—')}</h4>
+                ${dlRows.length ? `<div class="mini-table-wrap"><table class="mini-table"><thead><tr><th>Model</th><th>ROC-AUC</th><th>Sensitivity</th><th>Specificity</th></tr></thead><tbody>${metricRows(dlRows, 'Model', 'ROC-AUC')}</tbody></table></div>` : '<p class="result-empty">Chưa có final DL metrics.</p>'}
             </article>
         </div>
         <div class="research-interpretation">
-            ${interpretation.map(text => `<div class="check-item">${escapeHtml(text)}</div>`).join('')}
+            <div class="check-item">${escapeHtml(evidence.scope || '')}</div>
+            <div class="check-item">ROI decision: ${escapeHtml(evidence.roi_decision || '—')}. Calibration and confidence intervals are reported from frozen final artifacts.</div>
         </div>
-        <p class="result-note">Nguồn: ${Object.values(sources).filter(Boolean).map(src => escapeHtml(src)).join(' · ') || 'Chưa đủ thông tin nguồn.'}</p>
+        <p class="result-note">Nguồn final: ${escapeHtml(evidence.source || '—')}. Research / Educational Prototype - Not for clinical diagnosis.</p>
     `;
 }
 
@@ -1341,16 +1306,18 @@ async function syncCurrentUser() {
 
 async function loadModels() {
     try {
-        const [mlRes, benchRes, dlRes, evidenceRes] = await Promise.all([
+        const [mlRes, benchRes, dlRes, evidenceRes, finalStatusRes] = await Promise.all([
             fetch(`${API_BASE_URL}/models/`),
             fetch(`${API_BASE_URL}/models/benchmarks/`),
             fetch(`${API_BASE_URL}/models/dl/`),
             fetch(`${API_BASE_URL}/research/evidence/`),
+            fetch(`${API_BASE_URL}/models/final/status/`),
         ]);
         state.mlModels = mlRes.ok ? await mlRes.json() : [];
         state.benchmarks = benchRes.ok ? await benchRes.json() : {};
         state.dlModels = dlRes.ok ? await dlRes.json() : [];
         state.researchEvidence = evidenceRes.ok ? await evidenceRes.json() : null;
+        state.finalModelStatus = finalStatusRes.ok ? await finalStatusRes.json() : null;
         
         renderModels();
         renderStatsPage();
@@ -1544,6 +1511,7 @@ function loadSampleData(type) {
         if (input) input.value = sample[f];
     });
     el('refreshPatientsBtn')?.addEventListener('click', loadPatients);
+    updateMlFeatureProgress();
     updateMultimodalPanel();
     setStatus('predictionStatus', `Đã nạp dữ liệu mẫu ${type === 'benign' ? 'lành tính' : 'ác tính'}.`, 'success');
 }
@@ -1558,6 +1526,7 @@ function fillClinicalValues(values) {
         input.value = String(value);
         filled += 1;
     });
+    updateMlFeatureProgress();
     updateMultimodalPanel();
     return filled;
 }
@@ -1841,14 +1810,19 @@ function renderResultHtml(result, type = 'ml') {
                         <span class="result-badge ${diagClass}">${escapeHtml(diagnosis)}</span>
                         <strong class="result-primary-probability">${formatPercent(result.probability)}</strong>
                     </div>
-                    <p class="result-note">Xác suất hiển thị cho người dùng.</p>
+                    <div class="probability-scale" aria-label="Thang xác suất nguy cơ">
+                        <span class="probability-scale-fill" style="width:${Math.max(0, Math.min(100, Number(result.probability || 0) * 100))}%"></span>
+                        ${type === 'dl' ? `<i class="probability-threshold" style="left:${Math.max(0, Math.min(100, Number(result.decision_threshold ?? .515) * 100))}%" title="Raw classification threshold"></i>` : ''}
+                    </div>
+                    <p class="result-note">Model output for research/demo only, not a clinical diagnosis.</p>
                 </article>
                 <article class="result-block">
                     <h4>Tóm tắt nguy cơ</h4>
                     <ul class="result-list">
                         <li>Nguy cơ hiện tại: <strong>${escapeHtml(riskBand)}</strong></li>
                         <li>Xác suất hiển thị: <strong>${formatPercent(result.probability)}</strong></li>
-                        <li>Xác suất gốc của mô hình: <strong>${formatPercent(result.raw_probability)}</strong></li>
+                        <li>Xác suất thô của mô hình: <strong>${formatPercent(result.raw_probability)}</strong></li>
+                        ${type === 'dl' ? `<li>Xác suất hiệu chỉnh Platt: <strong>${formatPercent(result.calibrated_probability)}</strong></li><li>Ngưỡng phân loại (raw): <strong>${result.decision_threshold ?? '0.515'}</strong></li>` : ''}
                     </ul>
                 </article>
                 <article class="result-block">
@@ -1868,6 +1842,7 @@ function renderResultHtml(result, type = 'ml') {
                     <span>Chế độ hiệu chỉnh: <strong>${escapeHtml(result.calibration_mode || 'N/A')}</strong></span>
                 </div>
                 <p>${analysis ? escapeHtml(analysis).replace(/\n/g, '<br>') : 'Chưa có nhận định chi tiết cho lần dự đoán này.'}</p>
+                <p class="result-note">Research / Educational Prototype - Not for clinical diagnosis. Consult a qualified healthcare professional for clinical evaluation.</p>
             </article>
         </div>
     `;
@@ -2018,8 +1993,15 @@ function bindEvents() {
     // Navigation
     document.querySelectorAll('[data-page]').forEach(btn => btn.addEventListener('click', () => navigate(btn.dataset.page)));
     document.querySelectorAll('[data-nav-target]').forEach(btn => btn.addEventListener('click', () => navigate(btn.dataset.navTarget)));
+    document.querySelectorAll('[data-predict-route]').forEach(btn => btn.addEventListener('click', () => {
+        navigate('prediction');
+        switchPredictTab(btn.dataset.predictRoute);
+    }));
     document.querySelectorAll('.subnav-link').forEach(btn => btn.addEventListener('click', () => switchPredictTab(btn.dataset.predictTab)));
     el('brandHomeBtn')?.addEventListener('click', () => navigate('home'));
+    el('brandHomeBtn')?.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); navigate('home'); }
+    });
     
     // Auth
     el('loginBtn')?.addEventListener('click', loginUser);
@@ -2113,6 +2095,7 @@ function bindEvents() {
     el('predictMlBtn')?.addEventListener('click', predictMl);
     el('predictDlBtn')?.addEventListener('click', predictDl);
     el('predictFusionBtn')?.addEventListener('click', predictFusion);
+    el('featuresForm')?.addEventListener('input', updateMlFeatureProgress);
     el('useFusionBenignDemoBtn')?.addEventListener('click', () => loadFusionDemo('benign'));
     el('useFusionMalignantDemoBtn')?.addEventListener('click', () => loadFusionDemo('malignant'));
     
@@ -2120,6 +2103,22 @@ function bindEvents() {
     el('imageInput')?.addEventListener('change', e => {
         const f = e.target.files?.[0]; if (!f) return;
         setSelectedDlImage(f, URL.createObjectURL(f), `Đã chọn: ${f.name}`);
+    });
+    el('removeDlImageBtn')?.addEventListener('click', clearSelectedDlImage);
+    const dlUploadShell = el('dlUploadShell');
+    ['dragenter', 'dragover'].forEach(eventName => dlUploadShell?.addEventListener(eventName, event => {
+        event.preventDefault();
+        dlUploadShell.classList.add('is-dragging');
+    }));
+    ['dragleave', 'drop'].forEach(eventName => dlUploadShell?.addEventListener(eventName, event => {
+        event.preventDefault();
+        dlUploadShell.classList.remove('is-dragging');
+    }));
+    dlUploadShell?.addEventListener('drop', event => {
+        const file = event.dataTransfer?.files?.[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) { showToast('Vui lòng chọn tệp ảnh hợp lệ.', 'error'); return; }
+        setSelectedDlImage(file, URL.createObjectURL(file), `Đã chọn: ${file.name}`);
     });
     el('useDemoBenignImageBtn')?.addEventListener('click', () => loadDemoDlImage('benign'));
     el('useDemoMalignantImageBtn')?.addEventListener('click', () => loadDemoDlImage('malignant'));

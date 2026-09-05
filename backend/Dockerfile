@@ -1,4 +1,4 @@
-FROM python:3.13-slim
+FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -13,14 +13,14 @@ RUN apt-get update && apt-get install -y \
     libgl1 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt /app/requirements.txt
+COPY requirements-runtime.txt /app/requirements-runtime.txt
 
-RUN pip install --upgrade pip && pip install -r /app/requirements.txt
+RUN pip install --upgrade pip && pip install -r /app/requirements-runtime.txt
 
 COPY backend /app/backend
 COPY frontend /app/frontend
-COPY models /app/models
-COPY src /app/src
+COPY models/model_registry.example.json /app/models/model_registry.example.json
+COPY models/calibration/efficientnet_b0_platt_final_seed42.json /app/models/calibration/efficientnet_b0_platt_final_seed42.json
 
 WORKDIR /app/backend
 

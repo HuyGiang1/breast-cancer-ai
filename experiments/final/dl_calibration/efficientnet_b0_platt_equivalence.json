@@ -1,0 +1,32 @@
+{
+  "absolute_deltas": {
+    "Test_Brier": 0.0,
+    "Test_ECE_10bin": 0.0,
+    "Test_LogLoss": 0.0,
+    "Validation_Brier": 0.0,
+    "Validation_ECE_10bin": 0.0,
+    "Validation_LogLoss": 0.0
+  },
+  "artifact_sha256": "7f9a06f54d6146b57952bcc38704022e27c9953a1a6a9e98af7eb3b457632c5d",
+  "calibration_freeze": "PASSED",
+  "expected": {
+    "Test_Brier": 0.208762152150943,
+    "Test_ECE_10bin": 0.046994767185167104,
+    "Test_LogLoss": 0.6024092740995982,
+    "Validation_Brier": 0.21184852416480707,
+    "Validation_ECE_10bin": 0.022126176245054915,
+    "Validation_LogLoss": 0.6085768529896337
+  },
+  "frozen_runtime_transform_fit": "all frozen validation rows",
+  "historical_validation_mode": "5-fold OOF Platt",
+  "observed": {
+    "Test_Brier": 0.208762152150943,
+    "Test_ECE_10bin": 0.046994767185167104,
+    "Test_LogLoss": 0.6024092740995982,
+    "Validation_Brier": 0.21184852416480707,
+    "Validation_ECE_10bin": 0.022126176245054915,
+    "Validation_LogLoss": 0.6085768529896337
+  },
+  "test_labels_used_for_fit": false,
+  "tolerance": 1e-12
+}
