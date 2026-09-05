@@ -61,9 +61,14 @@ class PredictionResponse(BaseModel):
     diagnosis: str = Field(..., description="'Benign' or 'Malignant'")
     probability: float = Field(..., description="Confidence probability of the prediction")
     raw_probability: Optional[float] = Field(None, description="Raw model probability before display calibration")
+    calibrated_probability: Optional[float] = Field(None, description="Frozen calibration output used only for display/reliability")
     calibration_mode: Optional[str] = Field(None, description="Probability calibration mode used for the displayed probability")
+    calibration: Optional[str] = Field(None, description="Frozen calibration method, when a final candidate uses one")
     decision_threshold: Optional[float] = Field(None, description="Frozen threshold used for classification")
     probability_space: Optional[str] = Field(None, description="Probability space used by the decision threshold")
+    decision_probability_space: Optional[str] = Field(None, description="Probability space used for the classification decision")
+    artifact_verified: Optional[bool] = None
+    status: Optional[str] = None
     risk_band: Optional[str] = Field(None, description="Low/Medium/High risk band based on calibrated malignant probability")
     risk_band_scope: Optional[str] = Field(None, description="Display-only scope for the risk band")
     analysis_text: Optional[str] = None

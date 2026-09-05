@@ -27,7 +27,8 @@ from app.api.schemas import (
 )
 from app.services.prediction import prediction_service
 from app.services.final_ml_runtime import FinalModelUnavailableError
-from app.services.prediction_dl import dl_prediction_service, STATIC_RESULTS_DIR
+from app.services.prediction_dl import STATIC_RESULTS_DIR
+from app.services.final_dl_runtime import FinalDLUnavailableError, InvalidFinalDLImageError, final_dl_runtime_service
 from app.services.ai_advisor import ai_advisor_service
 from app.core.database import db, future_iso, utc_now_iso
 from app.core.mailer import send_password_reset_email, send_welcome_email
@@ -905,19 +906,29 @@ def get_model_benchmarks():
 def get_ml_model_status():
     return prediction_service.get_model_status()
 
+
+@router.get("/models/final/status/", response_model=Dict[str, Any])
+def get_final_model_status():
+    return {
+        "ml": prediction_service.get_model_status(),
+        "dl": final_dl_runtime_service.get_model_status(),
+        "clinical_use": False,
+        "multimodal_status": "experimental_only",
+    }
+
 @router.get("/models/dl/", response_model=List[str])
 def list_available_dl_models():
-    return dl_prediction_service.get_available_models()
+    return final_dl_runtime_service.get_available_models()
 
 
 @router.get("/models/dl/status/", response_model=Dict[str, Any])
 def get_dl_model_status():
-    return dl_prediction_service.get_model_status()
+    return final_dl_runtime_service.get_model_status()
 
 
 @router.post("/models/dl/warmup/", response_model=Dict[str, Any])
 def warmup_dl_models(model_name: Optional[str] = None):
-    return dl_prediction_service.preload_models(model_name=model_name)
+    return final_dl_runtime_service.preload_models(model_name=model_name)
 
 
 @router.get("/results/{filename}")
@@ -981,7 +992,7 @@ async def predict_diagnosis_image(
 ):
     try:
         image_bytes = await _read_validated_image_upload(file)
-        result = dl_prediction_service.predict(
+        result = final_dl_runtime_service.predict(
             image_bytes,
             model_name=model_name,
             include_explanation=include_explanation,
@@ -1018,6 +1029,10 @@ async def predict_diagnosis_image(
         return PredictionResponse(**result)
     except HTTPException:
         raise
+    except InvalidFinalDLImageError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except FinalDLUnavailableError as exc:
+        raise HTTPException(status_code=503, detail=f"Final DL model unavailable: {exc}") from exc
     except Exception as e:
         print(f"Image prediction error: {e}")
         raise _internal_error("Image prediction failed.")
@@ -1061,7 +1076,7 @@ async def predict_multimodal(
         
         # 2. Process Image
         image_bytes = await _read_validated_image_upload(image_file)
-        dl_res = dl_prediction_service.predict(
+        dl_res = final_dl_runtime_service.predict(
             image_bytes,
             model_name=dl_model,
             include_explanation=include_explanation,
