@@ -539,4 +539,8 @@ class PredictionService:
             
         return f"{header}\n\n{tone_desc}{p_analysis}{advice}"
 
-prediction_service = PredictionService()
+# The legacy service above is retained for historical reference only. Runtime API
+# traffic is deliberately routed through the frozen final-model contract below.
+from app.services.final_ml_runtime import FinalMLRuntimeService
+
+prediction_service = FinalMLRuntimeService()

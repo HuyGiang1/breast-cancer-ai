@@ -367,6 +367,12 @@ class DeepLearningService:
             "probability_postprocess_mode": self.probability_postprocess_mode,
             "thresholds": {k: float(v) for k, v in self.thresholds.items()},
             "calibration_metrics": self.calibration_metrics,
+            "final_candidate": {
+                "model_id": "cbis-efficientnetb0-full-v1",
+                "promotion_status": "BLOCKED",
+                "reason": "Selected Platt calibration has no frozen runtime-loadable artifact.",
+                "clinical_use": False,
+            },
         }
 
     def preload_models(self, model_name: str | None = None) -> Dict[str, Any]:

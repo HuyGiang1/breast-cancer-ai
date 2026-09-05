@@ -56,12 +56,16 @@ class PredictionRequest(BaseModel):
 
 class PredictionResponse(BaseModel):
     model_name: str
+    model_id: Optional[str] = None
     prediction: int = Field(..., description="0 for Benign, 1 for Malignant")
     diagnosis: str = Field(..., description="'Benign' or 'Malignant'")
     probability: float = Field(..., description="Confidence probability of the prediction")
     raw_probability: Optional[float] = Field(None, description="Raw model probability before display calibration")
     calibration_mode: Optional[str] = Field(None, description="Probability calibration mode used for the displayed probability")
+    decision_threshold: Optional[float] = Field(None, description="Frozen threshold used for classification")
+    probability_space: Optional[str] = Field(None, description="Probability space used by the decision threshold")
     risk_band: Optional[str] = Field(None, description="Low/Medium/High risk band based on calibrated malignant probability")
+    risk_band_scope: Optional[str] = Field(None, description="Display-only scope for the risk band")
     analysis_text: Optional[str] = None
     advice: Optional[str] = None
     advice_provider: Optional[str] = None

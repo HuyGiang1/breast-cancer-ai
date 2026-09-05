@@ -899,6 +899,11 @@ def list_available_models():
 def get_model_benchmarks():
     return prediction_service.get_model_benchmarks()
 
+
+@router.get("/models/status/", response_model=Dict[str, Any])
+def get_ml_model_status():
+    return prediction_service.get_model_status()
+
 @router.get("/models/dl/", response_model=List[str])
 def list_available_dl_models():
     return dl_prediction_service.get_available_models()
