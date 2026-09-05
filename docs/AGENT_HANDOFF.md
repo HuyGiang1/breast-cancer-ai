@@ -12,7 +12,7 @@ ML and DL research are frozen and both final candidates are integrated for resea
 
 - Current branch: `feat/system-finalization`
 - Base branch: `feat/final-dl-runtime-integration`
-- Branch commits: application finalization commits pending.
+- Branch commits: `207d4ba feat: finalize research dashboard and application flows`; `8955579 docs: record final application state`.
 - Verification passed: `python3 -m compileall backend/app scripts tests`; `pytest -q`; `scripts/validate_final_model_contract.py`; `scripts/validate_frozen_dl_calibration.py`; `scripts/freeze_final_dl_calibration.py` twice.
 
 ## Files changed in this handoff checkpoint
