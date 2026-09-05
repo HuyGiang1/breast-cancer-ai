@@ -1,1 +1,2 @@
 @import './layout.css';
+.v2-sidebar nav{gap:9px;overflow:auto}.v2-sidebar nav section{display:grid;gap:2px}.v2-sidebar nav section>strong{padding:0 10px;color:var(--muted);font-size:10px;text-transform:uppercase}.v2-sidebar nav a{padding:6px 10px;border-radius:7px}
