@@ -26,7 +26,6 @@ from app.api.schemas import (
     ClinicalExtractionResponse,
 )
 from app.services.final_ml_runtime import FinalModelUnavailableError, final_ml_runtime_service
-from app.services.prediction_dl import STATIC_RESULTS_DIR
 from app.services.final_dl_runtime import FinalDLUnavailableError, InvalidFinalDLImageError, final_dl_runtime_service
 from app.services.ai_advisor import ai_advisor_service
 from app.core.database import db, future_iso, utc_now_iso
@@ -46,6 +45,9 @@ import os
 from pathlib import Path
 
 router = APIRouter()
+
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+STATIC_RESULTS_DIR = PROJECT_ROOT / "frontend" / "results"
 
 MAX_IMAGE_UPLOAD_BYTES = int(os.getenv("APP_MAX_IMAGE_UPLOAD_MB", "20")) * 1024 * 1024
 ALLOWED_IMAGE_CONTENT_TYPES = {
@@ -93,11 +95,8 @@ def _risk_band(probability: float) -> str:
 
 
 def _displayed_malignant_probability(result: Dict[str, Any]) -> float:
-    probability = float(result.get("probability", 0.0))
-    diagnosis = str(result.get("diagnosis") or "")
-    if diagnosis == "Benign":
-        return 1.0 - probability
-    return probability
+    """Both final runtimes expose a malignant-class probability, even for benign results."""
+    return float(result.get("probability", 0.0))
 
 
 def _reliability_from_margin(margin: float) -> str:
@@ -111,24 +110,31 @@ def _reliability_from_margin(margin: float) -> str:
 def _build_uncertainty_payload(
     *,
     displayed_malignant_probability: float,
+    decision_probability: Optional[float] = None,
+    decision_threshold: Optional[float] = None,
     label: str = "kết quả",
     extra_reasons: Optional[list[str]] = None,
 ) -> Dict[str, Any]:
     p = max(0.0, min(1.0, float(displayed_malignant_probability)))
-    margin = abs(p - 0.5)
+    has_frozen_threshold = decision_probability is not None and decision_threshold is not None
+    reference_probability = p if decision_probability is None else max(0.0, min(1.0, float(decision_probability)))
+    reference = 0.5 if decision_threshold is None else float(decision_threshold)
+    margin = abs(reference_probability - reference)
     reasons = list(extra_reasons or [])
     reliability = _reliability_from_margin(margin)
 
+    if has_frozen_threshold:
+        threshold_text = f"{reference * 100:g}%"
+        near_message = f"Xác suất {label} nằm rất gần ngưỡng phân loại đã đóng băng {threshold_text}, nên cần thận trọng khi diễn giải."
+        medium_message = f"Xác suất {label} chưa cách xa ngưỡng phân loại đã đóng băng {threshold_text}, nên xem đây là tín hiệu hỗ trợ thay vì kết luận chắc chắn."
+    else:
+        near_message = f"Xác suất {label} nằm gần 50%, biểu thị xác suất mơ hồ chứ không phải ngưỡng phân loại của model, nên cần thận trọng khi diễn giải."
+        medium_message = f"Xác suất {label} chưa cách xa mức mơ hồ 50%; đây là tín hiệu hỗ trợ thay vì kết luận chắc chắn."
+
     if margin < 0.08:
-        reasons.insert(
-            0,
-            f"Xác suất {label} nằm rất gần ngưỡng quyết định 50%, nên cần thận trọng khi diễn giải.",
-        )
+        reasons.insert(0, near_message)
     elif margin < 0.18:
-        reasons.insert(
-            0,
-            f"Xác suất {label} chưa cách xa ngưỡng quyết định, nên xem đây là tín hiệu hỗ trợ thay vì kết luận chắc chắn.",
-        )
+        reasons.insert(0, medium_message)
 
     warning = None
     if reasons:
@@ -150,6 +156,8 @@ def _attach_uncertainty(result: Dict[str, Any], label: str) -> Dict[str, Any]:
     result.update(
         _build_uncertainty_payload(
             displayed_malignant_probability=_displayed_malignant_probability(result),
+            decision_probability=float(result.get("raw_probability", result.get("probability", 0.0))),
+            decision_threshold=result.get("decision_threshold"),
             label=label,
         )
     )
