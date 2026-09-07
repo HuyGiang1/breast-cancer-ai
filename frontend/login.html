@@ -7,9 +7,21 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/app.css">
-  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/app.css?v=auth-v3">
+  <link rel="stylesheet" href="css/auth.css?v=auth-v3">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+    if (window.location.search.includes('v=')) {
+      try {
+        const u = new URL(window.location.href);
+        if (u.searchParams.has('v')) {
+          u.searchParams.delete('v');
+          const q = u.searchParams.toString();
+          window.history.replaceState(window.history.state, '', u.pathname + (q ? '?' + q : '') + u.hash);
+        }
+      } catch (e) {}
+    }
+  </script>
 </head>
 <body class="studio-auth-page">
   <main class="auth-split-stage">
@@ -96,7 +108,7 @@
           <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <label class="form-label" for="loginPassword">Password</label>
-              <a href="forgot-password.html" style="font-size: 0.8125rem; color: var(--teal-700); text-decoration: none;">Forgot password?</a>
+              <a href="forgot-password.html?v=auth-v3" style="font-size: 0.8125rem; color: var(--teal-700); text-decoration: none;">Forgot password?</a>
             </div>
             <div class="form-input-wrapper">
               <input type="password" id="loginPassword" name="password" class="form-input" placeholder="••••••••" required minlength="8" autocomplete="current-password">
@@ -108,12 +120,12 @@
         </form>
 
         <div class="auth-footer-links">
-          <p>New to Breast Health Studio? <a href="register.html">Create account</a></p>
+          <p>New to Breast Health Studio? <a href="register.html?v=auth-v3">Create account</a></p>
         </div>
       </div>
     </section>
   </main>
 
-  <script type="module" src="js/pages/login.js"></script>
+  <script type="module" src="js/pages/login.js?v=auth-v3"></script>
 </body>
 </html>

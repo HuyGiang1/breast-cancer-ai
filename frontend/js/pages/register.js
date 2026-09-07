@@ -1,6 +1,9 @@
 import { guestOnly } from '../core/guards.js';
 import { authService } from '../services/auth.service.js';
 import { toast } from '../components/toast.js';
+import { cleanAuthUrl } from '../core/config.js';
+
+cleanAuthUrl();
 
 if (guestOnly('pages/dashboard.html')) {
   initRegisterPage();

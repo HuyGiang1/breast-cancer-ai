@@ -3,7 +3,7 @@ import { mountShell } from '../components/shell.js';
 import { authService } from '../services/auth.service.js';
 import { auth } from '../core/auth.js';
 
-if (requireAuth('../login.html')) {
+if (requireAuth()) {
   mountShell('Profile');
   const app=document.querySelector('#app');
   app.innerHTML='<section class="research-main"><header class="research-hero"><span class="eyebrow">Authenticated account</span><h1>Your profile</h1><p>Account identity and security for this research prototype.</p></header><div id="profile" class="profile-grid"><section class="v2-card">Loading profile...</section></div></section>';
@@ -14,6 +14,6 @@ if (requireAuth('../login.html')) {
     const account=document.querySelector('#account'); account.full_name.value=user.full_name||''; account.querySelector('input[type=email]').value=user.email||''; document.querySelector('#role').textContent=user.role||'user';
     account.addEventListener('submit',async event=>{event.preventDefault();const status=document.querySelector('#accountStatus');try{const updated=await authService.updateProfile({full_name:account.full_name.value});auth.save({access_token:auth.token(),user:updated});status.textContent='Profile name updated.';}catch(error){status.textContent=error.message;}});
     const password=document.querySelector('#password'); password.addEventListener('submit',async event=>{event.preventDefault();const status=document.querySelector('#passwordStatus');try{const result=await authService.changePassword(Object.fromEntries(new FormData(password)));status.textContent=result.message;password.reset();}catch(error){status.textContent=error.message;}});
-    document.querySelector('#logout').addEventListener('click',async()=>{await authService.logout();location.assign('../login.html');});
+    document.querySelector('#logout').addEventListener('click',async()=>{await authService.logout();location.assign('../login.html?v=auth-v3');});
   } catch(error){root.innerHTML='<section class="v2-card"><h2>Profile unavailable</h2><p></p></section>';root.querySelector('p').textContent=error.message;}
 }

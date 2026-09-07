@@ -38,7 +38,7 @@ const navGroups = [
 export function mountShell(pageTitle) {
   if (!auth.user()) {
     document.documentElement.hidden = true;
-    location.replace('../login.html');
+    location.replace('../login.html?v=auth-v3');
     return false;
   }
 
