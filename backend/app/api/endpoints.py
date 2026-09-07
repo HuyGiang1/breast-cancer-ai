@@ -4,12 +4,18 @@ from fastapi import APIRouter, HTTPException, Depends, File, UploadFile, Form, H
 from fastapi.responses import FileResponse, Response
 from pydantic import ValidationError
 from typing import List, Dict, Any, Optional
+import json
+import urllib.error
+import urllib.parse
+import urllib.request
 from app.api.schemas import (
     PredictionRequest,
     PredictionResponse,
     MultiModalResponse,
     RegisterRequest,
     LoginRequest,
+    GoogleAuthRequest,
+    GoogleConfigResponse,
     AuthResponse,
     ForgotPasswordRequest,
     ResetPasswordRequest,
@@ -552,6 +558,8 @@ def register(request: RegisterRequest):
     if existing is not None:
         raise HTTPException(status_code=409, detail="Email already registered")
 
+    # PUBLIC REGISTRATION MUST ALWAYS CREATE: role = "user"
+    assigned_role = "user"
     now = utc_now_iso()
     user_id = db.execute(
         """
@@ -562,7 +570,7 @@ def register(request: RegisterRequest):
             request.email.lower(),
             request.full_name.strip(),
             hash_password(request.password),
-            request.role,
+            assigned_role,
             now,
             now,
         ),
@@ -588,7 +596,7 @@ def register(request: RegisterRequest):
             "id": user_id,
             "email": request.email.lower(),
             "full_name": request.full_name.strip(),
-            "role": request.role,
+            "role": assigned_role,
         },
     )
 
@@ -610,6 +618,91 @@ def login(request: LoginRequest):
     return AuthResponse(
         access_token=token,
         user=_serialize_user(row),
+    )
+
+
+@router.get("/auth/google/config/", response_model=GoogleConfigResponse)
+def google_config():
+    return GoogleConfigResponse(client_id=os.getenv("GOOGLE_CLIENT_ID") or None)
+
+
+@router.post("/auth/google/", response_model=AuthResponse)
+def google_auth(request: GoogleAuthRequest):
+    client_id = os.getenv("GOOGLE_CLIENT_ID")
+    if not client_id:
+        raise HTTPException(
+            status_code=503,
+            detail="Google Sign-In is not configured on this server (GOOGLE_CLIENT_ID required).",
+        )
+
+    try:
+        tokeninfo_url = f"https://oauth2.googleapis.com/tokeninfo?{urllib.parse.urlencode({'id_token': request.credential})}"
+        req = urllib.request.Request(tokeninfo_url, headers={"User-Agent": "BreastHealthStudio-Auth/1.0"})
+        with urllib.request.urlopen(req, timeout=10.0) as resp:
+            payload = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError:
+        raise HTTPException(status_code=401, detail="Invalid Google ID token signature or expired credential")
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Failed to communicate with Google authentication services: {exc}")
+    if payload.get("aud") != client_id:
+        raise HTTPException(status_code=401, detail="Google token audience mismatch")
+    if payload.get("iss") not in {"accounts.google.com", "https://accounts.google.com"}:
+        raise HTTPException(status_code=401, detail="Invalid Google token issuer")
+    if not payload.get("email_verified") or str(payload.get("email_verified")).lower() != "true":
+        raise HTTPException(status_code=400, detail="Google email is not verified")
+
+    sub = str(payload.get("sub"))
+    email = str(payload.get("email")).lower().strip()
+    full_name = str(payload.get("name") or payload.get("given_name") or "Google User").strip()
+
+    # 1. Google sub already linked -> log into associated user
+    oauth_row = db.fetch_one(
+        "SELECT user_id FROM oauth_accounts WHERE provider = 'google' AND provider_subject = ?",
+        (sub,),
+    )
+    if oauth_row is not None:
+        user_id = int(oauth_row["user_id"])
+        user_row = db.fetch_one("SELECT * FROM users WHERE id = ?", (user_id,))
+        if user_row is None:
+            raise HTTPException(status_code=401, detail="Linked user account no longer exists")
+    else:
+        # 2. Google sub not linked, but verified Google email matches an existing password account
+        existing_user = db.fetch_one("SELECT * FROM users WHERE email = ?", (email,))
+        if existing_user is not None:
+            raise HTTPException(
+                status_code=409,
+                detail="An account already exists with this email. Sign in using your existing account first.",
+            )
+
+        # 3. Google sub not linked + email not present -> create new normal user with role=user
+        now = utc_now_iso()
+        user_id = db.execute(
+            """
+            INSERT INTO users (email, full_name, password_hash, role, created_at, updated_at)
+            VALUES (?, ?, ?, 'user', ?, ?)
+            """,
+            (email, full_name, f"oauth:google:{sub}", now, now),
+        )
+        db.execute(
+            """
+            INSERT INTO oauth_accounts (user_id, provider, provider_subject, email, created_at)
+            VALUES (?, 'google', ?, ?, ?)
+            """,
+            (user_id, sub, email, now),
+        )
+        user_row = db.fetch_one("SELECT * FROM users WHERE id = ?", (user_id,))
+
+    token = create_session_token()
+    db.execute(
+        """
+        INSERT INTO sessions (user_id, token, expires_at, created_at)
+        VALUES (?, ?, ?, ?)
+        """,
+        (user_id, token, future_iso(24 * 14), utc_now_iso()),
+    )
+    return AuthResponse(
+        access_token=token,
+        user=_serialize_user(user_row),
     )
 
 

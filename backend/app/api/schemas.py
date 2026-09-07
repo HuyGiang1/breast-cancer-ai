@@ -107,13 +107,21 @@ class ClinicalExtractionResponse(BaseModel):
 class RegisterRequest(BaseModel):
     email: str
     full_name: str
-    role: str = Field("user", pattern="^(user|doctor)$")
+    role: str = "user"
     password: str = Field(..., min_length=8)
 
 
 class LoginRequest(BaseModel):
     email: str
     password: str
+
+
+class GoogleAuthRequest(BaseModel):
+    credential: str = Field(..., min_length=16, description="Signed Google Identity Services ID Token (JWT)")
+
+
+class GoogleConfigResponse(BaseModel):
+    client_id: Optional[str] = None
 
 
 class AuthResponse(BaseModel):
