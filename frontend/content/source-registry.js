@@ -1,0 +1,159 @@
+/**
+ * Breast Health Intelligence Studio — Content Source Registry
+ * 
+ * Traceable repository of authoritative medical literature, clinical guidelines,
+ * video assets, and factual claim references.
+ * Educational and research use only; not for clinical diagnosis.
+ */
+
+export const EDUCATIONAL_RESOURCES = [
+  {
+    id: "acs-screening-guideline-overview",
+    category: "Screening & Mammography",
+    title: "American Cancer Society Breast Cancer Screening Guideline Overview",
+    publisher: "American Cancer Society",
+    sourceType: "Video",
+    sourcePage: "https://www.cancer.org/cancer/types/breast-cancer/screening-tests-and-early-detection/american-cancer-society-guidelines-for-the-early-detection-of-breast-cancer.html",
+    videoId: "50CdcLJsIEI",
+    embedUrl: "https://www.youtube-nocookie.com/embed/50CdcLJsIEI",
+    duration: "05:40",
+    reviewedDate: "2026-03-01",
+    licenseOrEmbedStatus: "Official YouTube Embed Permitted",
+    summary: "Clinical overview explaining evidence-based screening recommendations, average-risk timelines, mammography early detection benefits, and shared decision-making.",
+    relatedArticle: "Screening Protocols & Dense Tissue Considerations",
+    imageAsset: "assets/img/video_poster_screening.svg",
+    altText: "Video poster for American Cancer Society Screening Guideline Overview"
+  },
+  {
+    id: "acs-science-behind-screening",
+    category: "Screening & Mammography",
+    title: "The Science Behind the New Breast Cancer Screening Guideline",
+    publisher: "American Cancer Society",
+    sourceType: "Video",
+    sourcePage: "https://www.cancer.org/cancer/types/breast-cancer/screening-tests-and-early-detection.html",
+    videoId: "oZYRmApgoUI",
+    embedUrl: "https://www.youtube-nocookie.com/embed/oZYRmApgoUI",
+    duration: "02:21",
+    reviewedDate: "2026-03-01",
+    licenseOrEmbedStatus: "Official YouTube Embed Permitted",
+    summary: "Discussion of scientific evidence, mortality reduction modeling, and risk-benefit analyses guiding regular screening intervals.",
+    relatedArticle: "Screening Protocols & Dense Tissue Considerations",
+    imageAsset: "assets/img/mammography_tp_original.png",
+    altText: "Mammography radiographic scan illustrating screening early detection"
+  },
+  {
+    id: "msk-nutrition-basics-survivors",
+    category: "Nutrition & Lifestyle",
+    title: "Nutrition Basics for Cancer Survivors",
+    publisher: "Memorial Sloan Kettering Cancer Center (MSK)",
+    sourceType: "Clinical Educational Lecture",
+    sourcePage: "https://www.mskcc.org/pe/nutrition-cancer-survivors",
+    videoId: null,
+    embedUrl: null,
+    duration: "16:00",
+    reviewedDate: "2026-02-15",
+    licenseOrEmbedStatus: "External Institutional Resource Card",
+    summary: "Comprehensive nutritional guidance presented by clinical nutrition specialists at the Evelyn H. Lauder Breast Center focusing on whole-food dietary patterns, metabolic wellness, and evidence-based post-treatment health.",
+    relatedArticle: "Evidence-Based Lifestyle & Metabolic Factors",
+    imageAsset: "assets/img/nutrition_lifestyle.svg",
+    altText: "Infographic illustrating balanced plant-forward plate and active lifestyle"
+  },
+  {
+    id: "msk-nutrition-qa-survivors",
+    category: "Nutrition & Lifestyle",
+    title: "Nutrition Q&A for Cancer Survivors",
+    publisher: "Memorial Sloan Kettering Cancer Center (MSK)",
+    sourceType: "Clinical Educational Q&A",
+    sourcePage: "https://www.mskcc.org/pe/nutrition-qa",
+    videoId: null,
+    embedUrl: null,
+    duration: "05:00",
+    reviewedDate: "2026-02-15",
+    licenseOrEmbedStatus: "External Institutional Resource Card",
+    summary: "Targeted clinical answers addressing dietary supplements, soy intake, organic produce questions, and protein adequacy during and after cancer therapy.",
+    relatedArticle: "Evidence-Based Lifestyle & Metabolic Factors",
+    imageAsset: "assets/img/nutrition_lifestyle.svg",
+    altText: "Nutrition and clinical inquiry illustration"
+  },
+  {
+    id: "aicr-new-american-plate",
+    category: "Nutrition & Lifestyle",
+    title: "The New American Plate: Cancer Prevention & Survivorship Model",
+    publisher: "American Institute for Cancer Research (AICR) / WCRF",
+    sourceType: "Dietary Guidance Model",
+    sourcePage: "https://www.aicr.org/cancer-prevention/healthy-eating/new-american-plate/",
+    videoId: null,
+    embedUrl: null,
+    duration: null,
+    reviewedDate: "2026-01-20",
+    licenseOrEmbedStatus: "Public Health Educational Guidance",
+    summary: "Proportional plate model recommending 2/3 or more of meal composition from plant sources (vegetables, fruits, whole grains, beans) and 1/3 or less from animal protein sources.",
+    relatedArticle: "Evidence-Based Lifestyle & Metabolic Factors",
+    imageAsset: "assets/img/nutrition_lifestyle.svg",
+    altText: "New American Plate compositional proportion schematic"
+  },
+  {
+    id: "nci-breast-anatomy-biology",
+    category: "Medical Foundations",
+    title: "Anatomy of the Female Breast & Duct Lobular System",
+    publisher: "National Cancer Institute (NCI) / Visuals Online",
+    sourceType: "Authoritative Reference",
+    sourcePage: "https://visualsonline.cancer.gov/",
+    videoId: null,
+    embedUrl: null,
+    duration: null,
+    reviewedDate: "2026-01-15",
+    licenseOrEmbedStatus: "Public Domain / US Government Work",
+    summary: "Structural reference detailing terminal duct lobular units (TDLUs), milk ducts, stromal adipose, and regional axillary lymphatic drainage.",
+    relatedArticle: "Understanding Breast Tissue & Cellular Architecture",
+    imageAsset: "assets/img/anatomy_diagram.svg",
+    altText: "Anatomical schematic diagram of female breast lobules, ducts, and lymph nodes"
+  }
+];
+
+export const FACTUAL_CLAIMS = [
+  {
+    claimId: "CLAIM-SCREEN-001",
+    topic: "Mammography Screening Mortality",
+    statement: "Regular screening mammography is associated with substantial reduction in breast cancer mortality through detection of non-palpable asymptomatic lesions.",
+    sourceOrganization: "American Cancer Society / National Cancer Institute",
+    sourceTitle: "Breast Cancer Screening Guidelines and Systematic Review",
+    sourceReference: "ACS Breast Cancer Screening Guideline (Oeffinger et al., JAMA 2015;314(15):1599-1614)",
+    publishedOrUpdatedDate: "2015-10-20",
+    reviewedDate: "2026-03-01",
+    geographicApplicability: "Global / United States clinical reference"
+  },
+  {
+    claimId: "CLAIM-DENSITY-002",
+    topic: "Breast Tissue Density & Sensitivity",
+    statement: "High breast tissue density (BI-RADS category C and D) reduces the sensitivity of 2D projection mammography due to parenchymal tissue masking effects.",
+    sourceOrganization: "American College of Radiology (ACR)",
+    sourceTitle: "ACR BI-RADS Atlas: Breast Imaging Reporting and Data System",
+    sourceReference: "D'Orsi CJ, et al. ACR BI-RADS Atlas 5th Edition (2013/rev 2023)",
+    publishedOrUpdatedDate: "2023-08-10",
+    reviewedDate: "2026-03-01",
+    geographicApplicability: "International radiological standard"
+  },
+  {
+    claimId: "CLAIM-LIFESTYLE-003",
+    topic: "Physical Activity & Cancer Risk",
+    statement: "Engaging in 150 to 300 minutes of moderate-intensity or 75 to 150 minutes of vigorous-intensity physical activity weekly is associated with lower post-menopausal breast cancer risk.",
+    sourceOrganization: "World Health Organization (WHO) / American Cancer Society",
+    sourceTitle: "WHO Guidelines on Physical Activity and Sedentary Behaviour",
+    sourceReference: "WHO Guidelines (2020) & Rock CL et al. CA Cancer J Clin 2020;70(4):245-271",
+    publishedOrUpdatedDate: "2020-11-25",
+    reviewedDate: "2026-02-15",
+    geographicApplicability: "Global public health recommendation"
+  },
+  {
+    claimId: "CLAIM-NUTRITION-004",
+    topic: "Plant-Forward Dietary Pattern",
+    statement: "A dietary pattern emphasizing fiber-rich plant foods (vegetables, whole grains, legumes, and fruits) supports general metabolic wellness and survivorship health without curative claims.",
+    sourceOrganization: "American Institute for Cancer Research / WCRF",
+    sourceTitle: "Diet, Nutrition, Physical Activity and Breast Cancer",
+    sourceReference: "Continuous Update Project Expert Report (WCRF/AICR 2018)",
+    publishedOrUpdatedDate: "2018-05-24",
+    reviewedDate: "2026-02-15",
+    geographicApplicability: "Global epidemiological consensus"
+  }
+];
