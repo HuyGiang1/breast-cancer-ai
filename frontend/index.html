@@ -40,7 +40,7 @@
             <a href="pages/dl-analysis.html" class="mega-card" role="menuitem">
               <span class="mega-card-icon">🩻</span>
               <strong>Mammography Analysis</strong>
-              <p>Evaluate digital mammography ROIs with frozen EfficientNet-B0 and coarse Grad-CAM visual attention.</p>
+              <p>Evaluate digital mammography with frozen EfficientNet-B0 (full processed image) and coarse Grad-CAM visual attention.</p>
               <span class="mega-badge mega-badge-blue">Study B · Cutoff ≥ 0.515</span>
             </a>
             <a href="pages/multimodal.html" class="mega-card" role="menuitem">
@@ -74,7 +74,7 @@
             <a href="pages/datasets.html" class="mega-card" role="menuitem">
               <span class="mega-card-icon">🗄️</span>
               <strong>Data Transparency</strong>
-              <p>Manifest structure, patient study grouping audit, zero leakage verification, and distribution splits.</p>
+              <p>Manifest structure, inferred study-like grouping audit (not verified patient-level grouping), zero leakage verification, and distribution splits.</p>
               <span class="mega-badge mega-badge-teal">Zero Leakage</span>
             </a>
             <a href="pages/explainability.html" class="mega-card" role="menuitem">
@@ -266,7 +266,7 @@
                 <span>EFFICIENTNET-B0 INFERENCE</span>
               </div>
               <div class="hero-media-body">
-                <img src="assets/img/mammography_tp_overlay.png" alt="Digital mammography true positive ROI with Grad-CAM coarse attention overlay" width="512" height="512">
+                <img src="assets/img/mammography_tp_overlay.png" alt="CBIS-DDSM mammography full processed image with Grad-CAM coarse attention overlay" width="512" height="512">
                 <div class="hero-media-overlay-badge">
                   <strong>Grad-CAM Coarse Attention</strong>
                   <span>Conv5 Feature Saliency (Not Tumor Boundary)</span>
@@ -371,17 +371,17 @@
           <article class="study-card-v3">
             <div class="study-card-header">
               <div>
-                <span class="studio-badge badge-blue">Study B · Deep Learning</span>
+                <span class="studio-badge badge-blue">Study B · CBIS-DDSM</span>
                 <h3 style="margin-top: 0.5rem; font-size: 1.25rem;">CBIS-DDSM Mammography Vision</h3>
               </div>
-              <span class="mega-badge mega-badge-blue">512×512 Radiography</span>
+              <span class="mega-badge mega-badge-blue">Full Processed Image</span>
             </div>
             <div class="study-card-body">
               <div class="study-visual-box">
                 <img src="assets/img/dl_roc_comparison.png" alt="Study B ROC comparison for transfer learning mammography models" width="600" height="337">
               </div>
               <p>
-                Evaluates transfer learning on full-field digital mammography regions of interest (ROIs). Frozen candidate is an EfficientNet-B0 backbone with validation-first checkpoint selection and Grad-CAM saliency.
+                Evaluates transfer learning on full processed digital mammography images (CBIS-DDSM). The final retained candidate is an EfficientNet-B0 backbone trained on full processed images (raw malignant probability threshold ≥ 0.515, runtime input 224×224×3 RGB post-preprocessing; ROI was evaluated as an ablation and rejected validation-first).
               </p>
               <div class="study-metrics-row">
                 <div class="study-metric-item">
@@ -431,7 +431,7 @@
               <span style="font-size: 0.8125rem; font-family: var(--font-mono); color: var(--slate-400); text-transform: uppercase;">SELECT EVALUATION SAMPLE:</span>
               <div class="preset-pills-group" style="margin-top: 0.375rem;">
                 <button id="sampleA_Btn" class="preset-pill-btn active" type="button">Sample 1: WDBC FNA Biopsy</button>
-                <button id="sampleB_Btn" class="preset-pill-btn" type="button">Sample 2: Screening Mammogram ROI</button>
+                <button id="sampleB_Btn" class="preset-pill-btn" type="button">Sample 2: Mammogram Full Processed Image</button>
               </div>
             </div>
             <div style="text-align: right;">
@@ -560,23 +560,28 @@
       <div class="studio-container">
         <div class="editorial-split-card">
           <div class="editorial-split-media">
-            <img src="assets/img/nutrition_lifestyle.svg" alt="Infographic illustrating metabolic wellness, aerobic activity, and Mediterranean dietary patterns" width="640" height="480">
+            <img src="assets/img/nutrition_lifestyle.svg" alt="AICR New American Plate proportion model showing plant-forward dietary pattern and hydration" width="800" height="500">
           </div>
           <div class="editorial-split-content">
             <span class="studio-eyebrow">Public Health &amp; Prevention</span>
             <h2 style="font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 800; margin-bottom: 1rem; color: var(--slate-950);">
-              Evidence-Based Lifestyle &amp; Metabolic Factors
+              Evidence-Based Nutrition &amp; Lifestyle Modalities
             </h2>
             <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1rem;">
-              Extensive epidemiological literature published by the World Health Organization (WHO) and American Cancer Society indicates that modifiable lifestyle factors play a supportive role in overall metabolic health and long-term risk reduction.
+              Epidemiological evidence compiled by the American Institute for Cancer Research (AICR), World Cancer Research Fund (WCRF), and Memorial Sloan Kettering (MSK) establishes that balanced dietary patterns and metabolic activity support long-term wellness and survivorship.
             </p>
-            <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1.5rem;">
-              Regular moderate physical activity (150–300 minutes weekly), maintaining a healthy post-menopausal body mass index, and limiting alcohol intake are correlated with favorable health profiles.
+            <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1rem;">
+              The AICR <em>New American Plate</em> model recommends covering at least 2/3 of your plate with vegetables, fruits, whole grains, and legumes, with 1/3 or less dedicated to lean animal or plant protein sources, paired with 150–300 minutes of weekly moderate activity.
             </p>
-            <div class="studio-alert alert-warning" style="margin-top: 1rem;">
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem;">
+              <span class="studio-badge badge-teal">AICR New American Plate (≥ 2/3 Plant)</span>
+              <span class="studio-badge badge-blue">MSK Survivorship Education</span>
+              <span class="studio-badge badge-neutral">Active Treatment vs Prevention</span>
+            </div>
+            <div class="studio-alert alert-warning">
               <span class="studio-alert-icon">ℹ️</span>
               <div>
-                <strong>Medical Sourcing Disclaimer:</strong> Lifestyle modifications support general wellness but do not guarantee cancer prevention or replace medical screenings. Specific nutritional advice must be evaluated by licensed dietitians and physicians.
+                <strong>Evidence-Based Sourcing Notice:</strong> Nutritional guidance supports overall health but does not cure cancer. Nutritional needs during active chemotherapy/radiation differ substantially from general prevention and must be managed directly by clinical oncology dietitians (e.g., MSK Evelyn H. Lauder Breast Center protocols).
               </div>
             </div>
           </div>
@@ -651,36 +656,38 @@
     <section id="featured-video" class="studio-section">
       <div class="studio-container">
         <div class="section-header">
-          <span class="studio-eyebrow">Curated Video Lecture</span>
-          <h2 class="section-title">Educational Oncology Features</h2>
+          <span class="studio-eyebrow">Screening &amp; Mammography</span>
+          <h2 class="section-title">Verified Clinical Screening Guidance</h2>
           <p class="section-lead">
-            Curated clinical lectures and instructional videos explaining breast cancer biology and diagnostic imaging.
+            Official educational video lecture published by the American Cancer Society explaining screening guideline parameters and clinical evidence.
           </p>
         </div>
 
         <div class="editorial-split-card">
-          <div class="editorial-split-media" style="position: relative; cursor: pointer;">
-            <img src="assets/img/video_poster_screening.svg" alt="Video poster placeholder for screening protocols lecture" width="640" height="400">
-            <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background-color: rgba(2, 6, 23, 0.4);">
+          <div id="videoContainer" class="editorial-split-media" style="position: relative; cursor: pointer; min-height: 360px; background: #020617; border-radius: var(--radius-lg); overflow: hidden;">
+            <img src="assets/img/video_poster_screening.svg" alt="American Cancer Society Breast Cancer Screening Guideline Overview Video Poster" width="960" height="540" style="width: 100%; height: 100%; object-fit: cover;">
+            <div id="playBtnOverlay" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background-color: rgba(2, 6, 23, 0.3); transition: background-color var(--duration-fast);">
               <div style="width: 64px; height: 64px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-xl);">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--teal-700)"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               </div>
             </div>
           </div>
           <div class="editorial-split-content">
-            <span class="studio-badge badge-blue">Curated Medical Lecture</span>
+            <span class="studio-badge badge-blue">Screening &amp; Mammography</span>
             <h3 style="font-size: 1.5rem; font-weight: 800; margin: 0.75rem 0; color: var(--slate-950);">
-              Understanding Screening Protocols &amp; Dense Tissue Modalities
+              American Cancer Society Breast Cancer Screening Guideline Overview
             </h3>
             <p style="color: var(--slate-600); font-size: 0.9375rem; line-height: 1.6; margin-bottom: 1.25rem;">
-              A comprehensive clinical walkthrough explaining how screening intervals are determined, how breast density alters mammographic sensitivity, and how clinicians utilize supplementary ultrasound and MRI.
+              An authoritative walkthrough by the American Cancer Society outlining evidence-based screening recommendations, age milestones, annual mammography schedules, and dense breast tissue clinical context.
             </p>
             <div style="padding: 0.75rem 1rem; background-color: var(--slate-50); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); font-size: 0.8125rem; color: var(--slate-600); margin-bottom: 1.25rem;">
-              <div><strong>Topic:</strong> Diagnostic Radiology &amp; Mammography Interpretation</div>
-              <div><strong>Duration:</strong> 14:20 min · Verified Medical Source Pending Content Curation</div>
+              <div><strong>Publisher:</strong> American Cancer Society (ACS)</div>
+              <div><strong>Verified Duration:</strong> 05:40 min · Sourced via Official YouTube (50CdcLJsIEI)</div>
+              <div><strong>Topic:</strong> Screening Guidelines &amp; Clinical Mammography</div>
             </div>
-            <div style="font-size: 0.75rem; color: var(--slate-500); font-style: italic;">
-              * Educational Video Feature: Real video asset and verified publisher permissions will be integrated during the Phase 4 content sourcing contract.
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              <a href="https://www.youtube.com/watch?v=50CdcLJsIEI" target="_blank" rel="noopener noreferrer" class="studio-btn studio-btn-outline studio-btn-sm">Watch on YouTube ↗</a>
+              <a href="#learn-screening" class="studio-btn studio-btn-primary studio-btn-sm">View Screening Guidelines ↓</a>
             </div>
           </div>
         </div>
@@ -762,7 +769,7 @@
 
         <div style="text-align: center; margin-top: 2rem; padding: 1rem; background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); max-width: 500px; margin-left: auto; margin-right: auto;">
           <strong style="color: var(--slate-900);">Project Supervisor:</strong>
-          <span style="color: var(--teal-700); font-weight: 700; margin-left: 0.5rem;">GS/TS Đoàn Thị Thanh Hằng</span>
+          <span style="color: var(--teal-700); font-weight: 700; margin-left: 0.5rem;">GV. Đoàn Thị Thanh Hằng</span>
         </div>
       </div>
     </section>

@@ -6,6 +6,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
   initInteractivePreview();
+  initLazyVideo();
 });
 
 /**
@@ -135,9 +136,9 @@ function initInteractivePreview() {
     },
     B: {
       tag: 'Study B · Case #DDSM-4109',
-      model: 'EfficientNet-B0 (Single View Mammography)',
+      model: 'EfficientNet-B0 (Full Processed Image)',
       cutoff: 'Raw Cutoff ≥ 0.515',
-      modality: 'Full-Field Digital Mammography ROI (512×512)',
+      modality: 'CBIS-DDSM Mammography Full Processed Image (224×224×3 RGB input)',
       raw: 0.284,
       calib: 0.315,
       decision: 'Benign Pattern (Below 0.515 Research Cutoff)',
@@ -173,4 +174,30 @@ function initInteractivePreview() {
 
   sampleA_Btn.addEventListener('click', () => updateDisplay('A'));
   sampleB_Btn.addEventListener('click', () => updateDisplay('B'));
+}
+
+/**
+ * Lazy Video Player Controller (Beat 09)
+ * Avoids loading third-party iframes on initial load.
+ * Instantiates privacy-enhanced YouTube embed upon explicit user activation.
+ */
+function initLazyVideo() {
+  const videoContainer = document.getElementById('videoContainer');
+  if (!videoContainer) return;
+
+  videoContainer.addEventListener('click', () => {
+    videoContainer.style.cursor = 'default';
+    videoContainer.innerHTML = `
+      <iframe
+        src="https://www.youtube-nocookie.com/embed/50CdcLJsIEI?autoplay=1&rel=0"
+        title="American Cancer Society Breast Cancer Screening Guideline Overview"
+        width="100%"
+        height="100%"
+        style="border: 0; position: absolute; inset: 0; width: 100%; height: 100%;"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+      </iframe>
+    `;
+  }, { once: true });
 }
