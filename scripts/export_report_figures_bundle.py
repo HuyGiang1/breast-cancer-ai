@@ -21,12 +21,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--input",
-        default="BAO_CAO_BREASTCARE_MINT.md",
+        default="docs/report/FINAL_RESEARCH_REPORT_VI.md",
         help="Markdown report path.",
     )
     parser.add_argument(
         "--output",
-        default="HINH_BAO_CAO_BREASTCARE_MINT.zip",
+        default="docs/report/FINAL_REPORT_FIGURES.zip",
         help="Output ZIP path.",
     )
     return parser.parse_args()
@@ -132,7 +132,7 @@ def main() -> int:
         raise SystemExit("No figures found in the Markdown report.")
 
     with tempfile.TemporaryDirectory(prefix="report_figures_") as tmp:
-        bundle_dir = Path(tmp) / "HINH_BAO_CAO_BREASTCARE_MINT"
+        bundle_dir = Path(tmp) / "FINAL_REPORT_FIGURES"
         figures_dir = bundle_dir / "figures"
         figures_dir.mkdir(parents=True, exist_ok=True)
 
