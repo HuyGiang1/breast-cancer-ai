@@ -50,40 +50,49 @@
     <text x="0" y="4" text-anchor="middle" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800">AICR</text>
 
     <!-- Section Text Labels inside plate -->
-    <text x="45" y="-34" fill="#ffffff" font-family="'Inter', sans-serif" font-size="12" font-weight="800">≥ 2/3 Plant</text>
-    <text x="45" y="-18" fill="#d1fae5" font-family="'Inter', sans-serif" font-size="9" font-weight="600">Veg, fruit, grains, beans</text>
+    <text x="48" y="-30" fill="#ffffff" font-family="'Inter', sans-serif" font-size="12" font-weight="800">≥ 2/3 Plant</text>
+    <text x="48" y="-16" fill="#d1fae5" font-family="'Inter', sans-serif" font-size="8" font-weight="600">Veg, fruit &amp; grains</text>
 
-    <text x="-65" y="-34" fill="#ffffff" font-family="'Inter', sans-serif" font-size="12" font-weight="800">≤ 1/3 Other</text>
-    <text x="-65" y="-18" fill="#dbeafe" font-family="'Inter', sans-serif" font-size="9" font-weight="600">Fish, poultry, dairy</text>
+    <text x="-64" y="-30" fill="#ffffff" font-family="'Inter', sans-serif" font-size="12" font-weight="800">≤ 1/3 Other</text>
+    <text x="-64" y="-16" fill="#dbeafe" font-family="'Inter', sans-serif" font-size="8" font-weight="600">Fish, poultry, dairy</text>
   </g>
 
   <!-- Right Legend & Pillar Cards -->
-  <g transform="translate(415, 140)" font-family="'Inter', sans-serif">
+  <g transform="translate(415, 138)" font-family="'Inter', sans-serif">
     <!-- Pillar 1: Plant Foods (2/3 or more) -->
     <g transform="translate(0, 0)">
-      <rect width="340" height="74" rx="8" fill="#0f172a" fill-opacity="0.85" stroke="#10b981" stroke-width="1.5"/>
+      <rect width="345" height="76" rx="8" fill="#0f172a" fill-opacity="0.85" stroke="#10b981" stroke-width="1.5"/>
       <circle cx="26" cy="26" r="10" fill="#065f46"/>
       <text x="26" y="30" text-anchor="middle" fill="#34d399" font-size="10" font-weight="800">≥2/3</text>
-      <text x="46" y="28" fill="#f8fafc" font-size="13" font-weight="700">Plant Foods (Vegetables, Grains, Legumes)</text>
-      <text x="46" y="48" fill="#94a3b8" font-size="11">Whole grains, beans, lentils, vegetables &amp; fruits containing protective fiber and plant proteins.</text>
+      <text x="46" y="27" fill="#f8fafc" font-size="13" font-weight="700">Plant Foods (Vegetables, Grains, Legumes)</text>
+      <text x="46" y="46" fill="#94a3b8" font-size="10.5">
+        <tspan x="46" dy="0">Whole grains, beans, lentils, vegetables &amp; fruits</tspan>
+        <tspan x="46" dy="15">providing protective fiber and plant nutrients.</tspan>
+      </text>
     </g>
 
     <!-- Pillar 2: Other / Animal-Source Foods (1/3 or less) -->
-    <g transform="translate(0, 84)">
-      <rect width="340" height="74" rx="8" fill="#0f172a" fill-opacity="0.85" stroke="#2563eb" stroke-width="1.5"/>
+    <g transform="translate(0, 86)">
+      <rect width="345" height="76" rx="8" fill="#0f172a" fill-opacity="0.85" stroke="#2563eb" stroke-width="1.5"/>
       <circle cx="26" cy="26" r="10" fill="#1e3a8a"/>
       <text x="26" y="30" text-anchor="middle" fill="#60a5fa" font-size="10" font-weight="800">≤1/3</text>
-      <text x="46" y="28" fill="#f8fafc" font-size="13" font-weight="700">Other / Animal-Source Foods</text>
-      <text x="46" y="48" fill="#94a3b8" font-size="11">Fish, poultry, eggs, or dairy; limiting red meat and avoiding processed meats.</text>
+      <text x="46" y="27" fill="#f8fafc" font-size="13" font-weight="700">Other / Animal-Source Foods</text>
+      <text x="46" y="46" fill="#94a3b8" font-size="10.5">
+        <tspan x="46" dy="0">Fish, poultry, dairy, or eggs; limiting red meat</tspan>
+        <tspan x="46" dy="15">and avoiding processed meats.</tspan>
+      </text>
     </g>
 
     <!-- Pillar 3: Separate Lifestyle & Activity Recommendation -->
-    <g transform="translate(0, 168)">
-      <rect width="340" height="74" rx="8" fill="#0f172a" fill-opacity="0.85" stroke="#64748b" stroke-width="1"/>
+    <g transform="translate(0, 172)">
+      <rect width="345" height="76" rx="8" fill="#0f172a" fill-opacity="0.85" stroke="#64748b" stroke-width="1"/>
       <circle cx="26" cy="26" r="10" fill="#334155"/>
       <text x="26" y="30" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="800">🏃</text>
-      <text x="46" y="28" fill="#f8fafc" font-size="13" font-weight="700">Separate Context · Activity &amp; Hydration</text>
-      <text x="46" y="48" fill="#94a3b8" font-size="11">Regular physical activity (WHO/ACS guidelines) and water hydration support metabolic health.</text>
+      <text x="46" y="27" fill="#f8fafc" font-size="13" font-weight="700">Separate Context · Activity &amp; Hydration</text>
+      <text x="46" y="46" fill="#94a3b8" font-size="10.5">
+        <tspan x="46" dy="0">Regular physical activity (WHO/ACS guidelines)</tspan>
+        <tspan x="46" dy="15">and hydration to support metabolic wellness.</tspan>
+      </text>
     </g>
   </g>
 
