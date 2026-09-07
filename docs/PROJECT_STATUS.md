@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-09-05
+Last updated: 2026-09-07
 
 | Phase | Status | Evidence |
 | --- | --- | --- |
@@ -14,6 +14,8 @@ Last updated: 2026-09-05
 | Operational safety review | DONE | `docs/FINAL_SAFETY_REVIEW.md` verifies research-only framing, fail-closed models, controlled invalid input, no legacy import, and threshold-aware uncertainty. |
 | Docker build/up/container verification | DONE | Docker Desktop 28.5.1 aarch64 and Compose v2.40.3 built Python 3.11-slim API image; API healthy, web served port 80, read-only model mount and ML/DL/Platt SHA contracts passed, ML/DL and controlled-error smoke passed, snapshot matched, and SQLite persisted through restart. |
 | Premium frontend redesign | DONE | Static HTML/CSS/vanilla JS workspace refreshed on `feat/frontend-premium-redesign`: responsive sidebar/drawer, evidence-first landing, separated WDBC/CBIS-DDSM presentation, grouped 30-feature ML form, DL drag/drop upload, and raw-threshold-aware result bar. API/runtime/research contracts unchanged. |
+| Frontend V2 legacy cutover | DONE | Batch 7 on `feat/frontend-architecture-v2`: 21 canonical routes use modular controllers/services/components, legacy monolith and competing styles were retired, dependency graph validation and authenticated desktop cutover QA passed. |
+| Frontend V2 full QA | READY | Batch 8 cross-device/full-route verification remains before marking the frontend architecture phase complete. |
 | VPS/domain/HTTPS deployment | BLOCKED | Requires provisioned server, DNS/domain, and certificate configuration. |
 | Final documentation/release | READY | Begin `docs/final-documentation` after this branch's final tracker commit is pushed and CI is green. |
 

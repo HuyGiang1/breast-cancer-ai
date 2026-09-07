@@ -1,14 +1,15 @@
 # Breast Cancer AI - Project Progress
 
-Last updated: 2026-09-05
+Last updated: 2026-09-07
 
 ## Current stage
 
-**Premium Frontend Redesign**
+**Frontend Architecture V2 - Batch 7 complete**
 
-- Current branch: `feat/frontend-premium-redesign`
-- Base branch: `ops/production-readiness`
-- Next branch: `docs/final-documentation` (do not create automatically)
+- Current branch: `feat/frontend-architecture-v2`
+- Base branch: `feat/frontend-premium-redesign`
+- Current work: Batch 8 full route and cross-device QA
+- Next stage after Batch 8: `docs/final-documentation` (do not create automatically)
 
 ## Completed major milestones
 
@@ -23,6 +24,8 @@ Last updated: 2026-09-05
 - [x] Operational safety review and deployment runbook
 - [x] Docker final verification: build, healthy compose stack, mounted model checksums, ML/DL smoke, snapshot provenance, restart persistence, Nginx assets, and safe shutdown
 - [x] Premium responsive frontend redesign with evidence-first research dashboard, grouped ML inputs, DL upload UX, and threshold-aware result display
+- [x] Frontend V2 canonical route migration and Batch 7 legacy monolith/style cutover
+- [ ] Batch 8 full route and cross-device frontend QA
 
 ## Blockers
 
@@ -35,6 +38,8 @@ Last updated: 2026-09-05
 
 - [x] FastAPI base system, authentication, patient management, and prediction history
 - [x] Final ML/DL runtimes, unified status, and premium frontend redesign
+- [x] Frontend V2 canonical migration and legacy cutover through Batch 7
+- [ ] Batch 8 full route and cross-device frontend QA
 
 ### Production
 

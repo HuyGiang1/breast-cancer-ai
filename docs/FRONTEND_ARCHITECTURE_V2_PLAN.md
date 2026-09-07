@@ -70,3 +70,12 @@ Completed on 2026-09-05 from research product checkpoint `d2b817c`.
 - Chrome headless rendered Advisor, Model Status, and Profile at `1440x900`, plus Advisor and Model Status at `390x844`, using an authenticated disposable session. All stayed on their canonical routes with populated DOM and no horizontal overflow. Full cross-device authenticated interaction remains the Batch 8 sweep.
 - Nginx returned `200` for all three routes, controllers, services, shared support component, and CSS. JavaScript syntax checks, V2 static validation, `24` backend tests, compileall, final-application verification, and production-readiness verification passed.
 - Legacy advisor, status, and profile implementations remain in `frontend/app.js` until the explicit Batch 7 cutover and dead-code audit; no V2 page imports the monolith.
+
+## Batch 7 Canonical Cutover And Verification
+
+- Dependency and feature-parity audits proved that all intended surviving routes use V2 page controllers, services, core API handling, shared components, and semantic CSS. No canonical HTML imported `app.js`, `styles.css`, or `premium.css` before removal.
+- Removed the 113,040-byte monolith, 69,636 bytes of competing legacy CSS, two unreachable JS shims, and eight unreferenced legacy demo/article images. Runtime-generated `/results/` support remains intact.
+- Nginx now returns explicit `404` responses for unknown static paths instead of routing them through the public landing page. All 21 canonical routes returned `200`; legacy bundles returned `404`; JS used the correct MIME type and directory listing remained blocked.
+- The strengthened static validator checks the complete route-controller inventory, HTML/CSS/assets, ES import reachability, CSS imports, navigation targets, duplicate targets, hash routing, legacy references, and local absolute paths.
+- Authenticated Chrome desktop cutover QA passed all 16 workspace routes with populated content, correct active navigation, no horizontal overflow, no app console/network errors, and no request for legacy bundles. Patient routes were verified with an owned disposable doctor record.
+- Batch 7 is complete. Batch 8 full route and cross-device QA remains required before the frontend phase is marked complete.
