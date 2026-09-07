@@ -4,65 +4,66 @@ Last updated: 2026-09-07
 
 ## Current stage
 
-**Frontend V2 frozen for release**
+**Final documentation complete**
 
-- Current branch: `feat/frontend-architecture-v2`
-- Base branch: `feat/frontend-premium-redesign`
-- Current work: Frontend Architecture V2 complete; no further redesign planned
-- Next stage: `docs/final-documentation` (do not create automatically)
+- Current branch: `docs/final-documentation`
+- Base branch: `feat/frontend-architecture-v2`
+- Current work: final README, report, validation, release notes, and deployment handoff complete
+- Next stage: `deploy/server-production` (do not create automatically)
 
 ## Completed major milestones
 
-- [x] Dataset audit and leakage-safe CBIS-DDSM split
-- [x] Final DL baselines, validation-first ROI ablation, calibration, error analysis, bootstrap CI, and Grad-CAM
-- [x] Final WDBC ML study, SHAP analysis, paper artifacts, and research synthesis
+- [x] Dataset audit and leakage-controlled CBIS-DDSM inferred-group split
+- [x] WDBC ML study, calibration, bootstrap, error analysis, and SHAP
+- [x] CBIS-DDSM DL baselines, validation-first ROI ablation, calibration, bootstrap, error analysis, and Grad-CAM
 - [x] Frozen Logistic Regression and EfficientNet-B0 research/demo runtimes
-- [x] Unified final model status and research dashboard
-- [x] CI release validation for production-readiness (`33945903158`, commit `8fce90d`)
-- [x] SQLite backup and safe temporary-database restore rehearsal
-- [x] Final local runtime benchmark and production-readiness validator
-- [x] Operational safety review and deployment runbook
-- [x] Docker final verification: build, healthy compose stack, mounted model checksums, ML/DL smoke, snapshot provenance, restart persistence, Nginx assets, and safe shutdown
-- [x] Premium responsive frontend redesign with evidence-first research dashboard, grouped ML inputs, DL upload UX, and threshold-aware result display
-- [x] Frontend V2 canonical route migration and Batch 7 legacy monolith/style cutover
-- [x] Batch 8 full route and cross-device frontend QA
-- [x] Frontend Architecture V2 frozen for release
+- [x] Unified final model status and central research evidence adapter
+- [x] SQLite backup/restore rehearsal, local benchmark, operational safety review, and readiness validator
+- [x] Docker build/up verification, read-only model mounts, checksums, persistence, Nginx, and local smoke
+- [x] Frontend Architecture V2, legacy cutover, and 84/84 cross-device route QA
+- [x] Final public README and optimized eight-image screenshot set
+- [x] Official 29-page Vietnamese research report in source Markdown, DOCX, and PDF
+- [x] Scientific consistency/legacy wording audit and final report validator
+- [x] Proposed `v1.0.0-research-demo` release notes
+- [x] Server production deployment handoff
 
-## Blockers
+## Frozen state
 
-- VPS, domain, and HTTPS credentials have not been provided.
-- The project remains a research/educational prototype, not a clinical diagnostic system.
+- Research: **FROZEN**
+- Runtime: **FROZEN**
+- Frontend: **FROZEN FOR RELEASE**
+- Final documentation: **COMPLETE**
+
+## Current blockers / pending inputs
+
+- A server is available, but access and target configuration details have not been supplied in this repository.
+- Domain, DNS, HTTPS certificate configuration, and public production smoke remain pending.
+- The project remains a research/educational prototype with `clinical_use=false`.
 
 ## Remaining roadmap
 
-### Application
+### Research and application
 
-- [x] FastAPI base system, authentication, patient management, and prediction history
-- [x] Final ML/DL runtimes, unified status, and premium frontend redesign
-- [x] Frontend V2 canonical migration and legacy cutover through Batch 7
-- [x] Batch 8 full route and cross-device frontend QA
+- [x] Final research evidence and candidates frozen
+- [x] Final ML/DL runtimes integrated and verified
+- [x] Frontend V2 frozen after full QA
+- [x] Final research report and public documentation
 
-### Production
+### Server production
 
-- [x] End-to-end local benchmark
-- [x] Docker final verification
-- [x] Safety review
-- [x] CI validation for the production-readiness commit set
-- [ ] Deployment (blocked: VPS not provisioned)
-- [ ] HTTPS (blocked: domain/VPS not provisioned)
-
-### Documentation
-
-- [x] Final research results, paper tables, figures, update notes, deployment runbook, safety review, and backup/restore procedure
-- [ ] Update final Word report
-- [ ] Update final PDF
-- [ ] Final README
-- [ ] Release notes
+- [ ] Create `deploy/server-production` from `docs/final-documentation`
+- [ ] Confirm SSH access, architecture, OS, CPU/RAM/disk, firewall, and Docker/Compose
+- [ ] Transfer frozen model artifacts outside Git and verify SHA-256
+- [ ] Configure server-only `.env`, read-only model mount, and SQLite backup
+- [ ] Build/start and run local-on-server health/readiness/workflow smoke
+- [ ] Configure domain, DNS, Nginx TLS, HTTPS CORS, and certificate renewal
+- [ ] Run external public smoke, restart persistence, monitoring, and rollback rehearsal
+- [ ] Prepare release/tag only after deployment evidence is complete
 
 ## Document roles
 
-- `docs/PROJECT_PROGRESS.md`: human-readable overall roadmap and progress.
-- `docs/PROJECT_STATUS.md`: detailed phase status and verification evidence.
-- `docs/AGENT_HANDOFF.md`: exact continuation instructions for the next agent session.
+- `docs/PROJECT_PROGRESS.md`: simple overall roadmap and progress.
+- `docs/PROJECT_STATUS.md`: detailed phase/evidence status.
+- `docs/AGENT_HANDOFF.md`: exact continuation instructions for the next session.
 
 Update this tracker before the final commit of every future phase.

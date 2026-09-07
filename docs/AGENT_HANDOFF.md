@@ -3,26 +3,41 @@
 ## Current state
 
 - Repository: `https://github.com/HuyGiang1/breast-cancer-ai`
-- Current branch: `feat/frontend-architecture-v2`
-- Base branch: `feat/frontend-premium-redesign`
-- Frontend Premium Redesign: COMPLETE
-- Frontend Architecture V2: COMPLETE
-- Legacy Frontend Retirement: COMPLETE
-- Cross-device Final QA: COMPLETE
-- Frontend status: **FROZEN FOR RELEASE**
-- Next stage: `docs/final-documentation`; do not create it automatically.
-- Research is frozen. Do not retrain, recalibrate, change split/model/threshold, or promote clinical use.
+- Current branch: `docs/final-documentation`
+- Base branch: `feat/frontend-architecture-v2`
+- Research: **FROZEN**
+- Runtime: **FROZEN**
+- Frontend: **FROZEN FOR RELEASE**
+- Final documentation: **COMPLETE**
+- Next branch: `deploy/server-production`; do not create it automatically.
 
-## Final frontend evidence
+Do not retrain, change datasets/splits, tune on test, change thresholds/calibration/model selection, redesign the frontend, validate multimodal fusion, claim clinical use, merge main, tag, or create a release without explicit instruction.
 
-- 21 canonical routes and controllers; no runtime legacy frontend dependency.
-- Browser matrix: 21 routes at 1440x900, 1280x800, 768x1024, and 390x844, 84/84 PASS.
-- Full disposable workflow matrix passed auth/recovery/roles, final ML/DL and experimental multimodal, patient association/history/report, advisor, status, profile/password, and controlled 400/401/403/404/422 states.
-- ML uses raw threshold `0.36`. DL uses raw threshold `0.515`; Platt remains display/reliability only. Multimodal remains unpaired and experimental.
-- Mobile navigation, keyboard focus, network failure UX, static transfer/security, research values, and Nginx serving were verified.
-- Detailed evidence: `docs/FRONTEND_FINAL_QA.md` and `docs/FRONTEND_ARCHITECTURE_V2.md`.
+## Final documentation evidence
 
-## Required verification
+- `README.md`: public research platform entry point.
+- `docs/report/FINAL_RESEARCH_REPORT_VI.md`: official reproducible Vietnamese source.
+- `docs/report/NGHIEN_CUU_CAC_MO_HINH_NHAN_DANG_PHAN_LOAI_KHOI_U_VU_AC_TINH.docx`: final DOCX.
+- Matching `.pdf`: 29 pages, visually inspected page by page.
+- `docs/FINAL_REPORT_VALIDATION.md`: scientific/content/visual QA evidence.
+- `docs/RELEASE_NOTES.md`: proposed `v1.0.0-research-demo`; not tagged.
+- `docs/DEPLOYMENT_RUNBOOK.md`: canonical server procedure.
+
+## Scientific contract
+
+- Study A: WDBC, 569 samples, 30 FNA-derived numerical features, 455 development, 114 held-out test, seed 42. Logistic Regression selected from development OOF; raw threshold `0.36`.
+- Study B: CBIS-DDSM, 2,559 processed source images plus 2,559 ROI representations, 5,118 manifest rows, 2,354 inferred study-like groups, zero measured group overlap. Not verified patient-level. EfficientNet-B0 full image; raw threshold `0.515`.
+- Frozen Platt: displayed/reliability probability only, never the class decision threshold input.
+- SHAP: contribution to malignant log-odds, non-causal. Grad-CAM: coarse attention, not segmentation/localization/pathology evidence.
+- WDBC and CBIS-DDSM are unpaired; 40/60 fusion is `experimental_only`.
+
+## Next phase procedure
+
+Create `deploy/server-production` from this branch only after this branch is pushed and CI is green. The user has a server. Ask only for the target connection/configuration facts needed at execution time; never request committing SSH keys or passwords.
+
+Follow `docs/DEPLOYMENT_RUNBOOK.md`: architecture/OS/resource/firewall preflight, Docker/Compose, server-only `.env`, external model transfer and SHA-256, SQLite backup, read-only mount, build/start, health/readiness, local server workflow smoke, domain/DNS/HTTPS, restart persistence, external public smoke, and rollback evidence.
+
+## Required regression gates
 
 ```bash
 find frontend/js -name "*.js" -print0 | xargs -0 -n1 node --check
@@ -32,12 +47,8 @@ PYTHONPATH=.:backend venv/bin/python -m pytest -q
 python3 -m compileall backend/app scripts tests
 PYTHONPATH=.:backend venv/bin/python scripts/verify_final_application.py
 PYTHONPATH=.:backend venv/bin/python scripts/verify_production_readiness.py
+venv/bin/python scripts/build_final_report.py
+venv/bin/python scripts/validate_final_report.py
 ```
 
-The existing Pydantic V2 class-config warning is pre-existing. External advisor provider failures remain controlled. Docker must be stopped with `docker compose down`, never `down -v`.
-
-## Next session
-
-After the current branch is pushed, CI is green, and the user explicitly starts the next phase, create `docs/final-documentation` from this branch. Finalize the Word/PDF report, README, release notes, and release documentation without redesigning the frozen frontend or changing research/model contracts.
-
-VPS, domain, DNS, TLS, and external deployment remain blocked until infrastructure and credentials are provided.
+The pre-existing Pydantic V2 class-config warning may remain. Stop local Docker with `docker compose down`, never `down -v`.
