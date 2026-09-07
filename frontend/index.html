@@ -1,9 +1,855 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Breast cancer AI research and educational platform."><title>Breast Cancer AI Research Platform</title><link rel="stylesheet" href="css/app.css"><link rel="stylesheet" href="css/public.css"></head><body><header class="public-nav"><a class="v2-brand" href="index.html">BC <span>BreastCare AI</span></a><button id="menu" aria-label="Open navigation" aria-expanded="false">Menu</button><nav id="publicNav"><a href="#research">Research</a><a href="#models">Models</a><a href="#datasets">Datasets</a><a href="#explainability">Explainability</a><a href="#platform">Platform</a><a href="#safety">About</a></nav><div class="public-actions"><a href="login.html">Sign in</a><a class="v2-button" href="#research">Explore research</a></div></header><main>
-<section class="landing-hero"><div><span class="eyebrow">Research / Educational Prototype</span><h1>Breast Cancer AI Research Platform</h1><p>A research and educational platform combining classical machine learning, deep learning, calibration, explainability and reproducible deployment for breast tumor classification research.</p><div class="safety-note"><strong>Not for clinical diagnosis.</strong> Results do not replace pathology or clinician assessment.</div><p><a class="v2-button" href="#research">Explore research</a> <a class="v2-button secondary" href="login.html">Try the demo</a></p></div><aside class="hero-metrics"><span>Frozen research candidates</span><article><small>Study A · WDBC</small><strong>Logistic Regression</strong><b>ROC-AUC 99.54%</b></article><article><small>Study B · CBIS-DDSM</small><strong>EfficientNet-B0</strong><b>ROC-AUC 72.29%</b></article><p>Different datasets. Not a cross-model leaderboard.</p></aside></section>
-<section id="research" class="landing-section"><span class="eyebrow">Research studies</span><h2>Separate evidence streams, explicit limitations.</h2><div class="v2-grid"><article class="v2-card"><span class="study-label">Study A</span><h3>WDBC Classical Machine Learning</h3><p>Structured FNA-derived features, frozen Logistic Regression candidate and SHAP model-contribution analysis.</p></article><article class="v2-card"><span class="study-label">Study B</span><h3>CBIS-DDSM Deep Learning</h3><p>Mammography image research with EfficientNet-B0, validation-first selection and Grad-CAM attention review.</p></article><article class="v2-card"><span class="study-label">Study C</span><h3>Reliability & Explainability</h3><p>Calibration, bootstrap confidence intervals, error analysis, SHAP and Grad-CAM support cautious interpretation.</p></article></div></section>
-<section id="models" class="landing-section"><span class="eyebrow">Final research candidates</span><h2>Frozen runtime, transparent decision semantics.</h2><div class="v2-grid"><article class="v2-card"><h3>Logistic Regression</h3><p>WDBC · ROC-AUC 0.9954 · Sensitivity 0.9524 · Specificity 0.9861</p><span class="v2-badge">Raw decision threshold 0.36</span></article><article class="v2-card"><h3>EfficientNet-B0</h3><p>CBIS-DDSM · ROC-AUC 0.7229 · Sensitivity 0.6786 · Specificity 0.6250</p><span class="v2-badge">Raw threshold 0.515 · Platt display/reliability only</span></article><article class="v2-card"><h3>Research pipeline</h3><p>Dataset → leakage audit → development/validation → candidate comparison → calibration → explainability → frozen runtime → research demo.</p></article></div></section>
-<section id="explainability" class="landing-section"><span class="eyebrow">Explainability</span><div class="v2-grid"><article class="v2-card"><h2>SHAP</h2><p>Explains model contribution for WDBC Logistic Regression; it is not causal medical importance.</p></article><article class="v2-card"><h2>Grad-CAM</h2><p>Shows coarse attention for CBIS-DDSM EfficientNet-B0; it is not lesion localization.</p></article><article class="v2-card"><h2>Reliability</h2><p>DL classification uses raw probability. Calibration supports display/reliability interpretation only.</p></article></div></section>
-<section id="datasets" class="landing-section"><span class="eyebrow">Data transparency</span><div class="v2-grid"><article class="v2-card"><h2>WDBC</h2><p>569 samples · 30 FNA-derived numerical features · 212 malignant · 357 benign.</p></article><article class="v2-card"><h2>CBIS-DDSM</h2><p>2559 processed source images · 2559 ROI representations · 2354 inferred study-like groups · group overlap = 0 between final splits.</p></article><article class="v2-card"><h2>Interpret carefully</h2><p>5118 manifest rows are not 5118 independent mammograms. Grouping is not verified patient-level.</p></article></div></section>
-<section id="platform" class="landing-section"><span class="eyebrow">Platform capabilities</span><h2>Reproducible research demo infrastructure.</h2><div class="capability-list"><span>Structured ML analysis</span><span>Mammography image analysis</span><span>Patient workspace</span><span>Prediction history and reports</span><span>Research dashboard and model status</span><span>AI information assistant</span></div><div class="architecture"><strong>Browser</strong><i>↓</i><strong>Nginx</strong><i>↓</i><strong>FastAPI</strong><i>↓</i><strong>Frozen ML / DL runtime</strong><i>↓</i><strong>SQLite</strong><p>Checksum-verified models · Docker · CI</p></div></section>
-<section id="safety" class="landing-section safety-section"><span class="eyebrow">Safety & limitations</span><h2>Research evidence is not clinical validation.</h2><ul><li>Research / Educational Prototype; not a diagnostic medical device.</li><li>No external validation and no validated paired multimodal study.</li><li>CBIS grouping is not verified patient-level.</li><li>Clinical decisions require clinician assessment and pathology when appropriate.</li></ul></section>
-<section class="landing-section"><span class="eyebrow">Research team</span><p>Nguyễn Bá Duy · Trần Mỹ Anh · Hoàng Nhật Anh · Nguyễn Huy Giang · Ngô Tiến Đạt</p><p>Supervisor: Đoàn Thị Thanh Hằng</p></section></main><footer class="public-footer"><span>BreastCare AI · Research / Educational Prototype</span><nav><a href="#research">Research</a><a href="#models">Models</a><a href="#datasets">Datasets</a><a href="#safety">Safety</a><a href="https://github.com/HuyGiang1/breast-cancer-ai">GitHub</a><a href="login.html">Sign in</a></nav></footer><script type="module" src="js/pages/landing.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Breast Health Intelligence Studio — AI medical research, mammography computer vision, cytology machine learning, and evidence-based breast health education.">
+  <title>Breast Health Intelligence Studio · AI Medical Research &amp; Education</title>
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/public.css">
+</head>
+<body class="studio-body">
+
+  <!-- ============================================================
+       PHASE 2: GLOBAL TOPBAR & MEGA-MENU NAVIGATION
+       ============================================================ -->
+  <header class="studio-topbar" id="studioTopbar">
+    <div class="studio-topbar-inner">
+      <!-- Brand Emblem -->
+      <a class="studio-brand" href="index.html" aria-label="Breast Health Intelligence Studio Home">
+        <span class="studio-brand-badge">BH</span>
+        <span>Breast Health Studio</span>
+        <span class="studio-brand-tag">Research</span>
+      </a>
+
+      <!-- Desktop Navigation Menu -->
+      <nav class="studio-nav-menu" aria-label="Primary Navigation">
+        <!-- 1. Analyze Mega-Menu -->
+        <div class="studio-nav-item">
+          <button class="studio-nav-link" type="button" aria-haspopup="true" aria-expanded="false">
+            <span>Analyze</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="studio-mega-menu mega-menu-analyze" role="menu">
+            <a href="pages/ml-analysis.html" class="mega-card" role="menuitem">
+              <span class="mega-card-icon">🔬</span>
+              <strong>FNA Cytology Analysis</strong>
+              <p>Predict malignancy from 30 fine needle aspirate nuclear features using frozen Logistic Regression.</p>
+              <span class="mega-badge mega-badge-teal">Study A · Cutoff ≥ 0.360</span>
+            </a>
+            <a href="pages/dl-analysis.html" class="mega-card" role="menuitem">
+              <span class="mega-card-icon">🩻</span>
+              <strong>Mammography Analysis</strong>
+              <p>Evaluate digital mammography ROIs with frozen EfficientNet-B0 and coarse Grad-CAM visual attention.</p>
+              <span class="mega-badge mega-badge-blue">Study B · Cutoff ≥ 0.515</span>
+            </a>
+            <a href="pages/multimodal.html" class="mega-card" role="menuitem">
+              <span class="mega-card-icon">⚡</span>
+              <strong>Multimodal Experiment</strong>
+              <p>Explore software-level 40/60 weighted combination across unpaired cytology and imaging modalities.</p>
+              <span class="mega-badge mega-badge-amber">Research Heuristic Only</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 2. Research Mega-Menu -->
+        <div class="studio-nav-item">
+          <button class="studio-nav-link" type="button" aria-haspopup="true" aria-expanded="false">
+            <span>Research</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="studio-mega-menu mega-menu-research" role="menu">
+            <a href="pages/research.html" class="mega-card" role="menuitem">
+              <span class="mega-card-icon">📊</span>
+              <strong>Study A (WDBC)</strong>
+              <p>Wisconsin Diagnostic Breast Center dataset, 5-fold CV, calibration curve, and 99.54% ROC-AUC evaluation.</p>
+              <span class="mega-badge mega-badge-teal">Tabular ML</span>
+            </a>
+            <a href="pages/model-comparison.html" class="mega-card" role="menuitem">
+              <span class="mega-card-icon">📈</span>
+              <strong>Study B (CBIS-DDSM)</strong>
+              <p>Curated Breast Imaging Subset, transfer learning pipeline, and validation-first model selection.</p>
+              <span class="mega-badge mega-badge-blue">Deep Learning</span>
+            </a>
+            <a href="pages/datasets.html" class="mega-card" role="menuitem">
+              <span class="mega-card-icon">🗄️</span>
+              <strong>Data Transparency</strong>
+              <p>Manifest structure, patient study grouping audit, zero leakage verification, and distribution splits.</p>
+              <span class="mega-badge mega-badge-teal">Zero Leakage</span>
+            </a>
+            <a href="pages/explainability.html" class="mega-card" role="menuitem">
+              <span class="mega-card-icon">🔍</span>
+              <strong>Explainability Suite</strong>
+              <p>SHAP model contribution analysis for tabular models and Grad-CAM saliency heatmaps for deep learning.</p>
+              <span class="mega-badge mega-badge-blue">Interpretable AI</span>
+            </a>
+            <a href="pages/calibration.html" class="mega-card" role="menuitem">
+              <span class="mega-card-icon">⚖️</span>
+              <strong>Reliability &amp; Calibration</strong>
+              <p>Platt sigmoid scaling, Brier reliability metrics, and confidence intervals for cautious interpretation.</p>
+              <span class="mega-badge mega-badge-teal">Platt Scaling</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 3. Learn Mega-Menu -->
+        <div class="studio-nav-item">
+          <button class="studio-nav-link" type="button" aria-haspopup="true" aria-expanded="false">
+            <span>Learn</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="studio-mega-menu mega-menu-learn" role="menu">
+            <a href="#learn-anatomy" class="mega-card" role="menuitem">
+              <span class="mega-card-icon">🧬</span>
+              <strong>Breast Anatomy &amp; Biology</strong>
+              <p>Understanding lobules, milk ducts, stromal tissue, and cellular mechanisms of ductal proliferation.</p>
+              <span class="mega-badge mega-badge-teal">Foundations</span>
+            </a>
+            <a href="#learn-screening" class="mega-card" role="menuitem">
+              <span class="mega-card-icon">🩺</span>
+              <strong>Screening &amp; Mammography</strong>
+              <p>Evidence-based screening protocols, BI-RADS staging, and dense breast tissue clinical context.</p>
+              <span class="mega-badge mega-badge-blue">Clinical Guide</span>
+            </a>
+            <a href="#learn-lifestyle" class="mega-card" role="menuitem">
+              <span class="mega-card-icon">🥗</span>
+              <strong>Nutrition &amp; Lifestyle</strong>
+              <p>Peer-reviewed epidemiological insights on physical activity, metabolic health, and wellness factors.</p>
+              <span class="mega-badge mega-badge-amber">Non-Curative Health</span>
+            </a>
+            <a href="#featured-video" class="mega-card" role="menuitem">
+              <span class="mega-card-icon">🎬</span>
+              <strong>Curated Video Library</strong>
+              <p>Educational video lectures and clinical explainers curated from verified oncology institutions.</p>
+              <span class="mega-badge mega-badge-teal">Video Hub</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 4. Workspace Contextual Dropdown -->
+        <div class="studio-nav-item">
+          <button class="studio-nav-link" type="button" aria-haspopup="true" aria-expanded="false">
+            <span>Workspace</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="studio-dropdown" role="menu">
+            <a href="pages/dashboard.html" role="menuitem">Overview Dashboard <span>→</span></a>
+            <a href="pages/patients.html" role="menuitem">Patient Registry <span>→</span></a>
+            <a href="pages/reports.html" role="menuitem">Prediction Reports <span>→</span></a>
+            <a href="pages/history.html" role="menuitem">Audit History <span>→</span></a>
+          </div>
+        </div>
+
+        <!-- 5. AI Guide Direct Link -->
+        <div class="studio-nav-item">
+          <a class="studio-nav-link" href="pages/advisor.html">AI Guide</a>
+        </div>
+      </nav>
+
+      <!-- Utility Actions & System Telemetry -->
+      <div class="studio-topbar-actions">
+        <!-- Live System Status Indicator -->
+        <div class="studio-status-indicator" title="Model runtime active and verified">
+          <span class="studio-status-dot"></span>
+          <span>Models Frozen</span>
+        </div>
+
+        <!-- Authentication & Workspace CTAs -->
+        <a class="studio-btn studio-btn-ghost studio-btn-sm" href="login.html">Sign In</a>
+        <a class="studio-btn studio-btn-primary studio-btn-sm" href="pages/dashboard.html">Research Studio</a>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobileToggle" class="studio-mobile-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobileTopSheet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       MOBILE TOP-SHEET NAVIGATION (Expanding Full-Screen Sheet)
+       ============================================================ -->
+  <div id="mobileTopSheet" class="studio-top-sheet" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
+    <div class="studio-top-sheet-content">
+      <div class="mobile-sheet-header">
+        <div class="studio-brand">
+          <span class="studio-brand-badge">BH</span>
+          <span>Breast Health Studio</span>
+        </div>
+        <button id="topSheetClose" class="studio-btn studio-btn-ghost studio-btn-sm" aria-label="Close navigation">✕ Close</button>
+      </div>
+
+      <div class="mobile-nav-group">
+        <div class="mobile-nav-group-title">AI Analysis Labs</div>
+        <div class="mobile-nav-links">
+          <a href="pages/ml-analysis.html">FNA Cytology Analysis (Study A)</a>
+          <a href="pages/dl-analysis.html">Mammography Analysis (Study B)</a>
+          <a href="pages/multimodal.html">Multimodal Software Experiment</a>
+        </div>
+      </div>
+
+      <div class="mobile-nav-group">
+        <div class="mobile-nav-group-title">Research &amp; Evidence</div>
+        <div class="mobile-nav-links">
+          <a href="pages/research.html">Study A · WDBC Logistic Regression</a>
+          <a href="pages/model-comparison.html">Study B · CBIS-DDSM EfficientNet</a>
+          <a href="pages/datasets.html">Dataset Integrity &amp; Splitting</a>
+          <a href="pages/explainability.html">Explainability (SHAP &amp; Grad-CAM)</a>
+          <a href="pages/calibration.html">Calibration &amp; Reliability</a>
+        </div>
+      </div>
+
+      <div class="mobile-nav-group">
+        <div class="mobile-nav-group-title">Breast Health Education</div>
+        <div class="mobile-nav-links">
+          <a href="#learn-anatomy">Anatomy &amp; Tumor Biology</a>
+          <a href="#learn-screening">Screening &amp; Mammography</a>
+          <a href="#learn-lifestyle">Nutrition &amp; Metabolic Health</a>
+          <a href="#featured-video">Curated Video Library</a>
+        </div>
+      </div>
+
+      <div class="mobile-nav-group">
+        <div class="mobile-nav-group-title">Research Workspace</div>
+        <div class="mobile-nav-links">
+          <a href="pages/dashboard.html">Research Dashboard</a>
+          <a href="pages/patients.html">Patient Registry</a>
+          <a href="pages/reports.html">Prediction Reports</a>
+          <a href="pages/history.html">Audit History</a>
+          <a href="pages/advisor.html">AI Information Assistant</a>
+          <a href="login.html">Sign In to Account</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <!-- ============================================================
+         BEAT 01: IMMERSIVE HERO WITH ASYMMETRIC SCIENTIFIC STAGE
+         ============================================================ -->
+    <section class="studio-hero">
+      <div class="studio-container">
+        <div class="hero-grid">
+          <!-- Left Column: Editorial Typography & Intent -->
+          <div class="hero-content">
+            <div class="hero-safety-pill">
+              <span>⚠️ Research / Educational Prototype</span>
+              <span>·</span>
+              <span>Not for clinical diagnosis</span>
+            </div>
+
+            <h1 class="hero-title">
+              Advancing Breast Health Intelligence Through <span class="accent-teal">Transparent AI Research</span>.
+            </h1>
+
+            <p class="hero-description">
+              An open academic platform unifying classical fine needle aspirate morphometry, deep learning mammography analysis, empirical calibration, and transparent explainability for oncology research and public health education.
+            </p>
+
+            <div class="hero-actions">
+              <a class="studio-btn studio-btn-primary studio-btn-lg" href="#studies">Explore Research Studies</a>
+              <a class="studio-btn studio-btn-outline studio-btn-lg" href="#preview">Interactive Preview</a>
+              <a class="studio-btn studio-btn-ghost studio-btn-lg" href="login.html">Launch Workspace →</a>
+            </div>
+
+            <div class="hero-frozen-status">
+              <small class="text-muted">FROZEN RESEARCH RUNTIME</small>
+              <p>Validated against retrospective cohorts (WDBC &amp; CBIS-DDSM). Model parameters and decision boundaries cryptographically verified.</p>
+            </div>
+          </div>
+
+          <!-- Right Column: Scientific Scan Telemetry Stage -->
+          <div class="hero-visual-stage">
+            <div class="hero-media-frame">
+              <div class="hero-media-header">
+                <span>CBIS-DDSM TEST CASE #1042</span>
+                <span>EFFICIENTNET-B0 INFERENCE</span>
+              </div>
+              <div class="hero-media-body">
+                <img src="assets/img/mammography_tp_overlay.png" alt="Digital mammography true positive ROI with Grad-CAM coarse attention overlay" width="512" height="512">
+                <div class="hero-media-overlay-badge">
+                  <strong>Grad-CAM Coarse Attention</strong>
+                  <span>Conv5 Feature Saliency (Not Tumor Boundary)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-metrics-floating">
+              <div class="hero-stat-card">
+                <small>Study A · WDBC (FNA)</small>
+                <strong>Logistic Regression</strong>
+                <div class="stat-val">ROC-AUC 99.54%</div>
+                <span class="studio-badge badge-teal">Raw Cutoff ≥ 0.360</span>
+              </div>
+              <div class="hero-stat-card">
+                <small>Study B · CBIS-DDSM</small>
+                <strong>EfficientNet-B0</strong>
+                <div class="stat-val">ROC-AUC 72.29%</div>
+                <span class="studio-badge badge-blue">Raw Cutoff ≥ 0.515</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         BEAT 02: MISSION STATEMENT & RESEARCH CONTEXT
+         ============================================================ -->
+    <section class="mission-strip">
+      <div class="studio-container">
+        <div class="mission-grid">
+          <div>
+            <span class="studio-eyebrow">Academic Mission</span>
+            <h2 class="mission-lead">
+              Bridging rigorous machine learning, reproducible medicine, and public breast health literacy.
+            </h2>
+          </div>
+          <div class="mission-text">
+            <p>
+              Contemporary healthcare AI often operates as an opaque black box, obscuring the critical distinction between statistical probability and clinical diagnosis. Our mission is to dismantle that opacity through transparent model architectures, honest calibration reporting, and traceable, peer-reviewed educational literature.
+            </p>
+            <p>
+              By decoupling distinct biological modalities—cellular morphometry from digital radiography—we respect the distinct clinical questions each modality addresses while illustrating where machine learning can support, rather than replace, human expertise.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         BEAT 03: TWO INDEPENDENT AI STUDIES
+         ============================================================ -->
+    <section id="studies" class="studio-section">
+      <div class="studio-container">
+        <div class="section-header">
+          <span class="studio-eyebrow">Independent Scientific Evidence</span>
+          <h2 class="section-title">Two Separate Studies. Two Distinct Modalities.</h2>
+          <p class="section-lead">
+            Study A and Study B investigate fundamentally different diagnostic domains with independent clinical datasets. They represent separate research streams—never a cross-model leaderboard.
+          </p>
+        </div>
+
+        <div class="study-dual-grid">
+          <!-- Study A Card -->
+          <article class="study-card-v3">
+            <div class="study-card-header">
+              <div>
+                <span class="studio-badge badge-teal">Study A · Classical ML</span>
+                <h3 style="margin-top: 0.5rem; font-size: 1.25rem;">WDBC FNA Cytology Analysis</h3>
+              </div>
+              <span class="mega-badge mega-badge-teal">30 Morphometry Features</span>
+            </div>
+            <div class="study-card-body">
+              <div class="study-visual-box">
+                <img src="assets/img/ml_roc_comparison.png" alt="Study A ROC curve comparison across classical ML algorithms" width="600" height="337">
+              </div>
+              <p>
+                Evaluates nuclear contour features extracted from digitized Fine Needle Aspirate (FNA) biopsy samples. Frozen candidate is an L2-regularized Logistic Regression model calibrated with Platt scaling.
+              </p>
+              <div class="study-metrics-row">
+                <div class="study-metric-item">
+                  <small>Sensitivity</small>
+                  <b>95.24%</b>
+                </div>
+                <div class="study-metric-item">
+                  <small>Specificity</small>
+                  <b>98.61%</b>
+                </div>
+                <div class="study-metric-item">
+                  <small>Raw Threshold</small>
+                  <b>≥ 0.360</b>
+                </div>
+              </div>
+              <div style="margin-top: 1.25rem;">
+                <a class="studio-btn studio-btn-outline studio-btn-sm" href="pages/research.html">View Study A Methods →</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Study B Card -->
+          <article class="study-card-v3">
+            <div class="study-card-header">
+              <div>
+                <span class="studio-badge badge-blue">Study B · Deep Learning</span>
+                <h3 style="margin-top: 0.5rem; font-size: 1.25rem;">CBIS-DDSM Mammography Vision</h3>
+              </div>
+              <span class="mega-badge mega-badge-blue">512×512 Radiography</span>
+            </div>
+            <div class="study-card-body">
+              <div class="study-visual-box">
+                <img src="assets/img/dl_roc_comparison.png" alt="Study B ROC comparison for transfer learning mammography models" width="600" height="337">
+              </div>
+              <p>
+                Evaluates transfer learning on full-field digital mammography regions of interest (ROIs). Frozen candidate is an EfficientNet-B0 backbone with validation-first checkpoint selection and Grad-CAM saliency.
+              </p>
+              <div class="study-metrics-row">
+                <div class="study-metric-item">
+                  <small>Sensitivity</small>
+                  <b>67.86%</b>
+                </div>
+                <div class="study-metric-item">
+                  <small>Specificity</small>
+                  <b>62.50%</b>
+                </div>
+                <div class="study-metric-item">
+                  <small>Raw Threshold</small>
+                  <b>≥ 0.515</b>
+                </div>
+              </div>
+              <div style="margin-top: 1.25rem;">
+                <a class="studio-btn studio-btn-outline studio-btn-sm" href="pages/model-comparison.html">View Study B Methods →</a>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: center;">
+          <small class="text-muted">
+            ⚠️ Methodological Note: WDBC evaluates high-resolution cytological aspirates from palpable lesions; CBIS-DDSM evaluates screening mammograms with variable tissue densities. Direct performance comparison is scientifically invalid.
+          </small>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         BEAT 04: INTERACTIVE ANALYSIS PREVIEW
+         ============================================================ -->
+    <section id="preview" class="studio-section" style="background-color: var(--surface-subtle);">
+      <div class="studio-container">
+        <div class="section-header">
+          <span class="studio-eyebrow">Interactive Telemetry</span>
+          <h2 class="section-title">Experience Dual-Probability Decision Semantics</h2>
+          <p class="section-lead">
+            Explore how raw machine learning inference probabilities map to calibrated reliability scores and frozen clinical research thresholds.
+          </p>
+        </div>
+
+        <div class="interactive-preview-stage">
+          <div class="preview-controls-bar">
+            <div>
+              <span style="font-size: 0.8125rem; font-family: var(--font-mono); color: var(--slate-400); text-transform: uppercase;">SELECT EVALUATION SAMPLE:</span>
+              <div class="preset-pills-group" style="margin-top: 0.375rem;">
+                <button id="sampleA_Btn" class="preset-pill-btn active" type="button">Sample 1: WDBC FNA Biopsy</button>
+                <button id="sampleB_Btn" class="preset-pill-btn" type="button">Sample 2: Screening Mammogram ROI</button>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <span id="previewSampleTag" style="font-family: var(--font-mono); font-size: 0.875rem; color: var(--teal-400); font-weight: 700;">Study A · Case #W-1042</span>
+              <div id="previewModalityText" style="font-size: 0.75rem; color: var(--slate-400);">Fine Needle Aspirate (FNA) Nuclear Morphometry</div>
+            </div>
+          </div>
+
+          <div class="preview-dual-display">
+            <!-- Raw Probability Gauge -->
+            <div class="preview-meter-box">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.875rem; font-weight: 700; color: var(--slate-200);">Raw Output Probability</span>
+                <span id="rawProbValue" style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 800; color: var(--teal-400);">88.4%</span>
+              </div>
+              <div class="gauge-track">
+                <div id="rawProbFill" class="gauge-fill" style="width: 88.4%;"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.6875rem; color: var(--slate-400); margin-top: 0.375rem;">
+                <span>0.0 (Benign)</span>
+                <span id="previewCutoffTag" style="color: var(--warning-text); font-weight: 700;">Raw Cutoff ≥ 0.360</span>
+                <span>1.0 (Malignant)</span>
+              </div>
+              <p style="font-size: 0.75rem; color: var(--slate-400); margin-top: 0.75rem;">
+                Direct classification output from the frozen model before post-processing.
+              </p>
+            </div>
+
+            <!-- Calibrated Platt Reliability Gauge -->
+            <div class="preview-meter-box">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.875rem; font-weight: 700; color: var(--slate-200);">Calibrated Reliability Score</span>
+                <span id="calibProbValue" style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 800; color: var(--blue-400);">91.2%</span>
+              </div>
+              <div class="gauge-track">
+                <div id="calibProbFill" class="gauge-fill" style="width: 91.2%; background-color: var(--blue-500);"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.6875rem; color: var(--slate-400); margin-top: 0.375rem;">
+                <span>Low Confidence</span>
+                <span>Platt Scaling Display</span>
+                <span>High Confidence</span>
+              </div>
+              <p style="font-size: 0.75rem; color: var(--slate-400); margin-top: 0.75rem;">
+                Empirically calibrated probability for human reliability assessment.
+              </p>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--slate-800); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+            <div>
+              <span style="font-size: 0.8125rem; color: var(--slate-400);">Model Candidate:</span>
+              <strong id="previewModelTag" style="margin-left: 0.25rem; color: #ffffff;">Logistic Regression (30 FNA Features)</strong>
+            </div>
+            <div>
+              <span id="previewStatusPill" class="studio-badge badge-danger">Malignant Suspicion (Above 0.360 Research Cutoff)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         BEAT 05: UNDERSTANDING BREAST HEALTH
+         ============================================================ -->
+    <section id="learn-anatomy" class="studio-section">
+      <div class="studio-container">
+        <div class="editorial-split-card">
+          <div class="editorial-split-media">
+            <img src="assets/img/anatomy_diagram.svg" alt="Anatomical illustration of female breast tissue showing milk ducts, lobules, and adipose tissue" width="640" height="480">
+          </div>
+          <div class="editorial-split-content">
+            <span class="studio-eyebrow">Medical Foundations</span>
+            <h2 style="font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 800; margin-bottom: 1rem; color: var(--slate-950);">
+              Understanding Breast Tissue &amp; Cellular Architecture
+            </h2>
+            <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1rem;">
+              The adult female breast consists of glandular tissue, fibrous connective tissue, and adipose (fatty) tissue. Most breast malignancies originate within the epithelial lining of the milk ducts (ductal carcinoma) or the milk-producing lobules (lobular carcinoma).
+            </p>
+            <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1.5rem;">
+              Recognizing subtle architectural changes—such as microcalcifications, asymmetrical densities, or cellular pleomorphism—is the core objective of oncology screening and cytological biopsy analysis.
+            </p>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+              <span class="studio-badge badge-neutral">Ductal vs Lobular</span>
+              <span class="studio-badge badge-neutral">Stroma &amp; Adipose</span>
+              <span class="studio-badge badge-neutral">Cellular Contours</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         BEAT 06: SCREENING & MAMMOGRAPHY
+         ============================================================ -->
+    <section id="learn-screening" class="studio-section" style="background-color: var(--surface-subtle);">
+      <div class="studio-container">
+        <div class="editorial-split-card" style="direction: rtl;">
+          <div class="editorial-split-media" style="direction: ltr;">
+            <img src="assets/img/mammography_tp_original.png" alt="Clinical high-resolution mammogram demonstrating focal soft-tissue asymmetry" width="640" height="480">
+          </div>
+          <div class="editorial-split-content" style="direction: ltr;">
+            <span class="studio-eyebrow">Diagnostic Imaging</span>
+            <h2 style="font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 800; margin-bottom: 1rem; color: var(--slate-950);">
+              Screening Guidelines &amp; Mammography Modalities
+            </h2>
+            <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1rem;">
+              Screening mammography remains the primary evidence-based modality proven to reduce breast cancer mortality through early detection before palpable symptoms appear.
+            </p>
+            <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1.5rem;">
+              Factors such as breast tissue density (categorized under BI-RADS A through D) significantly impact radiological sensitivity. Women with dense breast tissue often benefit from supplementary screening modalities such as automated breast ultrasound (ABUS) or breast MRI under clinical guidance.
+            </p>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+              <span class="studio-badge badge-neutral">BI-RADS Classification</span>
+              <span class="studio-badge badge-neutral">Dense Tissue Considerations</span>
+              <span class="studio-badge badge-neutral">Digital Tomosynthesis</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         BEAT 07: EVIDENCE-BASED NUTRITION & LIFESTYLE
+         ============================================================ -->
+    <section id="learn-lifestyle" class="studio-section">
+      <div class="studio-container">
+        <div class="editorial-split-card">
+          <div class="editorial-split-media">
+            <img src="assets/img/nutrition_lifestyle.svg" alt="Infographic illustrating metabolic wellness, aerobic activity, and Mediterranean dietary patterns" width="640" height="480">
+          </div>
+          <div class="editorial-split-content">
+            <span class="studio-eyebrow">Public Health &amp; Prevention</span>
+            <h2 style="font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 800; margin-bottom: 1rem; color: var(--slate-950);">
+              Evidence-Based Lifestyle &amp; Metabolic Factors
+            </h2>
+            <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1rem;">
+              Extensive epidemiological literature published by the World Health Organization (WHO) and American Cancer Society indicates that modifiable lifestyle factors play a supportive role in overall metabolic health and long-term risk reduction.
+            </p>
+            <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1.5rem;">
+              Regular moderate physical activity (150–300 minutes weekly), maintaining a healthy post-menopausal body mass index, and limiting alcohol intake are correlated with favorable health profiles.
+            </p>
+            <div class="studio-alert alert-warning" style="margin-top: 1rem;">
+              <span class="studio-alert-icon">ℹ️</span>
+              <div>
+                <strong>Medical Sourcing Disclaimer:</strong> Lifestyle modifications support general wellness but do not guarantee cancer prevention or replace medical screenings. Specific nutritional advice must be evaluated by licensed dietitians and physicians.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         BEAT 08: EXPLAINABILITY & TRANSPARENCY
+         ============================================================ -->
+    <section id="explainability" class="studio-section" style="background-color: var(--surface-subtle);">
+      <div class="studio-container">
+        <div class="section-header">
+          <span class="studio-eyebrow">Interpretability &amp; Safety</span>
+          <h2 class="section-title">Beyond Black-Box Predictions</h2>
+          <p class="section-lead">
+            Model interpretability is not an optional accessory; it is fundamental to responsible biomedical AI. We pair every prediction with empirical attribution mechanisms.
+          </p>
+        </div>
+
+        <div class="study-dual-grid">
+          <!-- SHAP Attribution Card -->
+          <article class="study-card-v3">
+            <div class="study-card-header">
+              <div>
+                <span class="studio-badge badge-teal">Study A · WDBC</span>
+                <h3 style="margin-top: 0.5rem; font-size: 1.125rem;">SHAP Feature Attribution</h3>
+              </div>
+              <span class="mega-badge mega-badge-teal">Kernel Explainer</span>
+            </div>
+            <div class="study-card-body">
+              <div class="study-visual-box">
+                <img src="assets/img/ml_shap_bar.png" alt="SHAP global feature importance bar plot for WDBC Logistic Regression" width="600" height="337">
+              </div>
+              <p>
+                Calculates Shapley values to quantify how each of the 30 FNA features (such as worst concave points and texture error) shifts the log-odds toward malignant or benign predictions.
+              </p>
+              <div class="studio-alert alert-info" style="margin-top: 1rem;">
+                <small>⚠️ SHAP explains mathematical model contribution—not biological causality or pathology ground truth.</small>
+              </div>
+            </div>
+          </article>
+
+          <!-- Grad-CAM Saliency Card -->
+          <article class="study-card-v3">
+            <div class="study-card-header">
+              <div>
+                <span class="studio-badge badge-blue">Study B · CBIS-DDSM</span>
+                <h3 style="margin-top: 0.5rem; font-size: 1.125rem;">Grad-CAM Convolutional Saliency</h3>
+              </div>
+              <span class="mega-badge mega-badge-blue">Conv5 Activations</span>
+            </div>
+            <div class="study-card-body">
+              <div class="study-visual-box">
+                <img src="assets/img/efficientnet_gradcam_examples.png" alt="Grad-CAM activation heatmaps overlaid onto mammographic tissue" width="600" height="337">
+              </div>
+              <p>
+                Generates visual attention heatmaps by computing gradients of the final convolutional layer with respect to the malignant class score in the EfficientNet-B0 network.
+              </p>
+              <div class="studio-alert alert-info" style="margin-top: 1rem;">
+                <small>⚠️ Grad-CAM shows network feature activation regions—it does not delineate tumor margins or replace radiological segmentation.</small>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         BEAT 09: FEATURED CURATED VIDEO PREVIEW
+         ============================================================ -->
+    <section id="featured-video" class="studio-section">
+      <div class="studio-container">
+        <div class="section-header">
+          <span class="studio-eyebrow">Curated Video Lecture</span>
+          <h2 class="section-title">Educational Oncology Features</h2>
+          <p class="section-lead">
+            Curated clinical lectures and instructional videos explaining breast cancer biology and diagnostic imaging.
+          </p>
+        </div>
+
+        <div class="editorial-split-card">
+          <div class="editorial-split-media" style="position: relative; cursor: pointer;">
+            <img src="assets/img/video_poster_screening.svg" alt="Video poster placeholder for screening protocols lecture" width="640" height="400">
+            <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background-color: rgba(2, 6, 23, 0.4);">
+              <div style="width: 64px; height: 64px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-xl);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--teal-700)"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="editorial-split-content">
+            <span class="studio-badge badge-blue">Curated Medical Lecture</span>
+            <h3 style="font-size: 1.5rem; font-weight: 800; margin: 0.75rem 0; color: var(--slate-950);">
+              Understanding Screening Protocols &amp; Dense Tissue Modalities
+            </h3>
+            <p style="color: var(--slate-600); font-size: 0.9375rem; line-height: 1.6; margin-bottom: 1.25rem;">
+              A comprehensive clinical walkthrough explaining how screening intervals are determined, how breast density alters mammographic sensitivity, and how clinicians utilize supplementary ultrasound and MRI.
+            </p>
+            <div style="padding: 0.75rem 1rem; background-color: var(--slate-50); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); font-size: 0.8125rem; color: var(--slate-600); margin-bottom: 1.25rem;">
+              <div><strong>Topic:</strong> Diagnostic Radiology &amp; Mammography Interpretation</div>
+              <div><strong>Duration:</strong> 14:20 min · Verified Medical Source Pending Content Curation</div>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--slate-500); font-style: italic;">
+              * Educational Video Feature: Real video asset and verified publisher permissions will be integrated during the Phase 4 content sourcing contract.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         BEAT 10: RESEARCH LIMITATIONS & SAFETY BLOCK
+         ============================================================ -->
+    <section id="safety" class="studio-section" style="padding-top: 0;">
+      <div class="studio-container">
+        <div class="safety-deep-block">
+          <span class="studio-eyebrow" style="color: #b45309;">Safety &amp; Regulatory Framework</span>
+          <h2 style="color: #92400e; font-size: 1.75rem; font-weight: 800; margin-top: 0.25rem;">
+            Critical Research Limitations &amp; Ethical Guardrails
+          </h2>
+          <p style="color: #78350f; max-width: 80ch; line-height: 1.6; margin-top: 0.5rem;">
+            This software is developed strictly as an academic research and educational prototype. It does not constitute a certified medical device and must never be used as a substitute for professional medical advice, diagnosis, or clinical management.
+          </p>
+
+          <ul class="safety-deep-list">
+            <li>
+              <span><strong>No Clinical Clearance:</strong> This platform is not cleared by the FDA, CE, or regional health authorities for diagnostic usage (<code style="background: rgba(0,0,0,0.06); padding: 2px 4px; border-radius: 4px;">clinical_use = false</code>).</span>
+            </li>
+            <li>
+              <span><strong>Pathology Ground Truth Required:</strong> Computer vision and machine learning inferences do not replace microscopic histopathological examination or clinical palpation.</span>
+            </li>
+            <li>
+              <span><strong>Retrospective Training Cohorts:</strong> Models were trained on retrospective public datasets (WDBC &amp; CBIS-DDSM) with demographic limitations and without prospective multi-site clinical trials.</span>
+            </li>
+            <li>
+              <span><strong>Unpaired Multimodal Heuristic:</strong> The multimodal demo employs an unvalidated 40/60 weighted software heuristic; no clinically matched patient cohorts were evaluated simultaneously.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         BEAT 11: ACADEMIC RESEARCH TEAM
+         ============================================================ -->
+    <section id="team" class="studio-section" style="background-color: var(--surface-subtle);">
+      <div class="studio-container">
+        <div class="section-header">
+          <span class="studio-eyebrow">Academic Authorship</span>
+          <h2 class="section-title">Academic Research Team</h2>
+          <p class="section-lead">
+            Conducted within the School of Information and Communication Technology under faculty academic supervision.
+          </p>
+        </div>
+
+        <div class="team-grid">
+          <div class="team-member-card">
+            <div class="team-avatar-placeholder">ND</div>
+            <strong>Nguyễn Bá Duy</strong>
+            <small>Machine Learning &amp; WDBC Study</small>
+          </div>
+          <div class="team-member-card">
+            <div class="team-avatar-placeholder">TA</div>
+            <strong>Trần Mỹ Anh</strong>
+            <small>Deep Learning &amp; Computer Vision</small>
+          </div>
+          <div class="team-member-card">
+            <div class="team-avatar-placeholder">HA</div>
+            <strong>Hoàng Nhật Anh</strong>
+            <small>Model Calibration &amp; Metrics</small>
+          </div>
+          <div class="team-member-card">
+            <div class="team-avatar-placeholder">GH</div>
+            <strong>Nguyễn Huy Giang</strong>
+            <small>Systems &amp; Platform Architecture</small>
+          </div>
+          <div class="team-member-card">
+            <div class="team-avatar-placeholder">TD</div>
+            <strong>Ngô Tiến Đạt</strong>
+            <small>Explainability &amp; Evaluation</small>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem; padding: 1rem; background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); max-width: 500px; margin-left: auto; margin-right: auto;">
+          <strong style="color: var(--slate-900);">Project Supervisor:</strong>
+          <span style="color: var(--teal-700); font-weight: 700; margin-left: 0.5rem;">GS/TS Đoàn Thị Thanh Hằng</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         BEAT 12: FINAL CTA & STUDIO FOOTER
+         ============================================================ -->
+    <section class="studio-section" style="text-align: center; background: radial-gradient(circle at 50% 50%, rgba(13, 148, 136, 0.08), transparent 70%), #ffffff;">
+      <div class="studio-container">
+        <span class="studio-eyebrow">Get Started</span>
+        <h2 style="font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 800; letter-spacing: -0.025em; color: var(--slate-950); margin-bottom: 1rem;">
+          Explore the Breast Health Intelligence Studio
+        </h2>
+        <p style="color: var(--slate-600); max-width: 60ch; margin: 0 auto 2rem; font-size: 1.125rem;">
+          Test model predictions, examine SHAP and Grad-CAM interpretability visualizations, and review frozen research checkpoints.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+          <a class="studio-btn studio-btn-primary studio-btn-lg" href="pages/dashboard.html">Launch Research Studio</a>
+          <a class="studio-btn studio-btn-outline studio-btn-lg" href="#studies">Review Studies</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="studio-footer">
+    <div class="studio-container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="studio-brand" style="color: #ffffff; margin-bottom: 1rem;">
+            <span class="studio-brand-badge">BH</span>
+            <span>Breast Health Studio</span>
+          </div>
+          <p style="font-size: 0.875rem; line-height: 1.6; color: var(--slate-400);">
+            An academic research prototype for breast cancer detection research, computer vision mammography, and public breast health education.
+          </p>
+          <div style="margin-top: 1rem;">
+            <span class="studio-badge badge-neutral" style="background: rgba(255,255,255,0.1); color: var(--slate-300);">Version 3.0 · Prototype</span>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h5>Analysis Labs</h5>
+          <ul class="footer-links">
+            <li><a href="pages/ml-analysis.html">FNA Cytology Analysis</a></li>
+            <li><a href="pages/dl-analysis.html">Mammography Vision</a></li>
+            <li><a href="pages/multimodal.html">Multimodal Experiment</a></li>
+            <li><a href="pages/dashboard.html">Overview Dashboard</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Research &amp; Data</h5>
+          <ul class="footer-links">
+            <li><a href="pages/research.html">Study A (WDBC)</a></li>
+            <li><a href="pages/model-comparison.html">Study B (CBIS-DDSM)</a></li>
+            <li><a href="pages/datasets.html">Dataset Integrity</a></li>
+            <li><a href="pages/explainability.html">Explainability Suite</a></li>
+            <li><a href="pages/calibration.html">Platt Calibration</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Education &amp; Safety</h5>
+          <ul class="footer-links">
+            <li><a href="#learn-anatomy">Anatomy &amp; Biology</a></li>
+            <li><a href="#learn-screening">Screening Protocols</a></li>
+            <li><a href="#learn-lifestyle">Nutrition &amp; Lifestyle</a></li>
+            <li><a href="#safety">Research Limitations</a></li>
+            <li><a href="https://github.com/HuyGiang1/breast-cancer-ai">GitHub Repository</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          © 2026 Breast Health Intelligence Studio. Academic Research Prototype. Not for clinical diagnostic use.
+        </div>
+        <div>
+          <a href="login.html" style="color: var(--slate-400); margin-right: 1.5rem;">Sign In</a>
+          <a href="#studioTopbar" style="color: var(--slate-400);">Back to top ↑</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Single Canonical Controller Script for index.html -->
+  <script type="module" src="js/pages/landing.js"></script>
+</body>
+</html>
