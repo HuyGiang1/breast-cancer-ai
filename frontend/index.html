@@ -318,175 +318,507 @@
     </section>
 
     <!-- ============================================================
-         BEAT 03: TWO INDEPENDENT AI STUDIES
+         BEAT 03: MODEL SELECTION STORY & VALIDATION BOARDS
          ============================================================ -->
     <section id="studies" class="studio-section">
       <div class="studio-container">
         <div class="section-header">
-          <span class="studio-eyebrow">Independent Scientific Evidence</span>
-          <h2 class="section-title">Two Separate Studies. Two Distinct Modalities.</h2>
+          <span class="studio-eyebrow">Rigorous Candidate Selection</span>
+          <h2 class="section-title">How the Models Were Selected: A Development-First Story</h2>
           <p class="section-lead">
-            Study A and Study B investigate fundamentally different diagnostic domains with independent clinical datasets. They represent separate research streams—never a cross-model leaderboard.
+            Study A and Study B investigate fundamentally different clinical diagnostic domains with separate modalities and datasets. Candidates were evaluated and selected strictly on development/validation evidence—never test-set performance. Held-out test sets remained locked until post-selection confirmation.
           </p>
+          <div style="margin-top: 1rem; padding: 0.875rem 1.25rem; background-color: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius-lg); font-size: 0.875rem; color: #78350f; line-height: 1.5;">
+            <strong>⚠️ Scientific Guardrail:</strong> WDBC evaluates high-resolution cytological aspirates from palpable lesions; CBIS-DDSM evaluates screening mammograms with variable tissue densities. No cross-study ranking or combined leaderboards exist. Evaluations are strictly within-study.
+          </div>
         </div>
 
-        <div class="study-dual-grid">
-          <!-- Study A Card -->
-          <article class="study-card-v3">
-            <div class="study-card-header">
-              <div>
+        <div class="model-selection-grid">
+          <!-- Study A: WDBC Model Selection Board -->
+          <article class="selection-study-board">
+            <header class="selection-board-header teal-theme">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
                 <span class="studio-badge badge-teal">Study A · Classical ML</span>
-                <h3 style="margin-top: 0.5rem; font-size: 1.25rem;">WDBC FNA Cytology Analysis</h3>
+                <span class="studio-pill studio-pill-teal">569 Cases · 30 FNA Features</span>
               </div>
-              <span class="mega-badge mega-badge-teal">30 Morphometry Features</span>
-            </div>
-            <div class="study-card-body">
-              <div class="study-visual-box">
-                <img src="assets/img/ml_roc_comparison.png" alt="Study A ROC curve comparison across classical ML algorithms" width="600" height="337">
-              </div>
-              <p>
-                Evaluates nuclear contour features extracted from digitized Fine Needle Aspirate (FNA) biopsy samples. Frozen candidate is an L2-regularized Logistic Regression model calibrated with Platt scaling.
+              <h3 style="font-size: 1.375rem; font-weight: 800; color: var(--slate-900); margin-top: 0.25rem;">WDBC Cytology Selection</h3>
+              <p style="font-size: 0.8125rem; color: var(--slate-600); margin: 0;">
+                Candidate screening protocol: <strong>5-Fold Out-Of-Fold (OOF) Cross-Validation</strong> on development data.
               </p>
-              <div class="study-metrics-row">
-                <div class="study-metric-item">
-                  <small>Sensitivity</small>
-                  <b>95.24%</b>
-                </div>
-                <div class="study-metric-item">
-                  <small>Specificity</small>
-                  <b>98.61%</b>
-                </div>
-                <div class="study-metric-item">
-                  <small>Raw Threshold</small>
-                  <b>≥ 0.360</b>
-                </div>
-              </div>
-              <div style="margin-top: 1.25rem;">
-                <a class="studio-btn studio-btn-outline studio-btn-sm" href="pages/research.html">View Study A Methods →</a>
-              </div>
-            </div>
-          </article>
+            </header>
 
-          <!-- Study B Card -->
-          <article class="study-card-v3">
-            <div class="study-card-header">
+            <div class="selection-board-body">
+              <!-- Comparison Table -->
               <div>
-                <span class="studio-badge badge-blue">Study B · CBIS-DDSM</span>
-                <h3 style="margin-top: 0.5rem; font-size: 1.25rem;">CBIS-DDSM Mammography Vision</h3>
-              </div>
-              <span class="mega-badge mega-badge-blue">Full Processed Image</span>
-            </div>
-            <div class="study-card-body">
-              <div class="study-visual-box">
-                <img src="assets/img/dl_roc_comparison.png" alt="Study B ROC comparison for transfer learning mammography models" width="600" height="337">
-              </div>
-              <p>
-                Evaluates transfer learning on full processed digital mammography images (CBIS-DDSM). The final retained candidate is an EfficientNet-B0 backbone trained on full processed images (raw malignant probability threshold ≥ 0.515, runtime input 224×224×3 RGB post-preprocessing; ROI was evaluated as an ablation and rejected validation-first).
-              </p>
-              <div class="study-metrics-row">
-                <div class="study-metric-item">
-                  <small>Sensitivity</small>
-                  <b>67.86%</b>
+                <span style="display: block; font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--slate-500); margin-bottom: 0.5rem;">
+                  Development Evidence (5-Fold OOF CV)
+                </span>
+                <div class="selection-table-wrap">
+                  <table class="selection-table">
+                    <thead>
+                      <tr>
+                        <th>Candidate</th>
+                        <th>ROC-AUC</th>
+                        <th>PR-AUC</th>
+                        <th>Sens.</th>
+                        <th>Spec.</th>
+                        <th>Bal. Acc</th>
+                        <th>Brier</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="is-selected">
+                        <td data-label="Candidate"><strong>Logistic Regression</strong><span class="selected-star">★</span></td>
+                        <td data-label="ROC-AUC" class="num">0.9950</td>
+                        <td data-label="PR-AUC" class="num">0.9941</td>
+                        <td data-label="Sensitivity" class="num">97.65%</td>
+                        <td data-label="Specificity" class="num">96.84%</td>
+                        <td data-label="Bal. Acc" class="num">97.24%</td>
+                        <td data-label="Brier Score" class="num">0.0200</td>
+                        <td data-label="Status"><span class="studio-badge badge-teal">Selected</span></td>
+                      </tr>
+                      <tr>
+                        <td data-label="Candidate">Random Forest</td>
+                        <td data-label="ROC-AUC" class="num">0.9876</td>
+                        <td data-label="PR-AUC" class="num">0.9859</td>
+                        <td data-label="Sensitivity" class="num">95.88%</td>
+                        <td data-label="Specificity" class="num">96.49%</td>
+                        <td data-label="Bal. Acc" class="num">96.19%</td>
+                        <td data-label="Brier Score" class="num">0.0305</td>
+                        <td data-label="Status"><span class="studio-badge badge-neutral">Evaluated</span></td>
+                      </tr>
+                      <tr>
+                        <td data-label="Candidate">XGBoost</td>
+                        <td data-label="ROC-AUC" class="num">0.9939</td>
+                        <td data-label="PR-AUC" class="num">0.9924</td>
+                        <td data-label="Sensitivity" class="num">95.29%</td>
+                        <td data-label="Specificity" class="num">98.95%</td>
+                        <td data-label="Bal. Acc" class="num">97.12%</td>
+                        <td data-label="Brier Score" class="num">0.0225</td>
+                        <td data-label="Status"><span class="studio-badge badge-neutral">Evaluated</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
-                <div class="study-metric-item">
-                  <small>Specificity</small>
-                  <b>62.50%</b>
+              </div>
+
+              <!-- Selection Gate Indicator -->
+              <div class="selection-gate-arrow gate-arrow-teal">
+                ↓ Development Selection: Logistic Regression
+              </div>
+
+              <!-- Why this model? -->
+              <div class="why-model-box">
+                <h4>
+                  <span style="color: var(--teal-600);">★</span> Why Logistic Regression?
+                </h4>
+                <p class="why-model-lead">
+                  Logistic Regression demonstrated the strongest, most stable diagnostic balance across all five development folds, providing top-tier discriminatory power while remaining fully interpretable with direct coefficient weights.
+                </p>
+                <ul class="why-model-list">
+                  <li><strong>Development-only selection:</strong> Selected strictly on 5-fold cross-validation evidence prior to evaluating test data.</li>
+                  <li><strong>Highest ROC-AUC (0.9950) &amp; PR-AUC (0.9941):</strong> Outperformed ensemble tree alternatives in discriminatory accuracy.</li>
+                  <li><strong>Superior probability calibration:</strong> Lowest Brier score (0.0200) and highest balanced accuracy (97.24%).</li>
+                  <li><strong>Convex &amp; robust:</strong> L2 regularization prevents overfitting on small clinical cohorts (569 cases) compared to non-linear splits.</li>
+                </ul>
+              </div>
+
+              <!-- Final Locked Held-Out Test Report Gate -->
+              <div class="selection-gate-arrow gate-arrow-teal">
+                ↓ Locked Test Report (Post-Selection Verification)
+              </div>
+
+              <div class="heldout-report-card">
+                <div class="heldout-report-top">
+                  <div>
+                    <span class="heldout-badge-pill heldout-badge-teal">Final Held-Out Report</span>
+                    <strong style="margin-left: 0.5rem; font-size: 0.8125rem;">WDBC Test Split (114 Cases)</strong>
+                  </div>
+                  <span style="font-family: var(--font-mono); font-size: 0.75rem; color: #94a3b8;">
+                    Frozen decision rule: raw malignant probability ≥ 0.360
+                  </span>
                 </div>
-                <div class="study-metric-item">
-                  <small>Raw Threshold</small>
-                  <b>≥ 0.515</b>
+                <div class="heldout-metrics-grid">
+                  <div class="heldout-metric-cell">
+                    <small>Accuracy</small>
+                    <b>97.37%</b>
+                  </div>
+                  <div class="heldout-metric-cell">
+                    <small>ROC-AUC</small>
+                    <b>0.9954</b>
+                  </div>
+                  <div class="heldout-metric-cell">
+                    <small>PR-AUC</small>
+                    <b>0.9932</b>
+                  </div>
+                  <div class="heldout-metric-cell">
+                    <small>Sensitivity</small>
+                    <b>95.24%</b>
+                  </div>
+                  <div class="heldout-metric-cell">
+                    <small>Specificity</small>
+                    <b>98.61%</b>
+                  </div>
+                  <div class="heldout-metric-cell">
+                    <small>Balanced Acc.</small>
+                    <b>96.92%</b>
+                  </div>
+                </div>
+                <div class="heldout-contingency-strip">
+                  <span>TN: 71 (Benign)</span>
+                  <span>FP: 1</span>
+                  <span>FN: 2</span>
+                  <span>TP: 40 (Malignant)</span>
+                </div>
+                <div class="heldout-report-sub">
+                  Post-selection verification report. Held-out test data did NOT drive candidate selection.
                 </div>
               </div>
-              <div style="margin-top: 1.25rem;">
-                <a class="studio-btn studio-btn-outline studio-btn-sm" href="pages/model-comparison.html">View Study B Methods →</a>
+
+              <!-- Expandable Evidence Figures Drawer -->
+              <details class="selection-figures-toggle">
+                <summary class="selection-toggle-summary">
+                  <span>Inspect Study A Evidence Figures (ROC Curves &amp; SHAP)</span>
+                  <span style="font-size: 0.875rem;">▾</span>
+                </summary>
+                <div class="selection-figures-body">
+                  <div class="selection-figure-card">
+                    <img src="assets/img/ml_roc_comparison.png" alt="Study A ROC curves comparison for Logistic Regression, Random Forest, and XGBoost" width="600" height="337">
+                    <div class="selection-figure-caption">
+                      ROC curves comparing cross-validation discriminatory trajectories across classical ML candidates.
+                    </div>
+                  </div>
+                  <div class="selection-figure-card">
+                    <img src="assets/img/ml_shap_bar.png" alt="SHAP global feature importance bar plot for WDBC Logistic Regression" width="600" height="337">
+                    <div class="selection-figure-caption">
+                      SHAP global feature attribution validating primary nuclear contour dependencies.
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <div>
+                <a class="studio-btn studio-btn-outline studio-btn-sm" href="pages/research.html" style="width: 100%; justify-content: center;">
+                  Explore Complete Study A Research Dossier →
+                </a>
               </div>
             </div>
           </article>
-        </div>
 
-        <div style="margin-top: 1.5rem; text-align: center;">
-          <small class="text-muted">
-            ⚠️ Methodological Note: WDBC evaluates high-resolution cytological aspirates from palpable lesions; CBIS-DDSM evaluates screening mammograms with variable tissue densities. Direct performance comparison is scientifically invalid.
-          </small>
+          <!-- Study B: CBIS-DDSM Model Selection Board -->
+          <article class="selection-study-board">
+            <header class="selection-board-header blue-theme">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <span class="studio-badge badge-blue">Study B · Deep Learning</span>
+                <span class="studio-pill studio-pill-blue">Full Processed Mammography</span>
+              </div>
+              <h3 style="font-size: 1.375rem; font-weight: 800; color: var(--slate-900); margin-top: 0.25rem;">CBIS-DDSM Vision Selection</h3>
+              <p style="font-size: 0.8125rem; color: var(--slate-600); margin: 0;">
+                Candidate screening protocol: <strong>Validation-First Evidence</strong> on frozen validation split.
+              </p>
+            </header>
+
+            <div class="selection-board-body">
+              <!-- Comparison Table -->
+              <div>
+                <span style="display: block; font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--slate-500); margin-bottom: 0.5rem;">
+                  Validation-First Evidence (Validation Split)
+                </span>
+                <div class="selection-table-wrap">
+                  <table class="selection-table blue-theme">
+                    <thead>
+                      <tr>
+                        <th>Candidate</th>
+                        <th>Cutoff</th>
+                        <th>ROC-AUC</th>
+                        <th>PR-AUC</th>
+                        <th>Sens.</th>
+                        <th>Spec.</th>
+                        <th>Bal. Acc</th>
+                        <th>Brier</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="is-selected">
+                        <td data-label="Candidate"><strong>EfficientNet-B0</strong><span class="selected-star">★</span></td>
+                        <td data-label="Raw Cutoff" class="num">0.515</td>
+                        <td data-label="ROC-AUC" class="num">0.7044</td>
+                        <td data-label="PR-AUC" class="num">0.6152</td>
+                        <td data-label="Sensitivity" class="num">68.13%</td>
+                        <td data-label="Specificity" class="num">63.48%</td>
+                        <td data-label="Bal. Acc" class="num">65.80%</td>
+                        <td data-label="Brier Score" class="num">0.2327</td>
+                        <td data-label="Status"><span class="studio-badge badge-blue">Selected</span></td>
+                      </tr>
+                      <tr>
+                        <td data-label="Candidate">ResNet50</td>
+                        <td data-label="Raw Cutoff" class="num">0.470</td>
+                        <td data-label="ROC-AUC" class="num">0.6690</td>
+                        <td data-label="PR-AUC" class="num">0.5733</td>
+                        <td data-label="Sensitivity" class="num">80.00%</td>
+                        <td data-label="Specificity" class="num">47.83%</td>
+                        <td data-label="Bal. Acc" class="num">63.91%</td>
+                        <td data-label="Brier Score" class="num">0.2349</td>
+                        <td data-label="Status"><span class="studio-badge badge-neutral">Evaluated</span></td>
+                      </tr>
+                      <tr>
+                        <td data-label="Candidate">Custom CNN</td>
+                        <td data-label="Raw Cutoff" class="num">0.500</td>
+                        <td data-label="ROC-AUC" class="num">0.6373</td>
+                        <td data-label="PR-AUC" class="num">N/A</td>
+                        <td data-label="Sensitivity" class="num">51.88%</td>
+                        <td data-label="Specificity" class="num">70.43%</td>
+                        <td data-label="Bal. Acc" class="num">61.15%</td>
+                        <td data-label="Brier Score" class="num">0.2468</td>
+                        <td data-label="Status"><span class="studio-badge badge-neutral">Evaluated</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Selection Gate Indicator -->
+              <div class="selection-gate-arrow gate-arrow-blue">
+                ↓ Validation-First Selection: EfficientNet-B0
+              </div>
+
+              <!-- Why this model? -->
+              <div class="why-model-box">
+                <h4>
+                  <span style="color: var(--blue-600);">★</span> Why EfficientNet-B0?
+                </h4>
+                <p class="why-model-lead">
+                  EfficientNet-B0 achieved the highest validation discrimination while maintaining a balanced trade-off between sensitivity and specificity, avoiding the extreme specificity collapse observed in heavier architectures.
+                </p>
+                <ul class="why-model-list blue-theme">
+                  <li><strong>Validation-first selection:</strong> Candidate selection occurred strictly on the validation split before evaluating held-out test data.</li>
+                  <li><strong>Highest validation ROC-AUC (0.7044) &amp; PR-AUC (0.6152):</strong> Outperformed ResNet50 and Custom CNN on unseen scans.</li>
+                  <li><strong>Lowest validation calibration error:</strong> Achieved lowest Brier score (0.2327) and highest balanced accuracy (65.80%).</li>
+                  <li><strong>Avoided false-positive surge:</strong> ResNet50 specificity collapsed to 47.83%, whereas EfficientNet-B0 maintained 63.48% specificity.</li>
+                </ul>
+              </div>
+
+              <!-- Final Locked Held-Out Test Report Gate -->
+              <div class="selection-gate-arrow gate-arrow-blue">
+                ↓ Locked Test Report (Post-Selection Verification)
+              </div>
+
+              <div class="heldout-report-card">
+                <div class="heldout-report-top">
+                  <div>
+                    <span class="heldout-badge-pill heldout-badge-blue">Final Held-Out Report</span>
+                    <strong style="margin-left: 0.5rem; font-size: 0.8125rem;">Full Processed Test Split (392 Scans)</strong>
+                  </div>
+                  <span style="font-family: var(--font-mono); font-size: 0.75rem; color: #94a3b8;">
+                    Frozen decision rule: raw malignant probability ≥ 0.515
+                  </span>
+                </div>
+                <div class="heldout-metrics-grid">
+                  <div class="heldout-metric-cell">
+                    <small>Accuracy</small>
+                    <b>64.80%</b>
+                  </div>
+                  <div class="heldout-metric-cell">
+                    <small>ROC-AUC</small>
+                    <b>0.7229</b>
+                  </div>
+                  <div class="heldout-metric-cell">
+                    <small>PR-AUC</small>
+                    <b>0.6564</b>
+                  </div>
+                  <div class="heldout-metric-cell">
+                    <small>Sensitivity</small>
+                    <b>67.86%</b>
+                  </div>
+                  <div class="heldout-metric-cell">
+                    <small>Specificity</small>
+                    <b>62.50%</b>
+                  </div>
+                  <div class="heldout-metric-cell">
+                    <small>Brier Score</small>
+                    <b>0.2297</b>
+                  </div>
+                </div>
+                <div class="heldout-contingency-strip">
+                  <span>TN: 140 (Benign)</span>
+                  <span>FP: 84</span>
+                  <span>FN: 54</span>
+                  <span>TP: 114 (Malignant)</span>
+                </div>
+                <div class="heldout-report-sub">
+                  Post-selection verification report. Held-out test data did NOT drive candidate selection.
+                </div>
+              </div>
+
+              <!-- Expandable Evidence Figures Drawer -->
+              <details class="selection-figures-toggle">
+                <summary class="selection-toggle-summary">
+                  <span>Inspect Study B Evidence Figures (ROC Curves &amp; Grad-CAM)</span>
+                  <span style="font-size: 0.875rem;">▾</span>
+                </summary>
+                <div class="selection-figures-body">
+                  <div class="selection-figure-card">
+                    <img src="assets/img/dl_roc_comparison.png" alt="Study B ROC comparison for transfer learning mammography models" width="600" height="337">
+                    <div class="selection-figure-caption">
+                      ROC curves comparing validation and test trajectories for mammography deep learning backbones.
+                    </div>
+                  </div>
+                  <div class="selection-figure-card">
+                    <img src="assets/img/efficientnet_gradcam_examples.png" alt="Grad-CAM heatmaps for EfficientNet-B0 mammography classification" width="600" height="300">
+                    <div class="selection-figure-caption">
+                      Grad-CAM visual attribution highlighting focal radiologic density regions.
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <div>
+                <a class="studio-btn studio-btn-outline studio-btn-sm" href="pages/model-comparison.html" style="width: 100%; justify-content: center;">
+                  Explore Complete Study B Research Dossier →
+                </a>
+              </div>
+            </div>
+          </article>
         </div>
       </div>
     </section>
 
     <!-- ============================================================
-         BEAT 04: INTERACTIVE ANALYSIS PREVIEW
+         BEAT 04: FROM PROBABILITY TO PREDICTION (TELEMETRY)
          ============================================================ -->
     <section id="preview" class="studio-section" style="background-color: var(--surface-subtle);">
       <div class="studio-container">
         <div class="section-header">
-          <span class="studio-eyebrow">Interactive Telemetry</span>
-          <h2 class="section-title">Experience Dual-Probability Decision Semantics</h2>
+          <span class="studio-eyebrow">Decision Rule &amp; Telemetry Semantics</span>
+          <h2 class="section-title">From Probability to Prediction</h2>
           <p class="section-lead">
-            Explore how raw machine learning inference probabilities map to calibrated reliability scores and frozen clinical research thresholds.
+            Explore how raw model probabilities are compared with frozen research decision thresholds to produce a research prediction. For the mammography model, a separate Platt calibrated probability is shown for reliability interpretation only.
           </p>
         </div>
 
         <div class="interactive-preview-stage">
+          <!-- Research Question Banner -->
+          <div class="telemetry-question-strip">
+            <span>🔬</span>
+            <span><strong>Research Explainer:</strong> How does the frozen model turn a continuous probability into a categorical research prediction?</span>
+          </div>
+
           <div class="preview-controls-bar">
             <div>
-              <span style="font-size: 0.8125rem; font-family: var(--font-mono); color: var(--slate-400); text-transform: uppercase;">SELECT EVALUATION SAMPLE:</span>
+              <span style="font-size: 0.8125rem; font-family: var(--font-mono); color: var(--slate-400); text-transform: uppercase;">SELECT DEMONSTRATION SAMPLE:</span>
               <div class="preset-pills-group" style="margin-top: 0.375rem;">
-                <button id="sampleA_Btn" class="preset-pill-btn active" type="button">Sample 1: WDBC FNA Biopsy</button>
-                <button id="sampleB_Btn" class="preset-pill-btn" type="button">Sample 2: Mammogram Full Processed Image</button>
+                <button id="sampleA_Btn" class="preset-pill-btn active" type="button">Sample 1: WDBC FNA Cytology</button>
+                <button id="sampleB_Btn" class="preset-pill-btn" type="button">Sample 2: CBIS-DDSM Mammography</button>
               </div>
             </div>
             <div style="text-align: right;">
-              <span id="previewSampleTag" style="font-family: var(--font-mono); font-size: 0.875rem; color: var(--teal-400); font-weight: 700;">Study A · Case #W-1042</span>
-              <div id="previewModalityText" style="font-size: 0.75rem; color: var(--slate-400);">Fine Needle Aspirate (FNA) Nuclear Morphometry</div>
+              <span id="previewSampleTag" style="font-family: var(--font-mono); font-size: 0.875rem; color: var(--teal-400); font-weight: 700;">Interactive demonstration sample (WDBC Cytology)</span>
+              <div id="previewModalityText" style="font-size: 0.75rem; color: var(--slate-400);">Fine Needle Aspirate (FNA) 30 Nuclear Morphometry Features</div>
             </div>
           </div>
 
           <div class="preview-dual-display">
-            <!-- Raw Probability Gauge -->
+            <!-- Left Box: Raw Malignant Probability (Classification Basis) -->
             <div class="preview-meter-box">
-              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
-                <span style="font-size: 0.875rem; font-weight: 700; color: var(--slate-200);">Raw Output Probability</span>
-                <span id="rawProbValue" style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 800; color: var(--teal-400);">88.4%</span>
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                  <div>
+                    <span style="font-size: 0.875rem; font-weight: 700; color: #ffffff;">Raw Malignant Probability</span>
+                    <span style="display: block; font-size: 0.6875rem; color: var(--slate-400); text-transform: uppercase; letter-spacing: 0.04em;">Model Output · Classification Basis</span>
+                  </div>
+                  <span id="rawProbValue" style="font-family: var(--font-mono); font-size: 1.625rem; font-weight: 800; color: var(--teal-400);">88.4%</span>
+                </div>
+                <div class="gauge-track">
+                  <div id="rawProbFill" class="gauge-fill" style="width: 88.4%;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.6875rem; color: var(--slate-400); margin-top: 0.375rem;">
+                  <span>0.0 (Benign)</span>
+                  <span id="previewCutoffTag" style="color: #fbbf24; font-weight: 700;">Frozen research decision threshold: ≥ 0.360</span>
+                  <span>1.0 (Malignant)</span>
+                </div>
               </div>
-              <div class="gauge-track">
-                <div id="rawProbFill" class="gauge-fill" style="width: 88.4%;"></div>
+
+              <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--slate-800); display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.75rem; color: var(--slate-300);">Margin from threshold:</span>
+                <span id="rawMarginTag" class="telemetry-margin-pill margin-pill-pos">+52.4% above cutoff</span>
               </div>
-              <div style="display: flex; justify-content: space-between; font-size: 0.6875rem; color: var(--slate-400); margin-top: 0.375rem;">
-                <span>0.0 (Benign)</span>
-                <span id="previewCutoffTag" style="color: var(--warning-text); font-weight: 700;">Raw Cutoff ≥ 0.360</span>
-                <span>1.0 (Malignant)</span>
-              </div>
-              <p style="font-size: 0.75rem; color: var(--slate-400); margin-top: 0.75rem;">
-                Direct classification output from the frozen model before post-processing.
+              <p style="font-size: 0.75rem; color: var(--slate-400); margin-top: 0.5rem; line-height: 1.4;">
+                This raw probability is the direct mathematical output evaluated against the frozen research decision threshold to produce the categorical prediction.
               </p>
             </div>
 
-            <!-- Calibrated Platt Reliability Gauge -->
+            <!-- Right Box: Study A Decision Rule OR Study B Platt Calibration -->
             <div class="preview-meter-box">
-              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
-                <span style="font-size: 0.875rem; font-weight: 700; color: var(--slate-200);">Calibrated Reliability Score</span>
-                <span id="calibProbValue" style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 800; color: var(--blue-400);">91.2%</span>
+              <!-- Study A Panel: Decision Rule & Runtime Semantics -->
+              <div id="telemetryStudyAPanel" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                    <div>
+                      <span style="font-size: 0.875rem; font-weight: 700; color: #ffffff;">Decision Rule Architecture</span>
+                      <span style="display: block; font-size: 0.6875rem; color: var(--teal-400); text-transform: uppercase; letter-spacing: 0.04em;">Study A Runtime Contract</span>
+                    </div>
+                    <span class="studio-badge badge-teal">Raw Retained</span>
+                  </div>
+                  <div style="background-color: #0f172a; border: 1px solid #1e293b; border-radius: var(--radius-md); padding: 0.75rem; margin-top: 0.5rem; font-family: var(--font-mono); font-size: 0.8125rem; color: #38bdf8;">
+                    if raw malignant probability ≥ 0.360:<br>
+                    &nbsp;&nbsp;→ Malignant Prediction<br>
+                    else:<br>
+                    &nbsp;&nbsp;→ Benign Prediction
+                  </div>
+                </div>
+
+                <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--slate-800);">
+                  <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--slate-300); margin-bottom: 0.25rem;">
+                    <span>Frozen Decision Boundary:</span>
+                    <strong style="font-family: var(--font-mono); color: #fbbf24;">0.360</strong>
+                  </div>
+                  <p style="font-size: 0.75rem; color: var(--slate-400); margin: 0; line-height: 1.4;">
+                    No post-hoc Platt scaling is applied to Study A. The frozen Logistic Regression runtime retains its raw sigmoid probability directly for decision assignment and research evaluation.
+                  </p>
+                </div>
               </div>
-              <div class="gauge-track">
-                <div id="calibProbFill" class="gauge-fill" style="width: 91.2%; background-color: var(--blue-500);"></div>
+
+              <!-- Study B Panel: Calibrated Malignant Probability (Platt Scaling) -->
+              <div id="telemetryStudyBPanel" style="display: none; flex-direction: column; justify-content: space-between; height: 100%;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                    <div>
+                      <span style="font-size: 0.875rem; font-weight: 700; color: #ffffff;">Calibrated Malignant Probability</span>
+                      <span style="display: block; font-size: 0.6875rem; color: var(--blue-400); text-transform: uppercase; letter-spacing: 0.04em;">Platt Scaling · Display &amp; Reliability Only</span>
+                    </div>
+                    <span id="calibProbValue" style="font-family: var(--font-mono); font-size: 1.625rem; font-weight: 800; color: var(--blue-400);">31.5%</span>
+                  </div>
+                  <div class="gauge-track">
+                    <div id="calibProbFill" class="gauge-fill" style="width: 31.5%; background-color: var(--blue-500);"></div>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.6875rem; color: var(--slate-400); margin-top: 0.375rem;">
+                    <span>0.0 (Low Calib)</span>
+                    <span id="calibReliabilityPill" style="color: #60a5fa; font-weight: 700;">Interpretation Reliability: High</span>
+                    <span>1.0 (High Calib)</span>
+                  </div>
+                </div>
+
+                <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--slate-800);">
+                  <span style="display: block; font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #fbbf24; margin-bottom: 0.25rem;">
+                    ⚠️ Critical Hierarchy Rule
+                  </span>
+                  <p style="font-size: 0.75rem; color: var(--slate-400); margin: 0; line-height: 1.4;">
+                    The calibrated probability is computed via the frozen Platt sigmoid artifact strictly for human reliability interpretation. It does <strong>NOT</strong> determine classification and does <strong>NOT</strong> alter the 0.515 raw decision boundary.
+                  </p>
+                </div>
               </div>
-              <div style="display: flex; justify-content: space-between; font-size: 0.6875rem; color: var(--slate-400); margin-top: 0.375rem;">
-                <span>Low Confidence</span>
-                <span>Platt Scaling Display</span>
-                <span>High Confidence</span>
-              </div>
-              <p style="font-size: 0.75rem; color: var(--slate-400); margin-top: 0.75rem;">
-                Empirically calibrated probability for human reliability assessment.
-              </p>
             </div>
           </div>
 
           <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--slate-800); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
             <div>
-              <span style="font-size: 0.8125rem; color: var(--slate-400);">Model Candidate:</span>
+              <span style="font-size: 0.8125rem; color: var(--slate-400);">Evaluated Model Candidate:</span>
               <strong id="previewModelTag" style="margin-left: 0.25rem; color: #ffffff;">Logistic Regression (30 FNA Features)</strong>
             </div>
             <div>
-              <span id="previewStatusPill" class="studio-badge badge-danger">Malignant Suspicion (Above 0.360 Research Cutoff)</span>
+              <span id="previewStatusPill" class="studio-badge badge-danger">Malignant Prediction (Raw probability 0.884 ≥ 0.360 threshold)</span>
             </div>
           </div>
         </div>

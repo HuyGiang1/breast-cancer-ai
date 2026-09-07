@@ -117,31 +117,40 @@ function initInteractivePreview() {
   const previewModalityText = document.getElementById('previewModalityText');
   const rawProbValue = document.getElementById('rawProbValue');
   const rawProbFill = document.getElementById('rawProbFill');
+  const rawMarginTag = document.getElementById('rawMarginTag');
+  const panelA = document.getElementById('telemetryStudyAPanel');
+  const panelB = document.getElementById('telemetryStudyBPanel');
   const calibProbValue = document.getElementById('calibProbValue');
   const calibProbFill = document.getElementById('calibProbFill');
+  const calibReliabilityPill = document.getElementById('calibReliabilityPill');
   const statusPill = document.getElementById('previewStatusPill');
 
   if (!sampleA_Btn || !sampleB_Btn) return;
 
   const sampleData = {
     A: {
-      tag: 'Study A · Case #W-1042',
+      tag: 'Interactive demonstration sample (WDBC Cytology)',
       model: 'Logistic Regression (30 FNA Features)',
-      cutoff: 'Raw Cutoff ≥ 0.360',
-      modality: 'Fine Needle Aspirate (FNA) Nuclear Morphometry',
+      cutoff: 'Frozen research decision threshold: ≥ 0.360',
+      modality: 'Fine Needle Aspirate (FNA) 30 Nuclear Morphometry Features',
       raw: 0.884,
-      calib: 0.912,
-      decision: 'Malignant Suspicion (Above 0.360 Research Cutoff)',
+      margin: '+52.4% above cutoff',
+      marginClass: 'margin-pill-pos',
+      calib: null,
+      decision: 'Malignant Prediction (Raw probability 0.884 ≥ 0.360 threshold)',
       badgeClass: 'badge-danger'
     },
     B: {
-      tag: 'Study B · Case #DDSM-4109',
+      tag: 'Interactive demonstration sample (CBIS-DDSM Mammography)',
       model: 'EfficientNet-B0 (Full Processed Image)',
-      cutoff: 'Raw Cutoff ≥ 0.515',
+      cutoff: 'Frozen research decision threshold: ≥ 0.515',
       modality: 'CBIS-DDSM Mammography Full Processed Image (224×224×3 RGB input)',
       raw: 0.284,
+      margin: '-23.1% below cutoff',
+      marginClass: 'margin-pill-neg',
       calib: 0.315,
-      decision: 'Benign Pattern (Below 0.515 Research Cutoff)',
+      reliability: 'Interpretation Reliability: High',
+      decision: 'Benign Prediction (Raw probability 0.284 < 0.515 threshold)',
       badgeClass: 'badge-success'
     }
   };
@@ -162,9 +171,21 @@ function initInteractivePreview() {
 
     if (rawProbValue) rawProbValue.textContent = (data.raw * 100).toFixed(1) + '%';
     if (rawProbFill) rawProbFill.style.width = (data.raw * 100).toFixed(1) + '%';
+    if (rawMarginTag) {
+      rawMarginTag.textContent = data.margin;
+      rawMarginTag.className = `telemetry-margin-pill ${data.marginClass}`;
+    }
 
-    if (calibProbValue) calibProbValue.textContent = (data.calib * 100).toFixed(1) + '%';
-    if (calibProbFill) calibProbFill.style.width = (data.calib * 100).toFixed(1) + '%';
+    if (panelA && panelB) {
+      panelA.style.display = key === 'A' ? 'flex' : 'none';
+      panelB.style.display = key === 'B' ? 'flex' : 'none';
+    }
+
+    if (key === 'B') {
+      if (calibProbValue) calibProbValue.textContent = (data.calib * 100).toFixed(1) + '%';
+      if (calibProbFill) calibProbFill.style.width = (data.calib * 100).toFixed(1) + '%';
+      if (calibReliabilityPill) calibReliabilityPill.textContent = data.reliability;
+    }
 
     if (statusPill) {
       statusPill.textContent = data.decision;

@@ -154,6 +154,56 @@ async function capture() {
     const dest = path.join(SCREENSHOT_DIR, t.name);
     fs.writeFileSync(dest, buffer);
     console.log(`Saved: ${dest} (${buffer.length} bytes)`);
+
+    // Capture targeted section clips for landing
+    if (t.url.includes('index.html')) {
+      const isMobile = t.mobile;
+      const suffix = isMobile ? '390.png' : '1440.png';
+
+      for (const section of [
+        { id: '#studies', file: `landing-model-selection-${suffix}` },
+        { id: '#preview', file: `landing-telemetry-${suffix}` }
+      ]) {
+        try {
+          const box = await client.send('Runtime.evaluate', {
+            expression: `
+              (() => {
+                const el = document.querySelector('${section.id}');
+                if (!el) return null;
+                const rect = el.getBoundingClientRect();
+                return {
+                  x: 0,
+                  y: Math.max(0, rect.top + window.scrollY),
+                  width: ${t.width},
+                  height: rect.height
+                };
+              })()
+            `,
+            returnByValue: true
+          });
+
+          if (box.result.value) {
+            const { x, y, width, height } = box.result.value;
+            const clipShot = await client.send('Page.captureScreenshot', {
+              format: 'png',
+              clip: {
+                x: Math.round(x),
+                y: Math.round(y),
+                width: Math.round(width),
+                height: Math.round(height),
+                scale: 1
+              },
+              captureBeyondViewport: true
+            });
+            const clipDest = path.join(SCREENSHOT_DIR, section.file);
+            fs.writeFileSync(clipDest, Buffer.from(clipShot.data, 'base64'));
+            console.log(`Saved section clip: ${clipDest}`);
+          }
+        } catch (e) {
+          console.error(`Failed to capture ${section.file}:`, e);
+        }
+      }
+    }
   }
 
   client.close();
