@@ -150,15 +150,27 @@ export const FACTUAL_CLAIMS = [
   },
   {
     claimId: "CLAIM-LIFESTYLE-003",
-    topic: "Physical Activity Guidelines & Long-Term Health",
+    topic: "Physical Activity Guidelines & Long-Term Health (WHO)",
     statement: "Engaging in regular physical activity (150 to 300 minutes of moderate-intensity or 75 to 150 minutes of vigorous-intensity aerobic physical activity weekly) is associated with metabolic wellness and lower post-menopausal breast cancer risk.",
-    sourceOrganization: "World Health Organization (WHO) / American Cancer Society",
+    sourceOrganization: "World Health Organization (WHO)",
     sourceTitle: "WHO Guidelines on Physical Activity and Sedentary Behaviour",
     sourceUrl: "https://www.who.int/publications/i/item/9789240015128",
-    sourceReference: "WHO Guidelines on Physical Activity (2020) & Rock CL et al. American Cancer Society Guideline on Diet and Physical Activity for Cancer Prevention, CA Cancer J Clin 2020;70(4):245-271",
+    sourceReference: "World Health Organization. WHO Guidelines on Physical Activity and Sedentary Behaviour. Geneva: WHO, 2020.",
     publishedOrUpdatedDate: "2020-11-25",
     reviewedDate: "2026-02-15",
     geographicApplicability: "Global public health recommendation"
+  },
+  {
+    claimId: "CLAIM-LIFESTYLE-003B",
+    topic: "Physical Activity & Cancer Prevention Guidelines (ACS)",
+    statement: "Engaging in 150 to 300 minutes of moderate-intensity or 75 to 150 minutes of vigorous-intensity physical activity weekly is recommended for cancer prevention and general health maintenance.",
+    sourceOrganization: "American Cancer Society (ACS)",
+    sourceTitle: "American Cancer Society Guideline for Diet and Physical Activity for Cancer Prevention",
+    sourceUrl: "https://acsjournals.onlinelibrary.wiley.com/doi/10.3322/caac.21591",
+    sourceReference: "Rock CL, Thomson C, Gansler T, et al. American Cancer Society Guideline for Diet and Physical Activity for Cancer Prevention. CA Cancer J Clin 2020;70(4):245-271.",
+    publishedOrUpdatedDate: "2020-06-09",
+    reviewedDate: "2026-02-15",
+    geographicApplicability: "United States / International Reference"
   },
   {
     claimId: "CLAIM-NUTRITION-004",
