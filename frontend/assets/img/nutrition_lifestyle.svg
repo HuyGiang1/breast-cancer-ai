@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="nutriBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="20%" cy="20%" r="60%">
+      <stop offset="0%" stop-color="#34d399" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="800" height="500" rx="16" fill="url(#nutriBg)"/>
+  <rect width="800" height="500" rx="16" fill="url(#sunGlow)"/>
+
+  <!-- Botanical Leaf Accents -->
+  <g fill="#10b981" fill-opacity="0.15" transform="translate(100, 80)">
+    <path d="M 0 0 C 40 -80 120 -60 160 0 C 120 80 40 60 0 0 Z"/>
+    <path d="M 120 40 C 180 -20 240 0 280 60 C 220 120 160 100 120 40 Z"/>
+  </g>
+
+  <!-- Central Editorial Content Container -->
+  <rect x="80" y="70" width="640" height="360" rx="12" fill="#0f172a" fill-opacity="0.75" stroke="#059669" stroke-width="1.5"/>
+
+  <!-- Header Badge -->
+  <rect x="120" y="110" width="260" height="30" rx="6" fill="#065f46" stroke="#10b981" stroke-width="1"/>
+  <text x="132" y="130" fill="#a7f3d0" font-family="'Inter', sans-serif" font-size="11" font-weight="700" letter-spacing="0.08em">EVIDENCE-BASED WELLNESS</text>
+
+  <!-- Editorial Title -->
+  <text x="120" y="185" fill="#ffffff" font-family="'Plus Jakarta Sans', 'Inter', sans-serif" font-size="28" font-weight="800">Nutrition, Activity &amp; Long-Term Health</text>
+  
+  <text x="120" y="225" fill="#94a3b8" font-family="'Inter', sans-serif" font-size="14" font-weight="400">
+    <tspan x="120" dy="0">A balanced dietary pattern rich in whole grains, colorful produce, and physical</tspan>
+    <tspan x="120" dy="24">activity supports overall metabolic balance. Grounded in peer-reviewed science,</tspan>
+    <tspan x="120" dy="24">free of unverified curative claims.</tspan>
+  </text>
+
+  <!-- 3 Evidence Pillars -->
+  <g transform="translate(120, 310)" font-family="'Inter', sans-serif">
+    <!-- Pillar 1 -->
+    <rect x="0" y="0" width="170" height="70" rx="8" fill="#1e293b" stroke="#334155"/>
+    <circle cx="24" cy="24" r="10" fill="#065f46"/>
+    <text x="24" y="28" text-anchor="middle" fill="#34d399" font-size="12" font-weight="700">✓</text>
+    <text x="44" y="28" fill="#f8fafc" font-size="13" font-weight="700">Whole Foods</text>
+    <text x="16" y="52" fill="#94a3b8" font-size="11">Fiber &amp; polyphenols</text>
+
+    <!-- Pillar 2 -->
+    <rect x="195" y="0" width="170" height="70" rx="8" fill="#1e293b" stroke="#334155"/>
+    <circle cx="219" cy="24" r="10" fill="#065f46"/>
+    <text x="219" y="28" text-anchor="middle" fill="#34d399" font-size="12" font-weight="700">✓</text>
+    <text x="239" y="28" fill="#f8fafc" font-size="13" font-weight="700">Physical Activity</text>
+    <text x="211" y="52" fill="#94a3b8" font-size="11">150–300 min/week</text>
+
+    <!-- Pillar 3 -->
+    <rect x="390" y="0" width="170" height="70" rx="8" fill="#1e293b" stroke="#334155"/>
+    <circle cx="414" cy="24" r="10" fill="#065f46"/>
+    <text x="414" y="28" text-anchor="middle" fill="#34d399" font-size="12" font-weight="700">✓</text>
+    <text x="434" y="28" fill="#f8fafc" font-size="13" font-weight="700">Alcohol Context</text>
+    <text x="406" y="52" fill="#94a3b8" font-size="11">Dose-risk awareness</text>
+  </g>
+</svg>

@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="anatBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="ductGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#14b8a6"/>
+      <stop offset="100%" stop-color="#2dd4bf"/>
+    </linearGradient>
+    <linearGradient id="lobuleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="subtleGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="600" rx="16" fill="url(#anatBg)"/>
+  
+  <!-- Subtle Grid Texture -->
+  <g stroke="#334155" stroke-width="1" opacity="0.3" stroke-dasharray="4 4">
+    <line x1="50" y1="50" x2="750" y2="50"/>
+    <line x1="50" y1="150" x2="750" y2="150"/>
+    <line x1="50" y1="250" x2="750" y2="250"/>
+    <line x1="50" y1="350" x2="750" y2="350"/>
+    <line x1="50" y1="450" x2="750" y2="450"/>
+    <line x1="50" y1="550" x2="750" y2="550"/>
+    <line x1="100" y1="50" x2="100" y2="550"/>
+    <line x1="300" y1="50" x2="300" y2="550"/>
+    <line x1="500" y1="50" x2="500" y2="550"/>
+    <line x1="700" y1="50" x2="700" y2="550"/>
+  </g>
+
+  <!-- Title Badge -->
+  <rect x="40" y="36" width="220" height="32" rx="6" fill="#0f766e" fill-opacity="0.3" stroke="#0d9488" stroke-width="1"/>
+  <text x="52" y="57" fill="#2dd4bf" font-family="'Inter', sans-serif" font-size="12" font-weight="700" letter-spacing="0.08em">ANATOMICAL REFERENCE</text>
+
+  <!-- Chest Wall / Rib Outline -->
+  <path d="M 120 120 C 140 220 140 380 120 480" fill="none" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
+  <text x="60" y="300" fill="#64748b" font-family="'Inter', sans-serif" font-size="11" font-weight="600">Pectoralis Major</text>
+
+  <!-- Mammary Profile Outline -->
+  <path d="M 120 140 C 220 140, 360 180, 480 290 C 510 315, 510 325, 480 350 C 360 460, 220 480, 120 480" fill="#134e4a" fill-opacity="0.12" stroke="#0d9488" stroke-width="2" stroke-dasharray="6 3"/>
+
+  <!-- Lobules (Glandular clusters) -->
+  <g id="lobules" fill="url(#lobuleGrad)" stroke="#bae6fd" stroke-width="1.5">
+    <!-- Cluster 1 Upper -->
+    <circle cx="280" cy="220" r="14" filter="url(#subtleGlow)"/>
+    <circle cx="305" cy="210" r="11"/>
+    <circle cx="295" cy="235" r="12"/>
+    <circle cx="320" cy="225" r="9"/>
+    
+    <!-- Cluster 2 Deep Upper -->
+    <circle cx="230" cy="260" r="13"/>
+    <circle cx="250" cy="275" r="11"/>
+    
+    <!-- Cluster 3 Central -->
+    <circle cx="330" cy="300" r="15"/>
+    <circle cx="355" cy="290" r="12"/>
+    <circle cx="350" cy="320" r="13"/>
+
+    <!-- Cluster 4 Lower Outer -->
+    <circle cx="260" cy="370" r="14"/>
+    <circle cx="285" cy="360" r="12"/>
+    <circle cx="280" cy="390" r="11"/>
+
+    <!-- Cluster 5 Lower -->
+    <circle cx="320" cy="410" r="13"/>
+    <circle cx="345" cy="400" r="10"/>
+  </g>
+
+  <!-- Lactiferous Ducts branching toward Nipple -->
+  <g stroke="url(#ductGrad)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 305 220 Q 380 260 460 315"/>
+    <path d="M 245 265 Q 350 290 460 318"/>
+    <path d="M 345 305 Q 400 312 460 320"/>
+    <path d="M 275 375 Q 370 345 460 322"/>
+    <path d="M 335 405 Q 400 365 460 324"/>
+  </g>
+
+  <!-- Nipple & Areola -->
+  <ellipse cx="495" cy="320" rx="8" ry="16" fill="#f43f5e" opacity="0.8"/>
+  <ellipse cx="482" cy="320" rx="14" ry="28" fill="#fda4af" opacity="0.25"/>
+
+  <!-- Axillary Lymph Nodes -->
+  <g id="lymphNodes">
+    <circle cx="170" cy="110" r="22" fill="url(#nodeGlow)"/>
+    <circle cx="170" cy="110" r="8" fill="#38bdf8" stroke="#e0f2fe" stroke-width="2"/>
+    
+    <circle cx="210" cy="90" r="20" fill="url(#nodeGlow)"/>
+    <circle cx="210" cy="90" r="7" fill="#38bdf8" stroke="#e0f2fe" stroke-width="2"/>
+
+    <circle cx="245" cy="80" r="18" fill="url(#nodeGlow)"/>
+    <circle cx="245" cy="80" r="6" fill="#38bdf8" stroke="#e0f2fe" stroke-width="2"/>
+
+    <!-- Connecting lymphatic vessels -->
+    <path d="M 170 110 L 210 90 L 245 80" stroke="#38bdf8" stroke-width="2" stroke-dasharray="3 3" fill="none"/>
+    <path d="M 230 260 C 200 200 175 140 170 110" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4 4" fill="none" opacity="0.6"/>
+  </g>
+
+  <!-- Editorial Labels & Pointers -->
+  <g font-family="'Inter', sans-serif" font-size="12" font-weight="500">
+    <!-- Duct Label -->
+    <line x1="410" y1="285" x2="520" y2="210" stroke="#2dd4bf" stroke-width="1.5"/>
+    <circle cx="410" cy="285" r="3" fill="#2dd4bf"/>
+    <rect x="525" y="195" width="160" height="34" rx="6" fill="#0f172a" stroke="#334155"/>
+    <text x="535" y="212" fill="#f8fafc" font-weight="700">Lactiferous Ducts</text>
+    <text x="535" y="224" fill="#94a3b8" font-size="10">Site of ductal lesions (DCIS)</text>
+
+    <!-- Lobule Label -->
+    <line x1="330" y1="300" x2="480" y2="450" stroke="#38bdf8" stroke-width="1.5"/>
+    <circle cx="330" cy="300" r="3" fill="#38bdf8"/>
+    <rect x="485" y="435" width="160" height="34" rx="6" fill="#0f172a" stroke="#334155"/>
+    <text x="495" y="452" fill="#f8fafc" font-weight="700">Glandular Lobules</text>
+    <text x="495" y="464" fill="#94a3b8" font-size="10">Milk-producing clusters</text>
+
+    <!-- Lymph Node Label -->
+    <line x1="210" y1="90" x2="310" y2="45" stroke="#38bdf8" stroke-width="1.5"/>
+    <circle cx="210" cy="90" r="3" fill="#38bdf8"/>
+    <rect x="315" y="30" width="175" height="34" rx="6" fill="#0f172a" stroke="#334155"/>
+    <text x="325" y="47" fill="#f8fafc" font-weight="700">Axillary Lymph Nodes</text>
+    <text x="325" y="59" fill="#94a3b8" font-size="10">Screening & nodal staging</text>
+  </g>
+
+  <!-- Technical Spec Footer -->
+  <text x="40" y="565" fill="#64748b" font-family="'JetBrains Mono', monospace" font-size="11">FIGURE 1.1 // MORPHOLOGICAL TISSUE ARCHITECTURE // EDUCATIONAL SCHEMATIC</text>
+</svg>
