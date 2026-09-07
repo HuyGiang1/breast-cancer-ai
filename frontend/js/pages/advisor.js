@@ -11,8 +11,6 @@ if (requireAuth('../login.html')) {
   const messages=document.querySelector('#messages'),status=document.querySelector('#status'),form=document.querySelector('#composer'),input=document.querySelector('#message');
   let turns=[];
   const removeEmpty=()=>document.querySelector('#empty')?.remove();
-  try { const saved=await advisorService.history(); saved.slice().reverse().forEach(row=>{removeEmpty();addMessage(messages,'user',row.question);addMessage(messages,'assistant',row.answer,row.created_at);turns.push({role:'user',content:row.question},{role:'assistant',content:row.answer})}); turns=turns.slice(-10); }
-  catch (error) { status.textContent=`History unavailable: ${error.message}`; }
   async function send(message) {
     const clean=message.trim(); if(!clean)return;
     removeEmpty(); addMessage(messages,'user',clean); turns.push({role:'user',content:clean}); input.value='';
@@ -25,4 +23,6 @@ if (requireAuth('../login.html')) {
   input.addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();form.requestSubmit();}});
   document.querySelectorAll('[data-index]').forEach(button=>button.addEventListener('click',()=>send(suggestions[Number(button.dataset.index)])));
   document.querySelector('#clear').addEventListener('click',()=>{turns=[];messages.replaceChildren();const empty=document.createElement('p');empty.id='empty';empty.className='v2-empty';empty.textContent='Start a new local conversation. Saved server history is unchanged.';messages.append(empty);status.textContent='Local conversation cleared.';});
+  try { const saved=await advisorService.history(); saved.slice().reverse().forEach(row=>{removeEmpty();addMessage(messages,'user',row.question);addMessage(messages,'assistant',row.answer,row.created_at);turns.push({role:'user',content:row.question},{role:'assistant',content:row.answer})}); turns=turns.slice(-10); }
+  catch (error) { status.textContent=`History unavailable: ${error.message}`; }
 }
