@@ -17,12 +17,14 @@ export const EDUCATIONAL_RESOURCES = [
     videoId: "50CdcLJsIEI",
     embedUrl: "https://www.youtube-nocookie.com/embed/50CdcLJsIEI",
     duration: "05:40",
+    publishedOrUpdatedDate: "2015-10-20",
     reviewedDate: "2026-03-01",
     licenseOrEmbedStatus: "Official YouTube Embed Permitted",
     summary: "Clinical overview explaining evidence-based screening recommendations, average-risk timelines, mammography early detection benefits, and shared decision-making.",
     relatedArticle: "Screening Protocols & Dense Tissue Considerations",
     imageAsset: "assets/img/video_poster_screening.svg",
-    altText: "Video poster for American Cancer Society Screening Guideline Overview"
+    altText: "Video poster for American Cancer Society Screening Guideline Overview",
+    geographicApplicability: "United States / International Reference"
   },
   {
     id: "acs-science-behind-screening",
@@ -34,12 +36,14 @@ export const EDUCATIONAL_RESOURCES = [
     videoId: "oZYRmApgoUI",
     embedUrl: "https://www.youtube-nocookie.com/embed/oZYRmApgoUI",
     duration: "02:21",
+    publishedOrUpdatedDate: "2015-10-20",
     reviewedDate: "2026-03-01",
     licenseOrEmbedStatus: "Official YouTube Embed Permitted",
     summary: "Discussion of scientific evidence, mortality reduction modeling, and risk-benefit analyses guiding regular screening intervals.",
     relatedArticle: "Screening Protocols & Dense Tissue Considerations",
     imageAsset: "assets/img/mammography_tp_original.png",
-    altText: "Mammography radiographic scan illustrating screening early detection"
+    altText: "Mammography radiographic scan illustrating screening early detection",
+    geographicApplicability: "United States / International Reference"
   },
   {
     id: "msk-nutrition-basics-survivors",
@@ -51,12 +55,14 @@ export const EDUCATIONAL_RESOURCES = [
     videoId: null,
     embedUrl: null,
     duration: "16:00",
+    publishedOrUpdatedDate: "2023-05-12",
     reviewedDate: "2026-02-15",
     licenseOrEmbedStatus: "External Institutional Resource Card",
     summary: "Comprehensive nutritional guidance presented by clinical nutrition specialists at the Evelyn H. Lauder Breast Center focusing on whole-food dietary patterns, metabolic wellness, and evidence-based post-treatment health.",
     relatedArticle: "Evidence-Based Lifestyle & Metabolic Factors",
     imageAsset: "assets/img/nutrition_lifestyle.svg",
-    altText: "Infographic illustrating balanced plant-forward plate and active lifestyle"
+    altText: "Infographic illustrating balanced plant-forward plate and active lifestyle",
+    geographicApplicability: "Clinical survivorship guidance"
   },
   {
     id: "msk-nutrition-qa-survivors",
@@ -68,12 +74,14 @@ export const EDUCATIONAL_RESOURCES = [
     videoId: null,
     embedUrl: null,
     duration: "05:00",
+    publishedOrUpdatedDate: "2023-05-12",
     reviewedDate: "2026-02-15",
     licenseOrEmbedStatus: "External Institutional Resource Card",
     summary: "Targeted clinical answers addressing dietary supplements, soy intake, organic produce questions, and protein adequacy during and after cancer therapy.",
     relatedArticle: "Evidence-Based Lifestyle & Metabolic Factors",
     imageAsset: "assets/img/nutrition_lifestyle.svg",
-    altText: "Nutrition and clinical inquiry illustration"
+    altText: "Nutrition and clinical inquiry illustration",
+    geographicApplicability: "Clinical survivorship guidance"
   },
   {
     id: "aicr-new-american-plate",
@@ -85,12 +93,14 @@ export const EDUCATIONAL_RESOURCES = [
     videoId: null,
     embedUrl: null,
     duration: null,
+    publishedOrUpdatedDate: "2021-03-15",
     reviewedDate: "2026-01-20",
     licenseOrEmbedStatus: "Public Health Educational Guidance",
-    summary: "Proportional plate model recommending 2/3 or more of meal composition from plant sources (vegetables, fruits, whole grains, beans) and 1/3 or less from animal protein sources.",
+    summary: "Proportional meal model recommending covering 2/3 or more of the plate with plant foods (vegetables, fruits, whole grains, and legumes/beans) and 1/3 or less with other or animal-source foods (fish, poultry, dairy).",
     relatedArticle: "Evidence-Based Lifestyle & Metabolic Factors",
     imageAsset: "assets/img/nutrition_lifestyle.svg",
-    altText: "New American Plate compositional proportion schematic"
+    altText: "New American Plate compositional proportion schematic",
+    geographicApplicability: "Global public health / dietary pattern guidance"
   },
   {
     id: "nci-breast-anatomy-biology",
@@ -102,12 +112,14 @@ export const EDUCATIONAL_RESOURCES = [
     videoId: null,
     embedUrl: null,
     duration: null,
+    publishedOrUpdatedDate: "2022-06-01",
     reviewedDate: "2026-01-15",
     licenseOrEmbedStatus: "Public Domain / US Government Work",
     summary: "Structural reference detailing terminal duct lobular units (TDLUs), milk ducts, stromal adipose, and regional axillary lymphatic drainage.",
     relatedArticle: "Understanding Breast Tissue & Cellular Architecture",
     imageAsset: "assets/img/anatomy_diagram.svg",
-    altText: "Anatomical schematic diagram of female breast lobules, ducts, and lymph nodes"
+    altText: "Anatomical schematic diagram of female breast lobules, ducts, and lymph nodes",
+    geographicApplicability: "International anatomical standard"
   }
 ];
 
@@ -118,6 +130,7 @@ export const FACTUAL_CLAIMS = [
     statement: "Regular screening mammography is associated with substantial reduction in breast cancer mortality through detection of non-palpable asymptomatic lesions.",
     sourceOrganization: "American Cancer Society / National Cancer Institute",
     sourceTitle: "Breast Cancer Screening Guidelines and Systematic Review",
+    sourceUrl: "https://jamanetwork.com/journals/jama/fullarticle/2463261",
     sourceReference: "ACS Breast Cancer Screening Guideline (Oeffinger et al., JAMA 2015;314(15):1599-1614)",
     publishedOrUpdatedDate: "2015-10-20",
     reviewedDate: "2026-03-01",
@@ -129,6 +142,7 @@ export const FACTUAL_CLAIMS = [
     statement: "High breast tissue density (BI-RADS category C and D) reduces the sensitivity of 2D projection mammography due to parenchymal tissue masking effects.",
     sourceOrganization: "American College of Radiology (ACR)",
     sourceTitle: "ACR BI-RADS Atlas: Breast Imaging Reporting and Data System",
+    sourceUrl: "https://www.acr.org/Clinical-Resources/Reporting-and-Data-Systems/Bi-Rads",
     sourceReference: "D'Orsi CJ, et al. ACR BI-RADS Atlas 5th Edition (2013/rev 2023)",
     publishedOrUpdatedDate: "2023-08-10",
     reviewedDate: "2026-03-01",
@@ -136,23 +150,25 @@ export const FACTUAL_CLAIMS = [
   },
   {
     claimId: "CLAIM-LIFESTYLE-003",
-    topic: "Physical Activity & Cancer Risk",
-    statement: "Engaging in 150 to 300 minutes of moderate-intensity or 75 to 150 minutes of vigorous-intensity physical activity weekly is associated with lower post-menopausal breast cancer risk.",
+    topic: "Physical Activity Guidelines & Long-Term Health",
+    statement: "Engaging in regular physical activity (150 to 300 minutes of moderate-intensity or 75 to 150 minutes of vigorous-intensity aerobic physical activity weekly) is associated with metabolic wellness and lower post-menopausal breast cancer risk.",
     sourceOrganization: "World Health Organization (WHO) / American Cancer Society",
     sourceTitle: "WHO Guidelines on Physical Activity and Sedentary Behaviour",
-    sourceReference: "WHO Guidelines (2020) & Rock CL et al. CA Cancer J Clin 2020;70(4):245-271",
+    sourceUrl: "https://www.who.int/publications/i/item/9789240015128",
+    sourceReference: "WHO Guidelines on Physical Activity (2020) & Rock CL et al. American Cancer Society Guideline on Diet and Physical Activity for Cancer Prevention, CA Cancer J Clin 2020;70(4):245-271",
     publishedOrUpdatedDate: "2020-11-25",
     reviewedDate: "2026-02-15",
     geographicApplicability: "Global public health recommendation"
   },
   {
     claimId: "CLAIM-NUTRITION-004",
-    topic: "Plant-Forward Dietary Pattern",
-    statement: "A dietary pattern emphasizing fiber-rich plant foods (vegetables, whole grains, legumes, and fruits) supports general metabolic wellness and survivorship health without curative claims.",
-    sourceOrganization: "American Institute for Cancer Research / WCRF",
-    sourceTitle: "Diet, Nutrition, Physical Activity and Breast Cancer",
-    sourceReference: "Continuous Update Project Expert Report (WCRF/AICR 2018)",
-    publishedOrUpdatedDate: "2018-05-24",
+    topic: "Plant-Forward Dietary Pattern Proportions",
+    statement: "A dietary pattern emphasizing plant foods (vegetables, whole grains, legumes/beans, and fruits) for at least two-thirds of meal volume supports general metabolic wellness and survivorship health without curative or anti-cancer diet claims.",
+    sourceOrganization: "American Institute for Cancer Research / World Cancer Research Fund",
+    sourceTitle: "Diet, Nutrition, Physical Activity and Breast Cancer: A Global Perspective",
+    sourceUrl: "https://www.aicr.org/research/the-continuous-update-project/",
+    sourceReference: "Continuous Update Project Expert Report (WCRF/AICR 2018; updated recommendations 2021)",
+    publishedOrUpdatedDate: "2021-03-15",
     reviewedDate: "2026-02-15",
     geographicApplicability: "Global epidemiological consensus"
   }

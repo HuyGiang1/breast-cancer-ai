@@ -13,84 +13,82 @@
   <!-- Background -->
   <rect width="800" height="500" rx="16" fill="url(#nutriCanvas)"/>
 
-  <!-- Subtle Grid Accent -->
+  <!-- Grid Accent Lines -->
   <g stroke="rgba(255,255,255,0.04)" stroke-width="1">
-    <line x1="0" y1="100" x2="800" y2="100"/>
-    <line x1="0" y1="250" x2="800" y2="250"/>
-    <line x1="0" y1="400" x2="800" y2="400"/>
+    <line x1="0" y1="90" x2="800" y2="90"/>
+    <line x1="0" y1="240" x2="800" y2="240"/>
+    <line x1="0" y1="410" x2="800" y2="410"/>
   </g>
 
-  <!-- Top Title & Provenance -->
-  <g transform="translate(48, 44)">
-    <rect x="0" y="0" width="280" height="26" rx="6" fill="#047857" fill-opacity="0.3" stroke="#10b981" stroke-width="1"/>
-    <text x="12" y="17" fill="#6ee7b7" font-family="'Inter', sans-serif" font-size="11" font-weight="700" letter-spacing="0.08em">AICR EVIDENCE-BASED MODEL</text>
-    <text x="0" y="58" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif" font-size="22" font-weight="800">The New American Plate Composition</text>
-    <text x="0" y="82" fill="#94a3b8" font-family="'Inter', sans-serif" font-size="13">Proportion-based nutrition for survivorship and long-term metabolic health (AICR / WCRF)</text>
+  <!-- Top Header & Provenance -->
+  <g transform="translate(48, 38)">
+    <rect x="0" y="0" width="280" height="24" rx="5" fill="#047857" fill-opacity="0.3" stroke="#10b981" stroke-width="1"/>
+    <text x="12" y="16" fill="#6ee7b7" font-family="'Inter', sans-serif" font-size="10" font-weight="700" letter-spacing="0.08em">AICR EVIDENCE-BASED MODEL</text>
+    <text x="0" y="52" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif" font-size="22" font-weight="800">The New American Plate Composition</text>
+    <text x="0" y="74" fill="#94a3b8" font-family="'Inter', sans-serif" font-size="12">General evidence-based nutrition education · Proportions for long-term metabolic health</text>
   </g>
 
   <!-- Plate Visual Representation (Center-Left) -->
-  <g transform="translate(230, 290)" filter="url(#plateShadow)">
+  <g transform="translate(225, 275)" filter="url(#plateShadow)">
     <!-- Outer Rim -->
-    <circle cx="0" cy="0" r="140" fill="#f8fafc" stroke="#cbd5e1" stroke-width="3"/>
+    <circle cx="0" cy="0" r="135" fill="#f8fafc" stroke="#cbd5e1" stroke-width="3"/>
     <!-- Inner Dish -->
-    <circle cx="0" cy="0" r="126" fill="#ffffff"/>
+    <circle cx="0" cy="0" r="122" fill="#ffffff"/>
 
-    <!-- 2/3 Section: Plant Foods (Vegetables, Fruits, Whole Grains, Beans) - 240 degrees -->
-    <!-- Arc from -90 deg to 150 deg (240 deg total) -->
-    <path d="M 0 0 L 0 -124 A 124 124 0 1 1 -107.38 62 Z" fill="#10b981" fill-opacity="0.85"/>
+    <!-- 2/3 Section: Plant Foods (Vegetables, Fruits, Whole Grains, Legumes/Beans, Tofu) - 240 deg -->
+    <path d="M 0 0 L 0 -120 A 120 120 0 1 1 -103.92 60 Z" fill="#10b981" fill-opacity="0.88"/>
 
-    <!-- 1/3 Section: Lean Protein (Fish, Poultry, Tofu) - 120 degrees -->
-    <!-- Arc from 150 deg to 270 deg (120 deg total) -->
-    <path d="M 0 0 L -107.38 62 A 124 124 0 0 1 0 -124 Z" fill="#3b82f6" fill-opacity="0.85"/>
+    <!-- 1/3 Section: Other / Animal-Source Foods (Fish, Poultry, Dairy) - 120 deg -->
+    <path d="M 0 0 L -103.92 60 A 120 120 0 0 1 0 -120 Z" fill="#2563eb" fill-opacity="0.85"/>
 
-    <!-- Division Lines -->
-    <line x1="0" y1="0" x2="0" y2="-124" stroke="#ffffff" stroke-width="3"/>
-    <line x1="0" y1="0" x2="-107.38" y2="62" stroke="#ffffff" stroke-width="3"/>
+    <!-- Section Dividing Lines -->
+    <line x1="0" y1="0" x2="0" y2="-120" stroke="#ffffff" stroke-width="3"/>
+    <line x1="0" y1="0" x2="-103.92" y2="60" stroke="#ffffff" stroke-width="3"/>
 
     <!-- Center Badge -->
     <circle cx="0" cy="0" r="28" fill="#0f172a"/>
     <text x="0" y="4" text-anchor="middle" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800">AICR</text>
 
-    <!-- Section Labels inside plate -->
-    <text x="45" y="-30" fill="#ffffff" font-family="'Inter', sans-serif" font-size="13" font-weight="800">≥ 2/3 Plant</text>
-    <text x="45" y="-14" fill="#d1fae5" font-family="'Inter', sans-serif" font-size="10" font-weight="600">Veg, fruit, whole grains</text>
+    <!-- Section Text Labels inside plate -->
+    <text x="45" y="-34" fill="#ffffff" font-family="'Inter', sans-serif" font-size="12" font-weight="800">≥ 2/3 Plant</text>
+    <text x="45" y="-18" fill="#d1fae5" font-family="'Inter', sans-serif" font-size="9" font-weight="600">Veg, fruit, grains, beans</text>
 
-    <text x="-65" y="-40" fill="#ffffff" font-family="'Inter', sans-serif" font-size="13" font-weight="800">≤ 1/3</text>
-    <text x="-65" y="-24" fill="#dbeafe" font-family="'Inter', sans-serif" font-size="10" font-weight="600">Lean protein</text>
+    <text x="-65" y="-34" fill="#ffffff" font-family="'Inter', sans-serif" font-size="12" font-weight="800">≤ 1/3 Other</text>
+    <text x="-65" y="-18" fill="#dbeafe" font-family="'Inter', sans-serif" font-size="9" font-weight="600">Fish, poultry, dairy</text>
   </g>
 
   <!-- Right Legend & Pillar Cards -->
-  <g transform="translate(420, 160)" font-family="'Inter', sans-serif">
-    <!-- Pillar 1: Plant Foundation -->
+  <g transform="translate(415, 140)" font-family="'Inter', sans-serif">
+    <!-- Pillar 1: Plant Foods (2/3 or more) -->
     <g transform="translate(0, 0)">
-      <rect width="330" height="74" rx="10" fill="#0f172a" fill-opacity="0.85" stroke="#10b981" stroke-width="1.5"/>
-      <circle cx="28" cy="28" r="10" fill="#065f46"/>
-      <text x="28" y="32" text-anchor="middle" fill="#34d399" font-size="11" font-weight="800">2/3</text>
-      <text x="48" y="30" fill="#f8fafc" font-size="13" font-weight="700">Plant-Forward Foundation</text>
-      <text x="48" y="50" fill="#94a3b8" font-size="11">Cruciferous vegetables, berries, legumes &amp; oats rich in protective fiber &amp; polyphenols.</text>
+      <rect width="340" height="74" rx="8" fill="#0f172a" fill-opacity="0.85" stroke="#10b981" stroke-width="1.5"/>
+      <circle cx="26" cy="26" r="10" fill="#065f46"/>
+      <text x="26" y="30" text-anchor="middle" fill="#34d399" font-size="10" font-weight="800">≥2/3</text>
+      <text x="46" y="28" fill="#f8fafc" font-size="13" font-weight="700">Plant Foods (Vegetables, Grains, Legumes)</text>
+      <text x="46" y="48" fill="#94a3b8" font-size="11">Whole grains, beans, lentils, vegetables &amp; fruits containing protective fiber and plant proteins.</text>
     </g>
 
-    <!-- Pillar 2: Lean Protein -->
-    <g transform="translate(0, 86)">
-      <rect width="330" height="74" rx="10" fill="#0f172a" fill-opacity="0.85" stroke="#3b82f6" stroke-width="1.5"/>
-      <circle cx="28" cy="28" r="10" fill="#1e3a8a"/>
-      <text x="28" y="32" text-anchor="middle" fill="#60a5fa" font-size="11" font-weight="800">1/3</text>
-      <text x="48" y="30" fill="#f8fafc" font-size="13" font-weight="700">Quality Lean Protein</text>
-      <text x="48" y="50" fill="#94a3b8" font-size="11">Fish rich in omega-3s, poultry, beans &amp; tofu; limiting red &amp; processed meats.</text>
+    <!-- Pillar 2: Other / Animal-Source Foods (1/3 or less) -->
+    <g transform="translate(0, 84)">
+      <rect width="340" height="74" rx="8" fill="#0f172a" fill-opacity="0.85" stroke="#2563eb" stroke-width="1.5"/>
+      <circle cx="26" cy="26" r="10" fill="#1e3a8a"/>
+      <text x="26" y="30" text-anchor="middle" fill="#60a5fa" font-size="10" font-weight="800">≤1/3</text>
+      <text x="46" y="28" fill="#f8fafc" font-size="13" font-weight="700">Other / Animal-Source Foods</text>
+      <text x="46" y="48" fill="#94a3b8" font-size="11">Fish, poultry, eggs, or dairy; limiting red meat and avoiding processed meats.</text>
     </g>
 
-    <!-- Pillar 3: Active Context & Hydration -->
-    <g transform="translate(0, 172)">
-      <rect width="330" height="74" rx="10" fill="#0f172a" fill-opacity="0.85" stroke="#64748b" stroke-width="1"/>
-      <circle cx="28" cy="28" r="10" fill="#334155"/>
-      <text x="28" y="32" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="800">💧</text>
-      <text x="48" y="30" fill="#f8fafc" font-size="13" font-weight="700">Hydration &amp; Physical Activity</text>
-      <text x="48" y="50" fill="#94a3b8" font-size="11">Water as primary beverage; 150–300 min/week moderate physical activity.</text>
+    <!-- Pillar 3: Separate Lifestyle & Activity Recommendation -->
+    <g transform="translate(0, 168)">
+      <rect width="340" height="74" rx="8" fill="#0f172a" fill-opacity="0.85" stroke="#64748b" stroke-width="1"/>
+      <circle cx="26" cy="26" r="10" fill="#334155"/>
+      <text x="26" y="30" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="800">🏃</text>
+      <text x="46" y="28" fill="#f8fafc" font-size="13" font-weight="700">Separate Context · Activity &amp; Hydration</text>
+      <text x="46" y="48" fill="#94a3b8" font-size="11">Regular physical activity (WHO/ACS guidelines) and water hydration support metabolic health.</text>
     </g>
   </g>
 
   <!-- Bottom Sourced Note -->
-  <g transform="translate(48, 468)" font-family="'Inter', sans-serif" font-size="11" fill="#64748b">
-    <text x="0" y="0">Source: American Institute for Cancer Research (AICR). Distinct from active chemotherapy nutrition managed by oncology dietitians.</text>
+  <g transform="translate(48, 465)" font-family="'Inter', sans-serif" font-size="10" fill="#64748b">
+    <text x="0" y="0">Sources: AICR New American Plate (dietary proportions); WHO / ACS (physical activity guidelines). General education; not an anti-cancer diet.</text>
   </g>
 </svg>
