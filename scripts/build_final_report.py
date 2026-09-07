@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import argparse
 import re
+import tempfile
+import zipfile
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 
 from PIL import Image as PILImage
@@ -190,6 +193,25 @@ def add_docx_image(document: Document, path: Path, caption: str) -> None:
     document.add_paragraph(caption, style="Figure Caption")
 
 
+def normalize_docx_archive(path: Path) -> None:
+    fixed_time = (2026, 9, 7, 0, 0, 0)
+    with tempfile.NamedTemporaryFile(dir=path.parent, suffix=".docx", delete=False) as handle:
+        normalized_path = Path(handle.name)
+    try:
+        with zipfile.ZipFile(path, "r") as source, zipfile.ZipFile(
+            normalized_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9
+        ) as target:
+            for source_info in sorted(source.infolist(), key=lambda item: item.filename):
+                info = zipfile.ZipInfo(source_info.filename, fixed_time)
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.external_attr = source_info.external_attr
+                info.create_system = source_info.create_system
+                target.writestr(info, source.read(source_info.filename))
+        normalized_path.replace(path)
+    finally:
+        normalized_path.unlink(missing_ok=True)
+
+
 def build_docx(blocks: list[Block], output: Path) -> None:
     document = Document()
     configure_docx(document)
@@ -246,8 +268,12 @@ def build_docx(blocks: list[Block], output: Path) -> None:
     properties.title = "Nghiên cứu các mô hình nhận dạng, phân loại các khối u vú ác tính"
     properties.subject = "Báo cáo nghiên cứu khoa học sinh viên"
     properties.author = "Nguyễn Bá Duy; Trần Mỹ Anh; Hoàng Nhật Anh; Nguyễn Huy Giang; Ngô Tiến Đạt"
+    fixed_date = datetime(2026, 9, 7, tzinfo=timezone.utc)
+    properties.created = fixed_date
+    properties.modified = fixed_date
     output.parent.mkdir(parents=True, exist_ok=True)
     document.save(output)
+    normalize_docx_archive(output)
 
 
 def register_pdf_fonts() -> None:
@@ -341,6 +367,7 @@ def build_pdf(blocks: list[Block], output: Path) -> None:
         title="Nghiên cứu các mô hình nhận dạng, phân loại các khối u vú ác tính",
         author="Nguyễn Bá Duy; Trần Mỹ Anh; Hoàng Nhật Anh; Nguyễn Huy Giang; Ngô Tiến Đạt",
         subject="Báo cáo nghiên cứu khoa học sinh viên",
+        invariant=1,
     )
     document.build(story, onFirstPage=add_pdf_footer, onLaterPages=add_pdf_footer)
 

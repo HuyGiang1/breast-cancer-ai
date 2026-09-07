@@ -69,6 +69,11 @@ All 29 PDF pages were rendered and inspected in four contact sheets. Result:
 
 Both files are generated in one command from the same Markdown block tree. Automated validation extracts text from both formats and requires the official identity, frozen candidate names, raw DL threshold contract, `clinical_use=false`, and `experimental_only` language in each. DOCX has 19 inline figures and seven tables; PDF has 29 nonblank pages. Validation reports snapshot/source/DOCX/PDF consistency.
 
+The generator fixes document metadata and normalizes the DOCX archive. Two consecutive builds produced identical checksums:
+
+- DOCX: `5af54c61f49b6152f64e6b4e2fc6eb961b6b7ac51577d9d3eab0268411e42c3d`
+- PDF: `f8935e2e62c096c8540c227613e4e98c1ceaad5e704c175de82101479dae27a7`
+
 ## Legacy/preliminary audit
 
 Final-facing files were searched for old folder-split claims, patient-level claims, 5,118-image/patient claims, Custom CNN final/deployed claims, ML threshold 0.50, calibrated-threshold 0.515, cross-dataset ML-versus-DL ranking, clinical-grade/validated use, validated multimodal claims, React/Next.js architecture claims, legacy monolith claims, and missing-server wording.
