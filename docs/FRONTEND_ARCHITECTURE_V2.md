@@ -59,3 +59,9 @@ Before cutover, `app.js` was 113,040 bytes, `styles.css` 53,350 bytes, and `prem
 Legacy sample-image/autofill conveniences, image-to-clinical extraction UI, floating chat launcher, health article cards, and hash-based SPA switching were intentionally retired. They were development/convenience or obsolete presentation behavior outside the canonical product inventory; backend endpoints were not removed. Ignored `frontend/results/` remains available for runtime-generated outputs and is not final research evidence.
 
 The final tracked frontend has 21 canonical pages, 21 page controllers, 5 core modules, 7 services, 8 components, and 18 CSS files. `scripts/verify_frontend_v2.py` enforces route-controller mapping, references, imports, reachability, navigation uniqueness, CSS graph integrity, and absence of legacy bundles/local paths.
+
+## Final QA and freeze
+
+Batch 8 verified all 21 routes at 1440x900, 1280x800, 768x1024, and 390x844 for an 84/84 browser matrix. The matrix checked controllers, CSS, page titles, populated content, active navigation, overflow, network responses, exceptions, and absence of legacy requests. Disposable API/browser workflows covered auth and roles, ML/DL/multimodal predictions, patient association, history/reports, advisor, model status, profile, and representative error states.
+
+Final QA added accessible mobile drawer close/Escape behavior, global keyboard focus visibility, minimum button height, and immediate advisor control binding while history loads. Full evidence and known limitations are recorded in `docs/FRONTEND_FINAL_QA.md`. Frontend V2 is frozen for release; only release-blocking defects should change it before final documentation.
