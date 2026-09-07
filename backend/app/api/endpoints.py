@@ -4,10 +4,8 @@ from fastapi import APIRouter, HTTPException, Depends, File, UploadFile, Form, H
 from fastapi.responses import FileResponse, Response
 from pydantic import ValidationError
 from typing import List, Dict, Any, Optional
-import json
-import urllib.error
-import urllib.parse
-import urllib.request
+from google.oauth2 import id_token as google_id_token
+from google.auth.transport import requests as google_requests
 from app.api.schemas import (
     PredictionRequest,
     PredictionResponse,
@@ -636,24 +634,26 @@ def google_auth(request: GoogleAuthRequest):
         )
 
     try:
-        tokeninfo_url = f"https://oauth2.googleapis.com/tokeninfo?{urllib.parse.urlencode({'id_token': request.credential})}"
-        req = urllib.request.Request(tokeninfo_url, headers={"User-Agent": "BreastHealthStudio-Auth/1.0"})
-        with urllib.request.urlopen(req, timeout=10.0) as resp:
-            payload = json.loads(resp.read().decode("utf-8"))
-    except urllib.error.HTTPError:
-        raise HTTPException(status_code=401, detail="Invalid Google ID token signature or expired credential")
+        id_info = google_id_token.verify_oauth2_token(
+            request.credential,
+            google_requests.Request(),
+            client_id,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=401, detail=f"Invalid Google ID token signature or expired credential: {exc}")
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Failed to communicate with Google authentication services: {exc}")
-    if payload.get("aud") != client_id:
+
+    if id_info.get("aud") != client_id:
         raise HTTPException(status_code=401, detail="Google token audience mismatch")
-    if payload.get("iss") not in {"accounts.google.com", "https://accounts.google.com"}:
+    if id_info.get("iss") not in {"accounts.google.com", "https://accounts.google.com"}:
         raise HTTPException(status_code=401, detail="Invalid Google token issuer")
-    if not payload.get("email_verified") or str(payload.get("email_verified")).lower() != "true":
+    if not id_info.get("email_verified") or str(id_info.get("email_verified")).lower() != "true":
         raise HTTPException(status_code=400, detail="Google email is not verified")
 
-    sub = str(payload.get("sub"))
-    email = str(payload.get("email")).lower().strip()
-    full_name = str(payload.get("name") or payload.get("given_name") or "Google User").strip()
+    sub = str(id_info.get("sub"))
+    email = str(id_info.get("email")).lower().strip()
+    full_name = str(id_info.get("name") or id_info.get("given_name") or "Google User").strip()
 
     # 1. Google sub already linked -> log into associated user
     oauth_row = db.fetch_one(

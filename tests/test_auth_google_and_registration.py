@@ -94,16 +94,14 @@ def test_google_auth_without_configuration_returns_503():
 def test_google_auth_token_audience_mismatch():
     client_id = "configured-client-id.apps.googleusercontent.com"
     with patch.dict(os.environ, {"GOOGLE_CLIENT_ID": client_id}):
-        mock_resp = MagicMock()
-        mock_resp.status_code = 200
-        mock_resp.json.return_value = {
+        mock_payload = {
             "aud": "wrong-client-id.apps.googleusercontent.com",
             "iss": "https://accounts.google.com",
             "email": "user@gmail.com",
             "email_verified": "true",
             "sub": "1234567890"
         }
-        with patch("httpx.get", return_value=mock_resp):
+        with patch("app.api.endpoints.google_id_token.verify_oauth2_token", return_value=mock_payload):
             resp = client.post(
                 "/api/v1/auth/google/",
                 json={"credential": "mock_google_token_1234567890"}
@@ -120,9 +118,7 @@ def test_google_auth_new_user_success():
     db.execute("DELETE FROM users WHERE email = ?", (email,))
 
     with patch.dict(os.environ, {"GOOGLE_CLIENT_ID": client_id}):
-        mock_resp = MagicMock()
-        mock_resp.status_code = 200
-        mock_resp.json.return_value = {
+        mock_payload = {
             "aud": client_id,
             "iss": "https://accounts.google.com",
             "email": email,
@@ -130,7 +126,7 @@ def test_google_auth_new_user_success():
             "name": "Dr Google Researcher",
             "sub": sub
         }
-        with patch("httpx.get", return_value=mock_resp):
+        with patch("app.api.endpoints.google_id_token.verify_oauth2_token", return_value=mock_payload):
             resp = client.post(
                 "/api/v1/auth/google/",
                 json={"credential": "mock_google_token_1234567890"}
@@ -174,9 +170,7 @@ def test_google_auth_existing_password_account_collision_refuses_auto_link():
     )
 
     with patch.dict(os.environ, {"GOOGLE_CLIENT_ID": client_id}):
-        mock_resp = MagicMock()
-        mock_resp.status_code = 200
-        mock_resp.json.return_value = {
+        mock_payload = {
             "aud": client_id,
             "iss": "https://accounts.google.com",
             "email": email,
@@ -184,7 +178,7 @@ def test_google_auth_existing_password_account_collision_refuses_auto_link():
             "name": "Google User",
             "sub": sub
         }
-        with patch("httpx.get", return_value=mock_resp):
+        with patch("app.api.endpoints.google_id_token.verify_oauth2_token", return_value=mock_payload):
             resp = client.post(
                 "/api/v1/auth/google/",
                 json={"credential": "mock_google_token_1234567890"}
