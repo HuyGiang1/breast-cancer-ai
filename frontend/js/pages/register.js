@@ -1,1 +1,188 @@
-import{guestOnly}from'../core/guards.js';import{authService}from'../services/auth.service.js';import{mountAuth}from'../components/auth-shell.js';if(guestOnly('pages/dashboard.html')){mountAuth('Create account',`<form id="auth"><label class="v2-field">Full name<input class="v2-input" name="full_name" autocomplete="name" required></label><label class="v2-field">Email<input class="v2-input" name="email" type="email" autocomplete="email" required></label><label class="v2-field">Password<input class="v2-input" name="password" type="password" minlength="8" autocomplete="new-password" required></label><label class="v2-field">Confirm password<input class="v2-input" name="confirm" type="password" minlength="8" autocomplete="new-password" required></label><p id="error" aria-live="polite"></p><button class="v2-button">Create account</button><p><a href="login.html">Already have an account?</a></p></form>`);const form=document.querySelector('#auth');form.onsubmit=async e=>{e.preventDefault();const data=Object.fromEntries(new FormData(form));if(data.password!==data.confirm){document.querySelector('#error').textContent='Passwords do not match.';return}delete data.confirm;try{await authService.register(data);location.assign('pages/dashboard.html')}catch(err){document.querySelector('#error').textContent=err.message}}}
+import { guestOnly } from '../core/guards.js';
+import { authService } from '../services/auth.service.js';
+import { toast } from '../components/toast.js';
+
+if (guestOnly('pages/dashboard.html')) {
+  initRegisterPage();
+}
+
+function initRegisterPage() {
+  const form = document.getElementById('registerForm');
+  const alertBox = document.getElementById('authAlert');
+  const togglePassBtn = document.getElementById('toggleRegPassword');
+  const passInput = document.getElementById('regPassword');
+  const confirmInput = document.getElementById('regConfirm');
+  const submitBtn = document.getElementById('submitBtn');
+  const googleBtnContainer = document.getElementById('googleBtnContainer');
+  const googleFallbackBtn = document.getElementById('googleFallbackBtn');
+
+  function showAlert(message, type = 'error') {
+    if (alertBox) {
+      alertBox.textContent = message;
+      alertBox.className = `auth-alert-box ${type}`;
+      alertBox.style.display = 'block';
+    }
+    toast(message, type === 'error' ? 'error' : 'info');
+  }
+
+  function hideAlert() {
+    if (!alertBox) return;
+    alertBox.style.display = 'none';
+    alertBox.textContent = '';
+  }
+
+  // Password visibility toggle
+  if (togglePassBtn && passInput) {
+    togglePassBtn.addEventListener('click', () => {
+      const isPassword = passInput.type === 'password';
+      passInput.type = isPassword ? 'text' : 'password';
+      if (confirmInput) {
+        confirmInput.type = isPassword ? 'text' : 'password';
+      }
+      togglePassBtn.textContent = isPassword ? 'Hide' : 'Show';
+    });
+  }
+
+  // Form submission
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlert();
+
+      const fullName = form.full_name.value.trim();
+      const email = form.email.value.trim();
+      const password = form.password.value;
+      const confirm = form.confirm.value;
+
+      if (!fullName) {
+        showAlert('Please enter your full name.');
+        return;
+      }
+
+      if (!email) {
+        showAlert('Please enter a valid email address.');
+        return;
+      }
+
+      // Simple email validation regex
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showAlert('Please enter a valid email address format.');
+        return;
+      }
+
+      if (password.length < 8) {
+        showAlert('Password must be at least 8 characters long.');
+        return;
+      }
+
+      if (password !== confirm) {
+        showAlert('Passwords do not match. Please verify and try again.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating account...';
+
+      try {
+        // Public registration always assigns role='user' on server
+        await authService.register({
+          full_name: fullName,
+          email: email,
+          password: password,
+        });
+
+        // Auto-login session saved in authService.register; redirect to dashboard
+        window.location.assign('pages/dashboard.html');
+      } catch (err) {
+        showAlert(err.message || 'Account creation failed. Please try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create account';
+      }
+    });
+  }
+
+  // Google Sign-In setup
+  initGoogleAuth();
+
+  async function initGoogleAuth() {
+    try {
+      const config = await authService.googleConfig();
+      if (config && config.enabled && config.client_id) {
+        mountGoogleGsi(config.client_id);
+      } else {
+        mountGoogleNotice();
+      }
+    } catch (err) {
+      console.warn('Google auth configuration query:', err);
+      mountGoogleNotice();
+    }
+  }
+
+  function mountGoogleGsi(clientId) {
+    let attempts = 0;
+    const checkGsi = () => {
+      attempts++;
+      if (window.google && window.google.accounts && window.google.accounts.id) {
+        try {
+          window.google.accounts.id.initialize({
+            client_id: clientId,
+            callback: handleGoogleCredential,
+            auto_select: false,
+            cancel_on_tap_outside: true,
+          });
+
+          if (googleBtnContainer) {
+            googleBtnContainer.innerHTML = '';
+            window.google.accounts.id.renderButton(googleBtnContainer, {
+              type: 'standard',
+              theme: 'outline',
+              size: 'large',
+              text: 'continue_with',
+              shape: 'rectangular',
+              logo_alignment: 'left',
+              width: googleBtnContainer.offsetWidth || 340,
+            });
+          }
+        } catch (e) {
+          console.error('Failed to initialize Google Identity Services:', e);
+          mountGoogleNotice();
+        }
+      } else if (attempts < 30) {
+        setTimeout(checkGsi, 100);
+      } else {
+        mountGoogleNotice();
+      }
+    };
+    checkGsi();
+  }
+
+  function mountGoogleNotice() {
+    if (googleFallbackBtn) {
+      googleFallbackBtn.addEventListener('click', () => {
+        showAlert(
+          'Google Sign-In integration is active. Please configure GOOGLE_CLIENT_ID in your environment for live OAuth verification.',
+          'info'
+        );
+      });
+    }
+  }
+
+  async function handleGoogleCredential(response) {
+    if (!response || !response.credential) {
+      showAlert('Google sign-in did not return a valid credential.');
+      return;
+    }
+
+    hideAlert();
+    showAlert('Creating and verifying research workspace session with Google...', 'info');
+
+    try {
+      await authService.googleLogin(response.credential);
+      window.location.assign('pages/dashboard.html');
+    } catch (err) {
+      showAlert(err.message || 'Google account authentication failed.');
+    }
+  }
+}

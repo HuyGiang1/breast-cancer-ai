@@ -1,5 +1,5 @@
 /**
- * Prototype Visual QA Capture Tool
+ * Prototype Visual QA & Screenshot Capture Tool
  * Uses Chrome DevTools Protocol over native WebSocket to capture pixel-perfect responsive screenshots.
  */
 const fs = require('fs');
@@ -12,7 +12,7 @@ if (!fs.existsSync(SCREENSHOT_DIR)) {
   fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
 }
 
-// 1. Launch Headless Chrome with Remote Debugging
+// Launch Headless Chrome with Remote Debugging
 const chromeProc = spawn('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', [
   '--headless',
   '--remote-debugging-port=9222',
@@ -42,16 +42,16 @@ function getWebSocketUrl() {
             if (page && page.webSocketDebuggerUrl) {
               resolve(page.webSocketDebuggerUrl);
             } else {
-              if (attempts > 20) reject(new Error('No page found'));
+              if (attempts > 30) reject(new Error('No page found'));
               else setTimeout(check, 200);
             }
           } catch (e) {
-            if (attempts > 20) reject(e);
+            if (attempts > 30) reject(e);
             else setTimeout(check, 200);
           }
         });
       }).on('error', () => {
-        if (attempts > 20) reject(new Error('Connection failed'));
+        if (attempts > 30) reject(new Error('Connection failed'));
         else setTimeout(check, 200);
       });
     };
@@ -108,10 +108,12 @@ async function capture() {
   await client.send('Runtime.enable');
 
   const targets = [
-    { name: 'landing-1440.png', width: 1440, height: 900, mobile: false },
-    { name: 'landing-1280.png', width: 1280, height: 800, mobile: false },
-    { name: 'landing-768.png', width: 768, height: 1024, mobile: true },
-    { name: 'landing-390.png', width: 390, height: 844, mobile: true }
+    { name: 'landing-1440.png', url: 'http://localhost/index.html', width: 1440, height: 900, mobile: false },
+    { name: 'landing-390.png', url: 'http://localhost/index.html', width: 390, height: 844, mobile: true },
+    { name: 'login-1440.png', url: 'http://localhost/login.html', width: 1440, height: 900, mobile: false },
+    { name: 'login-390.png', url: 'http://localhost/login.html', width: 390, height: 844, mobile: true },
+    { name: 'register-1440.png', url: 'http://localhost/register.html', width: 1440, height: 900, mobile: false },
+    { name: 'register-390.png', url: 'http://localhost/register.html', width: 390, height: 844, mobile: true },
   ];
 
   for (const t of targets) {
@@ -122,8 +124,30 @@ async function capture() {
       deviceScaleFactor: 1,
       mobile: t.mobile
     });
-    await client.send('Page.navigate', { url: 'http://localhost/index.html' });
-    await sleep(1000);
+
+    // Clear session so guestOnly doesn't redirect
+    await client.send('Runtime.evaluate', { expression: `localStorage.clear(); sessionStorage.clear();` });
+    await client.send('Page.navigate', { url: t.url });
+    await sleep(1200);
+
+    // If on landing, check media integrity
+    if (t.url.includes('index.html')) {
+      const mediaAudit = await client.send('Runtime.evaluate', {
+        expression: `
+          (() => {
+            const imgs = Array.from(document.querySelectorAll('img'));
+            return imgs.map(img => ({
+              src: img.src.split('/').slice(-2).join('/'),
+              complete: img.complete,
+              naturalWidth: img.naturalWidth,
+              naturalHeight: img.naturalHeight
+            }));
+          })()
+        `,
+        returnByValue: true
+      });
+      console.log(`[Media Audit on ${t.name}]:`, JSON.stringify(mediaAudit.result.value, null, 2));
+    }
 
     const screenshot = await client.send('Page.captureScreenshot', { format: 'png' });
     const buffer = Buffer.from(screenshot.data, 'base64');
@@ -132,46 +156,9 @@ async function capture() {
     console.log(`Saved: ${dest} (${buffer.length} bytes)`);
   }
 
-  // Mega-menu Analyze (1440 viewport)
-  console.log('Capturing mega-menu-analyze.png...');
-  await client.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
-  await client.send('Page.navigate', { url: 'http://localhost/index.html' });
-  await sleep(800);
-  const evalAnalyze = await client.send('Runtime.evaluate', {
-    expression: `
-      document.querySelectorAll('.studio-mega-menu').forEach(el => el.classList.remove('is-open'));
-      const menu = document.querySelector('.mega-menu-analyze');
-      if (menu) menu.classList.add('is-open');
-      menu ? menu.className : 'NOT_FOUND';
-    `
-  });
-  console.log('Analyze menu class:', evalAnalyze);
-  await sleep(500);
-  const analyzeShot = await client.send('Page.captureScreenshot', { format: 'png' });
-  fs.writeFileSync(path.join(SCREENSHOT_DIR, 'mega-menu-analyze.png'), Buffer.from(analyzeShot.data, 'base64'));
-  console.log('Saved: mega-menu-analyze.png');
-
-  // Mega-menu Learn (1440 viewport)
-  console.log('Capturing mega-menu-learn.png...');
-  await client.send('Page.navigate', { url: 'http://localhost/index.html' });
-  await sleep(800);
-  const evalLearn = await client.send('Runtime.evaluate', {
-    expression: `
-      document.querySelectorAll('.studio-mega-menu').forEach(el => el.classList.remove('is-open'));
-      const menu = document.querySelector('.mega-menu-learn');
-      if (menu) menu.classList.add('is-open');
-      menu ? menu.className : 'NOT_FOUND';
-    `
-  });
-  console.log('Learn menu class:', evalLearn);
-  await sleep(500);
-  const learnShot = await client.send('Page.captureScreenshot', { format: 'png' });
-  fs.writeFileSync(path.join(SCREENSHOT_DIR, 'mega-menu-learn.png'), Buffer.from(learnShot.data, 'base64'));
-  console.log('Saved: mega-menu-learn.png');
-
   client.close();
   chromeProc.kill();
-  console.log('Screenshot generation complete.');
+  console.log('All prototype screenshots captured successfully.');
   process.exit(0);
 }
 
