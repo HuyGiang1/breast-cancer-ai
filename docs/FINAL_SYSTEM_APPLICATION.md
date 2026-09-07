@@ -28,6 +28,6 @@ The existing 0.4 ML + 0.6 DL endpoint remains an experimental demo heuristic. It
 
 `scripts/verify_final_application.py` exercises health, readiness, unified status, final ML prediction, invalid ML request, final DL prediction, and corrupt-image handling offline. Contract and runtime parity scripts remain required checks.
 
-## Remaining production tasks
+## Release state
 
-End-to-end benchmark, Docker verification, CI release validation, safety review, VPS deployment, HTTPS, final README/release notes, and Word/PDF report updates remain separate phases.
+End-to-end benchmark, Docker verification, CI release validation, safety review, frontend QA, final README/release notes, and Word/PDF report updates are complete. A server is available; production deployment, target preflight/access configuration, domain/DNS/HTTPS, and external smoke remain for `deploy/server-production`.

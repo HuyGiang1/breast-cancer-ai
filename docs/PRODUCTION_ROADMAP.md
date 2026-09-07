@@ -17,12 +17,13 @@
 
 ## External deployment work
 
-- [ ] Provision VPS.
+- [x] Server availability confirmed by the user.
+- [ ] Confirm server access, architecture, OS, CPU/RAM/disk, firewall, and Docker/Compose.
 - [ ] Configure DNS/domain.
 - [ ] Configure HTTPS certificate and HTTPS CORS origin.
 - [ ] Deploy only the checksum-verified runtime artifacts outside Git.
-- [ ] Run the operator procedure in `docs/DEPLOYMENT.md`.
+- [ ] Run the operator procedure in `docs/DEPLOYMENT_RUNBOOK.md` and complete public smoke.
 
 ## Release boundary
 
-`ops/production-readiness` is ready to close after its final documentation evidence commit is pushed and GitHub Actions is green. The next branch is `docs/final-documentation`; do not create it automatically. This remains a research/educational prototype and is not clinical software.
+Local production readiness and final documentation are complete. The next branch is `deploy/server-production`; do not create it automatically. This remains a research/educational prototype and is not clinical software.

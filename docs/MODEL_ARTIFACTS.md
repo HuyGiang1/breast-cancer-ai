@@ -1,51 +1,41 @@
-# Model Artifacts
+# Final Runtime Model Artifacts
 
-Audit date: 2026-09-04
+Status: frozen for the research demo. Model weights and serialized estimators are distributed outside normal Git history and mounted read-only in production.
 
-Model weights and serialized estimators are not stored in normal Git. Keep them in a release artifact, server volume, or external artifact store, then place them at the expected paths below before running inference.
+## Required artifacts
 
-Recommended strategy for this project: use GitHub Releases for final inference artifacts, plus a server volume for deployment. Do not commit `.keras`, `.pkl`, `.h5`, `.pt`, `.pth`, or `.onnx` files to the repository.
+| Model | Runtime path | Role | SHA-256 |
+| --- | --- | --- | --- |
+| WDBC Logistic Regression | `runtime_models/logistic_regression_final_seed42.joblib` | Final ML research/demo runtime; raw threshold `0.36` | `15a67b8580ba8729eebce9dd1330413905e7caa6ad2a022214769698e8b84755` |
+| CBIS-DDSM EfficientNet-B0 | `runtime_models/efficientnetb0_final_seed42.keras` | Final DL research/demo runtime; full processed image; raw threshold `0.515` | `dce9a5230afe1f1e4a8c0e908cd8467ae1b6526f3667e555c3a7db3c5f2f168b` |
+| EfficientNet-B0 Platt metadata | `models/calibration/efficientnet_b0_platt_final_seed42.json` | Frozen calibrated display/reliability probability only | Verified by final runtime contract |
 
-## Required Runtime Artifacts
+The DL class is always determined from raw probability `>= 0.515`; the Platt probability is not compared with that threshold.
 
-| Model | Filename | Expected path | Current role | Version | SHA-256 |
-| ----- | -------- | ------------- | ------------ | ------- | ------- |
-| Custom CNN | `custom_cnn_best.keras` | `backend/custom_cnn_best.keras` | Backend demo DL fallback/discovery | local legacy | `b6ceb487f7b03b40264f58a358d56e62dbdd439d24e6b00383f5e8c2960d3022` |
-| EfficientNetB0 | `efficientnetb0_best.keras` | `backend/efficientnetb0_best.keras` | Optional DL inference artifact | local legacy | `3ed64096d62f14e28f37b3f48fb94bc96610a4ee860b896b9275b867b66b7b0e` |
-| ResNet50 | `resnet50_best.keras` | `backend/resnet50_best.keras` | Optional DL inference artifact | local legacy | `3a6fe0e1a52c1947c6adb9f78101416d26c8ee9478a544c497a1325660e2836d` |
-| Wisconsin Logistic Regression | `wisconsin_logistic_regression_20260404_retrained.pkl` | `models/wisconsin_logistic_regression_20260404_retrained.pkl` | ML baseline candidate | 20260404 retrained | `c0f45867b88082b00fd27657e87c4786b9243f1a5de8928eb07b54fca26467c6` |
-| Wisconsin Random Forest | `wisconsin_random_forest_20260404_retrained.pkl` | `models/wisconsin_random_forest_20260404_retrained.pkl` | ML baseline candidate | 20260404 retrained | `a91b7c0af0f5cd599ff5ae6b0ea0737f5c5b8c405b8beaf43b298c4d58ce74a7` |
+## Installation
 
-## Local Research Artifacts
+Obtain the two binary files from the approved private artifact/release channel, place them under `runtime_models/`, and verify:
 
-| Artifact | Expected path | Notes | SHA-256 |
-| -------- | ------------- | ----- | ------- |
-| Custom CNN canonical copy | `models/deep_learning/custom_cnn_best.keras` | Research copy; duplicate role should be consolidated later | `ccb47928b1cb3811cab47d0015f066992b621a76ef38c9a3b22115a5faba4417` |
-| Custom CNN calibrated | `models/deep_learning/custom_cnn_finetuned_calibrated.keras` | Local calibrated experiment artifact | `720fccf568b2af22aa0b059bfa0c2730e3c09421da901a8e1437902da2de16d4` |
-| Custom CNN calibrated refresh | `models/deep_learning/custom_cnn_finetuned_calibrated_refresh.keras` | Local calibrated refresh artifact | `bf42db7b75156daf374b2b1bc0e697d32d314f279345c39ddd844cd10c8447f0` |
-| Custom CNN calibrated smoke | `models/deep_learning/custom_cnn_finetuned_calibrated_smoke.keras` | Smoke/test artifact; not a release candidate | `2be710e45f684c5138eb3af3eeb3583f4783733fea2ab296a0f0fb28b209c495` |
-| Custom CNN retrained balanced | `models/deep_learning/custom_cnn_retrained_balanced.keras` | Local experiment artifact | `116bde100593cf69ab536bf1c3045c1bfea7d548e6320713c278a804108e99b7` |
-| Custom CNN v2 ROI | `models/deep_learning/custom_cnn_v2_finetuned_roi.keras` | ROI experiment artifact | `095f722c27a1e0de2fa3be2d36f1c8eb7a029c674780c19c4d2057a803cd2349` |
-| DL image Random Forest | `models/deep_learning/dl_image_rf_20260404.pkl` | Experimental image-feature model | `231deb8625343cc3c4defdb44da64c4bea60fc97afbf14859faba26e73b1ac72` |
-
-## Release Flow
-
-1. Rebuild leakage-safe CBIS-DDSM split.
-2. Train final candidate models with fixed seeds and committed config.
-3. Evaluate exactly once on the locked test set.
-4. Select final inference artifacts.
-5. Create a GitHub Release such as `models-vYYYYMMDD`.
-6. Upload only final runtime artifacts and a checksum manifest.
-7. On the server, download artifacts into a persistent volume mounted at the expected paths.
-
-## Server Placement
-
-For Docker/VPS deployment, keep model files outside the image and mount them into the container:
-
-```text
-/opt/breast-cancer-ai/models/backend/custom_cnn_best.keras -> backend/custom_cnn_best.keras
-/opt/breast-cancer-ai/models/backend/efficientnetb0_best.keras -> backend/efficientnetb0_best.keras
-/opt/breast-cancer-ai/models/backend/resnet50_best.keras -> backend/resnet50_best.keras
+```bash
+sha256sum runtime_models/logistic_regression_final_seed42.joblib
+sha256sum runtime_models/efficientnetb0_final_seed42.keras
+git ls-files runtime_models
 ```
 
-The current model artifacts are legacy/local until the CBIS-DDSM leakage blocker is fixed. Do not use them for final scientific claims.
+The final command must return no tracked files. Do not commit `.keras`, `.joblib`, `.pkl`, `.h5`, `.pt`, `.pth`, `.onnx`, patient data, or credentials.
+
+## Runtime behavior
+
+The final services verify checksum before serving inference and fail closed on missing or mismatched files. They do not fall back to historical models. `/api/v1/models/final/status/` exposes safe identity/status metadata and always reports `clinical_use: false`.
+
+Docker Compose mounts `./runtime_models:/app/runtime_models:ro`.
+
+## Provenance
+
+- `experiments/final/FINAL_RESULTS_SNAPSHOT.json`
+- `experiments/final/runs/efficientnet_b0_full/model_metadata.json`
+- `experiments/final/ml_runs/logistic_regression/model_metadata.json`
+- `docs/FINAL_RUNTIME_MODEL_CONTRACT.md`
+- `docs/FINAL_MODEL_PROMOTION_REVIEW.md`
+
+Historical/local experiment files are not deployment candidates and must not replace the two checksummed artifacts above.

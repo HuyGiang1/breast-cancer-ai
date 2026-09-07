@@ -63,4 +63,4 @@ No `eval`/`new Function`, patient/password/token logging, bearer query parameter
 - Browser QA used desktop Chrome emulation, not a physical-device lab or formal WCAG certification.
 - External advisor providers can return availability/quota errors; controlled fallback/error behavior is retained.
 - Static-client authentication continues to use the existing local-storage bearer contract.
-- VPS, domain, DNS, TLS, and external deployment remain blocked on infrastructure/credentials.
+- A server is available. Production deployment, target access/configuration, domain, DNS, TLS, and external smoke remain pending.

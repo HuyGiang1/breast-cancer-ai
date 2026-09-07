@@ -182,7 +182,7 @@ Docker Compose bao gồm API FastAPI và Nginx phục vụ frontend tĩnh/revers
 Internet -> Domain + HTTPS -> Nginx -> static web + /api FastAPI -> models + persistent SQLite
 ```
 
-Mục tiêu là Ubuntu VPS chạy Docker Compose, Nginx, domain, HTTPS, `.env` production, volume model/DB, backup và healthcheck. Bước triển khai thực tế bắt đầu khi có VPS, domain và quyền truy cập.
+Mục tiêu là server Linux chạy Docker Compose, Nginx, domain, HTTPS, `.env` production, volume model/DB, backup và healthcheck. Server đã có; bước triển khai thực tế bắt đầu sau khi có thông tin truy cập/cấu hình đích và sẽ hoàn thiện domain, DNS, HTTPS cùng public smoke.
 
 ## 26. Quản lý model artifact
 
@@ -222,7 +222,7 @@ Xác thực ngoài tập dữ liệu, bổ sung metadata ca bệnh, DICOM/PACS, 
 6. Chọn và promote model theo sensitivity, FN, calibration và độ ổn định.
 7. Kết nối artifact cuối vào backend/dashboard, hoàn thiện frontend/test.
 8. Hoàn thiện Docker, backup, release package và docs.
-9. Khi có VPS/domain: triển khai HTTPS, xác minh public demo và phát hành release.
+9. Trên server sẵn có: hoàn tất preflight/access, triển khai HTTPS sau khi có domain/DNS, xác minh public demo và chuẩn bị release.
 
 ## 34. Checklist nghiệm thu cuối
 
