@@ -8,10 +8,10 @@
 - Functional baseline commit: `5b6c72c` (legacy monolithic rich frontend)
 - Research: **FROZEN**
 - Runtime: **FROZEN**
-- Frontend: **FEATURE PARITY AUDIT / BASELINE LOCK (PHASE 4R)**
-- Parity matrix: `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged)
-- Implementation status: Phase 4R implementation has **NOT** started
-- Next phase: Await user approval of parity matrix before commencing Batch A
+- Frontend: **PHASE 4R BATCH A COMPLETED (PASS)**
+- Parity matrix: `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged, sum reconciled: 52)
+- QA report: `docs/v4/BATCH_A_HOME_RESEARCH_LEARN_QA.md`
+- Next phase: Batch B (Structured ML Parity Restoration) — await explicit user instruction. Do not start Batch B prematurely.
 
 Do not retrain, change datasets/splits, tune on test, change thresholds/calibration/model selection, redesign the frontend, validate multimodal fusion, claim clinical use, merge main, tag, or create a release without explicit instruction.
 

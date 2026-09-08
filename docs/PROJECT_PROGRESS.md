@@ -4,13 +4,18 @@ Last updated: 2026-09-07
 
 ## Current stage
 
-**Phase 4R — Feature Parity Audit / Baseline Lock**
+**Phase 4R — Feature Parity Restoration**
 
 - Current branch: `feat/product-experience-v4`
 - Baseline commits: `5b6c72c` (legacy rich functional baseline) and `8eba137` (committed V3 baseline)
-- Current work: Feature parity matrix locked in `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged)
-- Implementation status: Phase 4R implementation has **NOT** started
-- Next step: Await user review of the feature parity matrix before commencing Batch A (Overview/Learn/Research)
+- Parity matrix: `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged, sum reconciled: 52)
+- Current work: **Batch A (Overview / Learn / Research Restoration) COMPLETED (PASS)**
+  - Canonical authenticated & guest Overview on `index.html` with compact identity and quick-start bar.
+  - Safe compatibility redirect from `/pages/dashboard.html` to `../index.html`.
+  - 60-second visual research narrative in `#research` with validation-first selection and exact frozen metrics.
+  - Comprehensive educational hub in `#learn` (anatomy, source-backed screening, warning signs, nutrition, video library, FAQ).
+  - All automated tests, crawlers, and browser E2E suites passing with 0 defects.
+- Next step: Batch B (Structured ML Parity Restoration) — await explicit user prompt.
 
 ## Completed major milestones
 

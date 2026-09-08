@@ -10,7 +10,7 @@ Last updated: 2026-09-07
 | Production readiness | DONE | CI, backup/restore rehearsal, local benchmark, safety review, validator, Docker mounts/checksums/persistence, Nginx, and controlled-error smoke passed. |
 | Frontend Architecture V2 | FROZEN FOR RELEASE | 21 canonical routes, modular ES Modules, legacy bundle retirement, and 84/84 route/viewport QA. |
 | Frontend Redesign V3 | READY FOR UAT | 21 canonical routes, top navigation mega-menus, glassmorphic design system, and full regression verification (`8eba137`). |
-| Phase 4R Feature Parity Audit | BASELINE LOCKED | Comprehensive 52-feature parity matrix locked in `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md`. Implementation has NOT started. |
+| Phase 4R Batch A (Overview/Learn/Research) | RESTORED (PASS) | Canonical authenticated/guest Overview on `index.html`, `#research` storytelling, `#learn` hub, dashboard compatibility redirect, 7 screenshots verified, 0 defects. |
 | Final README and screenshots | DONE | Final public entry point and eight optimized, disposable-data screenshots. |
 | Official report | DONE | `docs/report/FINAL_RESEARCH_REPORT_VI.md` generated into matching 29-page DOCX/PDF with final paper artifacts and platform screenshots. |
 | Report validation | DONE | `scripts/validate_final_report.py` plus `docs/FINAL_REPORT_VALIDATION.md`; scientific facts, structure, page completeness, and wording gates pass. |
