@@ -206,9 +206,9 @@ async function runSuite() {
     }
 
     // ==========================================
-    // 1. PUBLIC LANDING QA
+    // 1. PUBLIC LANDING QA & ANCHOR NAVIGATION
     // ==========================================
-    console.log('\n--- 1. Testing Public Landing Page ---');
+    console.log('\n--- 1. Testing Public Landing Page & Anchors ---');
     await setViewport(1440, 900);
     await client.send('Page.navigate', { url: 'http://localhost/index.html' });
     await sleep(1500);
@@ -221,37 +221,117 @@ async function runSuite() {
           hasBrand: text.includes('Breast Health Studio'),
           hasExplore: text.includes('Explore'),
           hasAnalyzeMenu: !!document.querySelector('.mega-menu-analyze'),
-          hasResearchMenu: !!document.querySelector('.mega-menu-research'),
+          hasResearchAnchor: !!document.querySelector('a[href="#research"]'),
+          hasLearnAnchor: !!document.querySelector('a[href="#learn"]'),
           hasSignInBtn: !!document.querySelector('a[href*="login.html"]'),
+          hasRegisterBtn: !!document.querySelector('a[href*="register.html"]'),
+          hasScreeningTable: !!document.querySelector('.screening-table'),
+          hasWarningSigns: !!document.querySelector('.warning-signs-grid'),
+          hasFaqAccordion: !!document.querySelector('.faq-accordion-list'),
+          hasVideoLibrary: !!document.querySelector('.video-library-grid'),
           scrollWidth: document.documentElement.scrollWidth,
           clientWidth: document.documentElement.clientWidth
         };
       })()
     `);
     console.log('Landing Audit (1440x900):', landingAudit);
-    if (!landingAudit.hasBrand || !landingAudit.hasSignInBtn) {
-      defects.push({ id: 'LANDING-01', severity: 'P1', route: '/index.html', defect: 'Landing branding or Sign In link missing.' });
+    if (!landingAudit.hasBrand || !landingAudit.hasSignInBtn || !landingAudit.hasResearchAnchor || !landingAudit.hasLearnAnchor) {
+      defects.push({ id: 'LANDING-01', severity: 'P1', route: '/index.html', defect: 'Landing branding, Sign In link, or section anchors missing.' });
     }
+    await captureScreenshot('v4-a-overview-guest-1440.png');
     await captureScreenshot('qa-landing-1440.png');
 
-    // Mobile viewport overflow check
+    // Test #research smooth anchor navigation
+    console.log('Testing #research anchor navigation...');
+    await evalExpr(`document.querySelector('a[href="#research"]')?.click()`);
+    await sleep(1000);
+    const researchInView = await evalExpr(`
+      (() => {
+        const el = document.getElementById('research');
+        if (!el) return false;
+        const rect = el.getBoundingClientRect();
+        return rect.top >= -50 && rect.top <= 200;
+      })()
+    `);
+    console.log('Research section in viewport after anchor click:', researchInView);
+    await captureScreenshot('v4-a-research-1440.png');
+
+    // Test #learn smooth anchor navigation
+    console.log('Testing #learn anchor navigation...');
+    await evalExpr(`document.querySelector('a[href="#learn"]')?.click()`);
+    await sleep(1000);
+    const learnInView = await evalExpr(`
+      (() => {
+        const el = document.getElementById('learn');
+        if (!el) return false;
+        const rect = el.getBoundingClientRect();
+        return rect.top >= -50 && rect.top <= 200;
+      })()
+    `);
+    console.log('Learn section in viewport after anchor click:', learnInView);
+
+    // Test FAQ accordion interaction
+    const faqOpened = await evalExpr(`
+      (() => {
+        const firstSummary = document.querySelector('.faq-item summary');
+        if (!firstSummary) return false;
+        firstSummary.click();
+        const firstItem = firstSummary.closest('details');
+        return firstItem && firstItem.open;
+      })()
+    `);
+    console.log('FAQ accordion toggled open:', faqOpened);
+    if (!faqOpened) {
+      defects.push({ id: 'FAQ-01', severity: 'P2', route: '/index.html#learn', defect: 'FAQ accordion did not expand when clicked.' });
+    }
+
+    // Test lazy video loader
+    const videoIframeLoaded = await evalExpr(`
+      (() => {
+        const stage = document.querySelector('.video-poster-stage');
+        if (!stage) return false;
+        stage.click();
+        return !!stage.querySelector('iframe');
+      })()
+    `);
+    console.log('Lazy video iframe initialized on click:', videoIframeLoaded);
+    if (!videoIframeLoaded) {
+      defects.push({ id: 'VIDEO-01', severity: 'P2', route: '/index.html#learn', defect: 'Lazy video did not load iframe when clicked.' });
+    }
+    await captureScreenshot('v4-a-learn-1440.png');
+
+    // Mobile viewport check at 390x844
     await setViewport(390, 844, true, 2);
     const mobileOverflow = await evalExpr('document.documentElement.scrollWidth > 390');
     console.log('Mobile horizontal overflow at 390px:', mobileOverflow);
     if (mobileOverflow) {
       defects.push({ id: 'RESPONSIVE-01', severity: 'P2', route: '/index.html', defect: 'Horizontal overflow detected on mobile landing page.' });
     }
+    // Scroll to #learn on mobile and capture
+    await evalExpr(`document.getElementById('learn')?.scrollIntoView()`);
+    await sleep(800);
+    await captureScreenshot('v4-a-learn-390.png');
+    await setViewport(1440, 900);
 
     // ==========================================
-    // 2. SESSION GUARD QA (Unauthenticated Direct Access)
+    // 2. SESSION GUARD & DASHBOARD COMPATIBILITY QA
     // ==========================================
-    console.log('\n--- 2. Testing Session Guards for Protected Routes ---');
+    console.log('\n--- 2. Testing Session Guards & Dashboard Compatibility ---');
     await setViewport(1440, 900);
     // Clear any residual localStorage
     await evalExpr('localStorage.clear()');
 
+    // Test Dashboard backward compatibility redirect for guest
+    console.log('Testing unauthenticated /pages/dashboard.html backward compatibility...');
+    await client.send('Page.navigate', { url: 'http://localhost/pages/dashboard.html' });
+    await sleep(1200);
+    const guestDashRedirectUrl = await evalExpr('window.location.href');
+    console.log('Unauthenticated dashboard.html redirected to:', guestDashRedirectUrl);
+    if (!guestDashRedirectUrl.includes('index.html')) {
+      defects.push({ id: 'DASH-01', severity: 'P0', route: '/pages/dashboard.html', defect: `Unauthenticated dashboard.html did not redirect to index.html. Got: ${guestDashRedirectUrl}` });
+    }
+
     const protectedRoutes = [
-      '/pages/dashboard.html',
       '/pages/profile.html',
       '/pages/ml-analysis.html',
       '/pages/dl-analysis.html',
@@ -271,9 +351,9 @@ async function runSuite() {
     }
 
     // ==========================================
-    // 3. USER REGISTRATION & ROLE ENFORCEMENT
+    // 3. USER REGISTRATION & CANONICAL AUTH OVERVIEW
     // ==========================================
-    console.log('\n--- 3. Testing User Registration & Role Enforcement ---');
+    console.log('\n--- 3. Testing User Registration & Canonical Auth Overview ---');
     await client.send('Page.navigate', { url: 'http://localhost/register.html' });
     await sleep(1200);
 
@@ -291,27 +371,79 @@ async function runSuite() {
 
     const postRegisterUrl = await evalExpr('window.location.href');
     console.log('Post-register URL:', postRegisterUrl);
+    if (!postRegisterUrl.includes('index.html')) {
+      defects.push({ id: 'AUTH-02', severity: 'P0', route: '/register.html', defect: `Post-registration destination should be index.html, got: ${postRegisterUrl}` });
+    }
+
     const userRole = await evalExpr("JSON.parse(localStorage.getItem('bcai_user') || '{}').role");
     console.log('Stored user role:', userRole);
-
     if (userRole !== 'user') {
       defects.push({ id: 'AUTH-01', severity: 'P0', route: '/register.html', defect: `Public registration did not force role to 'user'. Role was: ${userRole}` });
     }
 
-    // Capture Dashboard
+    // Verify Authenticated Overview on index.html
+    const authOverviewAudit = await evalExpr(`
+      (() => {
+        const greeting = document.getElementById('quickStartGreeting')?.innerText || '';
+        const headerWelcome = document.getElementById('headerAuthActions')?.innerText || '';
+        const quickStart = document.getElementById('authQuickStart');
+        const qsDisplay = quickStart ? window.getComputedStyle(quickStart).display : 'none';
+        const hasML = !!document.querySelector('a[href*="ml-analysis.html"]');
+        const hasDL = !!document.querySelector('a[href*="dl-analysis.html"]');
+        const hasFusion = !!document.querySelector('a[href*="multimodal.html"]');
+        const hasHistory = !!document.querySelector('a[href*="history.html"]');
+        const docCard = document.getElementById('quickStartDoctorCard');
+        const hasDoctorQS = docCard && window.getComputedStyle(docCard).display !== 'none';
+        return { greeting, headerWelcome, qsDisplay, hasML, hasDL, hasFusion, hasHistory, hasDoctorQS };
+      })()
+    `);
+    console.log('Authenticated Overview Audit on index.html:', authOverviewAudit);
+
+    if (!authOverviewAudit.greeting.includes('QA Normal User') && !authOverviewAudit.headerWelcome.includes('QA Normal User')) {
+      defects.push({ id: 'AUTH-03', severity: 'P1', route: '/index.html', defect: 'Authenticated index.html missing compact user identity.' });
+    }
+    if (authOverviewAudit.qsDisplay === 'none') {
+      defects.push({ id: 'AUTH-04', severity: 'P1', route: '/index.html', defect: 'Authenticated index.html quick start bar not displayed.' });
+    }
+    if (authOverviewAudit.hasDoctorQS) {
+      defects.push({ id: 'ROLE-00', severity: 'P0', route: '/index.html', defect: 'Doctor Workspace quick-start leaked to normal user.' });
+    }
+
+    // Capture authenticated overview
+    await captureScreenshot('v4-a-overview-auth-1440.png');
     await captureScreenshot('qa-dashboard-1440.png');
+
+    // Mobile authenticated overview check
+    await setViewport(390, 844, true, 2);
+    const authMobileOverflow = await evalExpr('document.documentElement.scrollWidth > 390');
+    console.log('Authenticated mobile horizontal overflow at 390px:', authMobileOverflow);
+    if (authMobileOverflow) {
+      defects.push({ id: 'RESPONSIVE-02', severity: 'P2', route: '/index.html', defect: 'Horizontal overflow detected on mobile authenticated overview.' });
+    }
+    await captureScreenshot('v4-a-overview-auth-390.png');
+    await setViewport(1440, 900);
+
+    // Test authenticated /pages/dashboard.html compatibility redirect
+    console.log('Testing authenticated /pages/dashboard.html compatibility redirect...');
+    await client.send('Page.navigate', { url: 'http://localhost/pages/dashboard.html' });
+    await sleep(1200);
+    const authDashRedirectUrl = await evalExpr('window.location.href');
+    console.log('Authenticated dashboard.html redirected to:', authDashRedirectUrl);
+    if (!authDashRedirectUrl.includes('index.html')) {
+      defects.push({ id: 'DASH-02', severity: 'P0', route: '/pages/dashboard.html', defect: `Authenticated dashboard.html did not redirect to index.html. Got: ${authDashRedirectUrl}` });
+    }
 
     // ==========================================
     // 3B. DIRECT NAVIGATION & RESPONSIVE QA FOR MIGRATED ROUTES
     // ==========================================
     console.log('\n--- 3B. Testing Direct Navigation & Responsive QA for Migrated Routes ---');
-    // Ensure we are on Dashboard
-    await client.send('Page.navigate', { url: 'http://localhost/pages/dashboard.html' });
-    await sleep(1500);
+    // Ensure we start from index.html
+    await client.send('Page.navigate', { url: 'http://localhost/index.html' });
+    await sleep(1200);
 
-    // 1. Dashboard -> Research -> Research Center
-    console.log('Testing Direct Navigation: Dashboard -> Research -> Research Center');
-    await evalExpr(`document.querySelector('.mega-menu-research a[href="research.html"]')?.click()`);
+    // 1. Homepage -> Research -> Research Center
+    console.log('Testing Direct Navigation: Homepage -> Research -> Research Center');
+    await evalExpr(`document.querySelector('.research-deep-dive-grid a[href*="research.html"]')?.click()`);
     await sleep(1500);
     const researchUrl = await evalExpr('window.location.href');
     console.log('Navigated to:', researchUrl);
@@ -328,9 +460,11 @@ async function runSuite() {
     await captureScreenshot('research-390.png');
     await setViewport(1440, 900);
 
-    // 2. Dashboard -> Research -> Model Benchmarks (Model Comparison)
-    console.log('Testing Direct Navigation: Dashboard -> Research -> Model Benchmarks');
-    await evalExpr(`document.querySelector('.mega-menu-research a[href="model-comparison.html"]')?.click()`);
+    // 2. Homepage -> Research -> Model Benchmarks (Model Comparison)
+    console.log('Testing Direct Navigation: Homepage -> Research -> Model Benchmarks');
+    await client.send('Page.navigate', { url: 'http://localhost/index.html' });
+    await sleep(1000);
+    await evalExpr(`document.querySelector('.research-deep-dive-grid a[href*="model-comparison.html"]')?.click()`);
     await sleep(1500);
     const modelCompUrl = await evalExpr('window.location.href');
     console.log('Navigated to:', modelCompUrl);
@@ -339,9 +473,11 @@ async function runSuite() {
     }
     await captureScreenshot('model-comparison-1440.png');
 
-    // 3. Dashboard -> Research -> Dataset Explorer
-    console.log('Testing Direct Navigation: Dashboard -> Research -> Dataset Explorer');
-    await evalExpr(`document.querySelector('.mega-menu-research a[href="datasets.html"]')?.click()`);
+    // 3. Homepage -> Research -> Dataset Explorer
+    console.log('Testing Direct Navigation: Homepage -> Research -> Dataset Explorer');
+    await client.send('Page.navigate', { url: 'http://localhost/index.html' });
+    await sleep(1000);
+    await evalExpr(`document.querySelector('.research-deep-dive-grid a[href*="datasets.html"]')?.click()`);
     await sleep(1500);
     const datasetsUrl = await evalExpr('window.location.href');
     console.log('Navigated to:', datasetsUrl);
@@ -350,24 +486,15 @@ async function runSuite() {
     }
     await captureScreenshot('datasets-1440.png');
 
-    // 4. Dashboard -> Workspace -> Prediction Reports
-    console.log('Testing Direct Navigation: Dashboard -> Workspace -> Prediction Reports');
-    await evalExpr(`document.querySelector('.studio-dropdown a[href="reports.html"]')?.click()`);
+    // 4. From internal page, test navigation back to homepage anchors
+    console.log('Testing Topbar Anchor Navigation from Internal Page (datasets.html -> ../index.html#research)');
+    await evalExpr(`document.querySelector('a[href*="index.html#research"]')?.click()`);
     await sleep(1500);
-    const reportsUrl = await evalExpr('window.location.href');
-    console.log('Navigated to:', reportsUrl);
-    if (!reportsUrl.includes('reports.html')) {
-      defects.push({ id: 'NAV-04', severity: 'P1', route: '/pages/reports.html', defect: 'Direct navigation to Prediction Reports failed.' });
+    const backToAnchorUrl = await evalExpr('window.location.href');
+    console.log('Navigated via topbar anchor to:', backToAnchorUrl);
+    if (!backToAnchorUrl.includes('index.html#research')) {
+      defects.push({ id: 'NAV-05', severity: 'P1', route: '/index.html#research', defect: 'Navigation from internal page back to #research anchor failed.' });
     }
-    await captureScreenshot('reports-1440.png');
-    await setViewport(390, 844, true, 2);
-    const reportsMobileOverflow = await evalExpr('document.documentElement.scrollWidth > 390');
-    console.log('Reports mobile overflow at 390px:', reportsMobileOverflow);
-    if (reportsMobileOverflow) {
-      defects.push({ id: 'RESP-03', severity: 'P2', route: '/pages/reports.html', defect: 'Horizontal overflow on mobile reports.html.' });
-    }
-    await captureScreenshot('reports-390.png');
-    await setViewport(1440, 900);
 
     // ==========================================
     // 4. USER ROLE BOUNDARY (Patient Registry Access Denied)
@@ -427,7 +554,7 @@ async function runSuite() {
     // Check button is disabled during submit
     const btnDisabledDuringSubmit = await evalExpr("document.querySelector('#analysis button')?.disabled");
     let attempts = 0;
-    while (attempts < 20) {
+    while (attempts < 50) {
       await sleep(500);
       const text = await evalExpr("document.getElementById('result')?.innerText || ''");
       if (text && !text.includes('Running frozen')) break;
@@ -563,13 +690,13 @@ async function runSuite() {
     `);
     await sleep(1500);
 
-    // Attempt back button navigation
-    await client.send('Page.navigate', { url: 'http://localhost/pages/dashboard.html' });
+    // Attempt back button navigation to protected page
+    await client.send('Page.navigate', { url: 'http://localhost/pages/profile.html' });
     await sleep(1000);
     const postLogoutUrl = await evalExpr('window.location.href');
-    console.log('Post-logout navigation to /pages/dashboard.html -> URL is:', postLogoutUrl);
+    console.log('Post-logout navigation to /pages/profile.html -> URL is:', postLogoutUrl);
     if (!postLogoutUrl.includes('login.html')) {
-      defects.push({ id: 'GUARD-02', severity: 'P0', route: '/pages/dashboard.html', defect: 'Post-logout back-navigation did not redirect to login page.' });
+      defects.push({ id: 'GUARD-02', severity: 'P0', route: '/pages/profile.html', defect: 'Post-logout back-navigation did not redirect to login page.' });
     }
 
     // ==========================================
@@ -600,8 +727,31 @@ conn.close()
     `);
     await sleep(2000);
 
+    const docPostLoginUrl = await evalExpr('window.location.href');
+    console.log('Doctor post-login URL:', docPostLoginUrl);
+    if (!docPostLoginUrl.includes('index.html')) {
+      defects.push({ id: 'AUTH-05', severity: 'P0', route: '/login.html', defect: `Doctor login did not redirect to index.html. Got: ${docPostLoginUrl}` });
+    }
+
     const docRole = await evalExpr("JSON.parse(localStorage.getItem('bcai_user') || '{}').role");
     console.log('Doctor account role verified:', docRole);
+
+    // Verify Doctor Overview state on index.html
+    const docOverviewAudit = await evalExpr(`
+      (() => {
+        const greeting = document.getElementById('quickStartGreeting')?.innerText || '';
+        const headerWelcome = document.getElementById('headerAuthActions')?.innerText || '';
+        const docCard = document.getElementById('quickStartDoctorCard');
+        const hasDoctorQS = docCard && window.getComputedStyle(docCard).display !== 'none';
+        const topbarDoctor = !!document.querySelector('#topbarWorkspaceSlot a[href*="patients.html"]');
+        return { greeting, headerWelcome, hasDoctorQS, topbarDoctor };
+      })()
+    `);
+    console.log('Doctor Overview Audit on index.html:', docOverviewAudit);
+    if (!docOverviewAudit.hasDoctorQS || !docOverviewAudit.topbarDoctor) {
+      defects.push({ id: 'ROLE-03', severity: 'P1', route: '/index.html', defect: 'Doctor Workspace shortcut missing on Doctor Overview.' });
+    }
+    await captureScreenshot('v4-a-doctor-overview-1440.png');
 
     // Doctor visits Patient Registry
     await client.send('Page.navigate', { url: 'http://localhost/pages/patients.html' });
