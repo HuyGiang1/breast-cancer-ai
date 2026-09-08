@@ -44,8 +44,8 @@
 | # | Feature | Legacy UI / Behavior (`5b6c72c`) | Current V3 Frontend UI (`8eba137`) | Current V3 Frontend Logic | Current Backend / API Support | Current Final-Model Compatibility | Status | V4 Action | Evidence / Verification |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **1** | **Hero & Public Entry** | Hero banner with quick triage CTA and workflow entry cards | Premium dark hero with headline, status chips, and CTA | `index.html` inline navigation logic | N/A (Static) | Fully compatible | **PRESERVED** | Maintain current premium layout | `frontend/index.html:L42-L78` |
-| **2** | **Clinical Warning Signs Gallery** | 6 descriptive warning signs with images and advice | Condensed into landing sections | Rendered as text cards | N/A (Static) | Fully compatible | **PRESERVED — UX DEGRADED** | Restore rich medical descriptions and verified visual cards | `5b6c72c:frontend/index.html:L68-L98` |
-| **3** | **Screening Guidelines by Age** | Age-stratified mammography screening guideline tables | Mentioned in copy, table omitted | Omitted in landing | N/A (Static) | Fully compatible | **PARTIALLY PRESERVED** | Restore structured screening guideline table in Learn section | `5b6c72c:frontend/index.html:L150-L180` |
+| **2** | **Clinical Warning Signs Gallery** | 6 descriptive warning signs with images and advice | Restored 6 rich medical warning sign cards with non-alarmist phrasing and guidance | Interactive smooth scroll to `#learn-warnings` | N/A (Static) | Fully compatible | **RESTORED** | Restored in Batch A with verified clinical copy & evaluation advice | `frontend/index.html:L1060-L1140` |
+| **3** | **Screening Guidelines by Age** | Age-stratified mammography screening guideline tables | Restored structured age-stratified screening table with official ACS & USPSTF citations | Interactive navigation to `#learn-screening` | N/A (Static) | Fully compatible | **RESTORED** | Restored in Batch A with authoritative source links | `frontend/index.html:L980-L1050` |
 | **4** | **Nutrition & Lifestyle Modalities** | Care guide cards for plant foods, animal foods, hydration, exercise | 4 glassmorphic cards in landing | Fully rendered in V3 | N/A (Static) | Fully compatible | **PRESERVED** | Preserved in Phase 3A.2/3A.5 | `frontend/index.html:L240-L310` |
 | **5** | **Interactive FAQ Accordion** | Searchable/expandable FAQ accordion (`bindFaqToggle`) | Expandable FAQ section in landing | Native `<details>` or JS toggle | N/A (Static) | Fully compatible | **PRESERVED** | Maintain and verify keyboard accessibility | `frontend/index.html:L350-L410` |
 | **6** | **Educational Video Library** | Video preview cards with modal / embedded player | 2 video preview cards in landing | Media card elements | N/A (Static) | Fully compatible | **PRESERVED** | Maintain verified poster assets | `frontend/index.html:L320-L348` |
@@ -103,15 +103,16 @@
 | Category | Count | Detailed Breakdown |
 | :--- | :---: | :--- |
 | **Total Meaningful Features Audited** | **52** | Exhaustive census across `frontend/index.html`, `frontend/app.js`, and V3 pages |
+| **RESTORED (Batch A)** | **2** | Features #2 (Warning Signs Gallery), #3 (Age Screening Guidelines) |
 | **PRESERVED** | **18** | Features #1, #4, #5, #6, #7, #9, #12, #17, #22, #25, #29, #32, #39, #40, #44, #45, #48, #49 |
-| **PRESERVED — UX DEGRADED** | **7** | Features #2, #8, #34, #35, #36, #37, #43 |
-| **PARTIALLY PRESERVED** | **4** | Features #3, #21, #28, #38, #41 |
+| **PRESERVED — UX DEGRADED** | **7** | Features #8, #34, #35, #36, #37, #42, #43 |
+| **PARTIALLY PRESERVED** | **4** | Features #21, #28, #38, #41 |
 | **FRONTEND REGRESSION — BACKEND PRESERVED** | **8** | Features #14, #18, #19, #26, #27, #31, #33, #50 |
 | **FULLY LOST** | **8** | Features #10, #11, #13, #20, #23, #30, #46, #47 |
 | **SCIENTIFICALLY INCOMPATIBLE — REIMPLEMENT AGAINST FINAL MODEL** | **2** | Features #16 (Linear model contributions from frozen LR), #24 (Grad-CAM on frozen EfficientNet-B0 `top_conv`) |
 | **NEW ENHANCEMENTS PROPOSED** | **1** | Feature #15 (WDBC development reference percentiles & outlier alerts) |
 | **INTENTIONALLY DEFERRED** | **2** | Features #51 (Google OAuth real handshake), #52 (Real SMTP email delivery) |
-| **Sum Reconciliation** | **52** | $18 + 7 + 4 + 8 + 8 + 2 + 1 + 2 = 50 + 2 = \mathbf{52}$ (Reconciled with 0 discrepancies) |
+| **Sum Reconciliation** | **52** | $2 + 18 + 7 + 4 + 8 + 8 + 2 + 1 + 2 = \mathbf{52}$ (Reconciled with 0 discrepancies) |
 
 ---
 
@@ -141,7 +142,12 @@
 
 ## 5. Non-Regression & Restoration Execution Batches
 
-- **Batch A — Overview, Learn & Research Content**: Enrich `index.html#learn` and `index.html#research` with detailed screening and clinical content.
+- **Batch A — Overview, Learn & Research Content**: **COMPLETED (PASS)**.
+  - Canonical authenticated & guest Overview on `index.html` with compact identity and quick-start bar.
+  - Top navigation streamlined to Overview, Analyze, Research (`#research`), Learn (`#learn`), Doctor Workspace / My Activity, AI Guide.
+  - Safe compatibility redirect from `/pages/dashboard.html` to `../index.html` with query/hash preservation.
+  - 60-second visual research narrative in `#research` with validation-first selection, exact frozen metrics (Study A LR ROC-AUC 0.9954, Study B EfficientNet-B0 ROC-AUC 0.7229), and links to secondary deep-dive routes.
+  - Substantial educational hub in `#learn`: anatomy schematic, source-backed screening table (ACS/USPSTF), 6 warning signs cards with non-alarmist framing, AICR New American Plate nutrition, recovery guidance, 4 myth/fact pairs, verified lazy-loaded video library, and accessible native FAQ accordions.
 - **Batch B — Structured ML Parity**: Restore presets (Benign/Malignant), Clear button, CSV import & template, OCR extraction modal, LR feature contributions ($z_i$), reference percentiles, patient selector, report button, AI handoff.
 - **Batch C — Mammography DL Parity & Frozen Grad-CAM**: Implement Grad-CAM on `top_conv` of frozen EfficientNet-B0 in `final_dl_runtime_service.py`; restore demo mammograms, side-by-side comparison, patient selector, report button, AI handoff.
 - **Batch D — Multimodal Fusion Parity**: Restore two-branch cards (ML features + DL Grad-CAM), fusion demo loader, heuristic synthesis explanation.
