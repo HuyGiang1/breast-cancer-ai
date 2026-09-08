@@ -19,6 +19,33 @@ function initRegisterPage() {
   const googleBtnContainer = document.getElementById('googleBtnContainer');
   const googleFallbackBtn = document.getElementById('googleFallbackBtn');
 
+  function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function showResolutionAlert(email) {
+    if (alertBox) {
+      alertBox.className = 'auth-alert-box warning account-resolution-card';
+      alertBox.innerHTML = `
+        <div class="resolution-content">
+          <div class="resolution-title">This email already has an account.</div>
+          <p class="resolution-desc">An account for <code>${escapeHtml(email)}</code> is already registered in Breast Health Studio.</p>
+          <div class="resolution-actions">
+            <a href="login.html?v=auth-v3" class="studio-btn studio-btn-primary studio-btn-sm">Sign in</a>
+            <a href="forgot-password.html?v=auth-v3" class="studio-btn studio-btn-outline studio-btn-sm">Reset password</a>
+          </div>
+          <p class="resolution-note">
+            <small><strong>Note on Google:</strong> If this account was created with a password, sign in with your password first, then connect Google in Profile / Account Settings.</small>
+          </p>
+        </div>
+      `;
+      alertBox.style.display = 'block';
+    }
+    toast('This email already has an account.', 'info');
+  }
+
   function showAlert(message, type = 'error') {
     if (alertBox) {
       alertBox.textContent = message;
@@ -98,7 +125,12 @@ function initRegisterPage() {
         // Auto-login session saved in authService.register; redirect to dashboard
         window.location.assign('pages/dashboard.html');
       } catch (err) {
-        showAlert(err.message || 'Account creation failed. Please try again.');
+        const msg = String(err.message || '');
+        if (msg.toLowerCase().includes('already registered') || err.status === 409) {
+          showResolutionAlert(email);
+        } else {
+          showAlert(msg || 'Account creation failed. Please try again.');
+        }
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Create account';
