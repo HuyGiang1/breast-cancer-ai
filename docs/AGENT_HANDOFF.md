@@ -3,13 +3,15 @@
 ## Current state
 
 - Repository: `https://github.com/HuyGiang1/breast-cancer-ai`
-- Current branch: `docs/final-documentation`
-- Base branch: `feat/frontend-architecture-v2`
+- Current branch: `feat/product-experience-v4`
+- Base commit: `8eba137` (committed V3 baseline)
+- Functional baseline commit: `5b6c72c` (legacy monolithic rich frontend)
 - Research: **FROZEN**
 - Runtime: **FROZEN**
-- Frontend: **FROZEN FOR RELEASE**
-- Final documentation: **COMPLETE**
-- Next branch: `deploy/server-production`; do not create it automatically.
+- Frontend: **FEATURE PARITY AUDIT / BASELINE LOCK (PHASE 4R)**
+- Parity matrix: `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged)
+- Implementation status: Phase 4R implementation has **NOT** started
+- Next phase: Await user approval of parity matrix before commencing Batch A
 
 Do not retrain, change datasets/splits, tune on test, change thresholds/calibration/model selection, redesign the frontend, validate multimodal fusion, claim clinical use, merge main, tag, or create a release without explicit instruction.
 

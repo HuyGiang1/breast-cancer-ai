@@ -4,12 +4,13 @@ Last updated: 2026-09-07
 
 ## Current stage
 
-**Final documentation complete**
+**Phase 4R — Feature Parity Audit / Baseline Lock**
 
-- Current branch: `docs/final-documentation`
-- Base branch: `feat/frontend-architecture-v2`
-- Current work: final README, report, validation, release notes, and deployment handoff complete
-- Next stage: `deploy/server-production` (do not create automatically)
+- Current branch: `feat/product-experience-v4`
+- Baseline commits: `5b6c72c` (legacy rich functional baseline) and `8eba137` (committed V3 baseline)
+- Current work: Feature parity matrix locked in `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged)
+- Implementation status: Phase 4R implementation has **NOT** started
+- Next step: Await user review of the feature parity matrix before commencing Batch A (Overview/Learn/Research)
 
 ## Completed major milestones
 
