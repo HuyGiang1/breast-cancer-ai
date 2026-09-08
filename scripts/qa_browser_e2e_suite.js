@@ -301,9 +301,72 @@ async function runSuite() {
     // Capture Dashboard
     await captureScreenshot('qa-dashboard-1440.png');
 
-    // Test Mobile Dashboard
+    // ==========================================
+    // 3B. DIRECT NAVIGATION & RESPONSIVE QA FOR MIGRATED ROUTES
+    // ==========================================
+    console.log('\n--- 3B. Testing Direct Navigation & Responsive QA for Migrated Routes ---');
+    // Ensure we are on Dashboard
+    await client.send('Page.navigate', { url: 'http://localhost/pages/dashboard.html' });
+    await sleep(1500);
+
+    // 1. Dashboard -> Research -> Research Center
+    console.log('Testing Direct Navigation: Dashboard -> Research -> Research Center');
+    await evalExpr(`document.querySelector('.mega-menu-research a[href="research.html"]')?.click()`);
+    await sleep(1500);
+    const researchUrl = await evalExpr('window.location.href');
+    console.log('Navigated to:', researchUrl);
+    if (!researchUrl.includes('research.html')) {
+      defects.push({ id: 'NAV-01', severity: 'P1', route: '/pages/research.html', defect: 'Direct navigation to Research Center failed.' });
+    }
+    await captureScreenshot('research-1440.png');
     await setViewport(390, 844, true, 2);
-    await captureScreenshot('qa-mobile-dashboard-390.png');
+    const researchMobileOverflow = await evalExpr('document.documentElement.scrollWidth > 390');
+    console.log('Research Center mobile overflow at 390px:', researchMobileOverflow);
+    if (researchMobileOverflow) {
+      defects.push({ id: 'RESP-02', severity: 'P2', route: '/pages/research.html', defect: 'Horizontal overflow on mobile research.html.' });
+    }
+    await captureScreenshot('research-390.png');
+    await setViewport(1440, 900);
+
+    // 2. Dashboard -> Research -> Model Benchmarks (Model Comparison)
+    console.log('Testing Direct Navigation: Dashboard -> Research -> Model Benchmarks');
+    await evalExpr(`document.querySelector('.mega-menu-research a[href="model-comparison.html"]')?.click()`);
+    await sleep(1500);
+    const modelCompUrl = await evalExpr('window.location.href');
+    console.log('Navigated to:', modelCompUrl);
+    if (!modelCompUrl.includes('model-comparison.html')) {
+      defects.push({ id: 'NAV-02', severity: 'P1', route: '/pages/model-comparison.html', defect: 'Direct navigation to Model Comparison failed.' });
+    }
+    await captureScreenshot('model-comparison-1440.png');
+
+    // 3. Dashboard -> Research -> Dataset Explorer
+    console.log('Testing Direct Navigation: Dashboard -> Research -> Dataset Explorer');
+    await evalExpr(`document.querySelector('.mega-menu-research a[href="datasets.html"]')?.click()`);
+    await sleep(1500);
+    const datasetsUrl = await evalExpr('window.location.href');
+    console.log('Navigated to:', datasetsUrl);
+    if (!datasetsUrl.includes('datasets.html')) {
+      defects.push({ id: 'NAV-03', severity: 'P1', route: '/pages/datasets.html', defect: 'Direct navigation to Dataset Explorer failed.' });
+    }
+    await captureScreenshot('datasets-1440.png');
+
+    // 4. Dashboard -> Workspace -> Prediction Reports
+    console.log('Testing Direct Navigation: Dashboard -> Workspace -> Prediction Reports');
+    await evalExpr(`document.querySelector('.studio-dropdown a[href="reports.html"]')?.click()`);
+    await sleep(1500);
+    const reportsUrl = await evalExpr('window.location.href');
+    console.log('Navigated to:', reportsUrl);
+    if (!reportsUrl.includes('reports.html')) {
+      defects.push({ id: 'NAV-04', severity: 'P1', route: '/pages/reports.html', defect: 'Direct navigation to Prediction Reports failed.' });
+    }
+    await captureScreenshot('reports-1440.png');
+    await setViewport(390, 844, true, 2);
+    const reportsMobileOverflow = await evalExpr('document.documentElement.scrollWidth > 390');
+    console.log('Reports mobile overflow at 390px:', reportsMobileOverflow);
+    if (reportsMobileOverflow) {
+      defects.push({ id: 'RESP-03', severity: 'P2', route: '/pages/reports.html', defect: 'Horizontal overflow on mobile reports.html.' });
+    }
+    await captureScreenshot('reports-390.png');
     await setViewport(1440, 900);
 
     // ==========================================
@@ -603,6 +666,67 @@ conn.close()
     console.log('AI Advisor has safe educational framing:', hasDisclaimer);
     if (!hasDisclaimer) {
       defects.push({ id: 'ADVISOR-01', severity: 'P1', route: '/pages/advisor.html', defect: 'AI Advisor missing safe educational disclaimer and research framing.' });
+    }
+
+    // ==========================================
+    // 11B. COMPREHENSIVE 21-ROUTE VISUAL & LEGACY UI AUDIT
+    // ==========================================
+    console.log('\n--- 11B. Auditing All 21 Canonical Routes for Legacy UI & Branding ---');
+    const allRoutes = [
+      { path: '/index.html', title: 'Breast Health Intelligence Studio' },
+      { path: '/login.html', title: 'Sign in · Breast Health Intelligence Studio' },
+      { path: '/register.html', title: 'Create account · Breast Health Intelligence Studio' },
+      { path: '/forgot-password.html', title: 'Forgot password · Breast Health Intelligence Studio' },
+      { path: '/reset-password.html', title: 'Set a new password · Breast Health Intelligence Studio' },
+      { path: '/pages/dashboard.html', title: 'Overview · Breast Health Studio' },
+      { path: '/pages/profile.html', title: 'Profile · Breast Health Studio' },
+      { path: '/pages/ml-analysis.html', title: 'Structured ML · Breast Health Studio' },
+      { path: '/pages/dl-analysis.html', title: 'Mammography DL · Breast Health Studio' },
+      { path: '/pages/multimodal.html', title: 'Experimental Fusion · Breast Health Studio' },
+      { path: '/pages/research.html', title: 'Research Center · Breast Health Studio' },
+      { path: '/pages/model-comparison.html', title: 'Model Comparison · Breast Health Studio' },
+      { path: '/pages/datasets.html', title: 'Datasets · Breast Health Studio' },
+      { path: '/pages/explainability.html', title: 'Explainability · Breast Health Studio' },
+      { path: '/pages/calibration.html', title: 'Calibration · Breast Health Studio' },
+      { path: '/pages/model-status.html', title: 'Model Status · Breast Health Studio' },
+      { path: '/pages/history.html', title: 'Prediction History · Breast Health Studio' },
+      { path: '/pages/reports.html', title: 'Reports · Breast Health Studio' },
+      { path: '/pages/patients.html', title: 'Patients · Breast Health Studio' },
+      { path: `/pages/patient-detail.html?id=${createdPatient.id}`, title: 'Patient · Breast Health Studio' },
+      { path: '/pages/advisor.html', title: 'AI Advisor · Breast Health Studio' }
+    ];
+
+    for (const r of allRoutes) {
+      await client.send('Page.navigate', { url: `http://localhost${r.path}` });
+      await sleep(1000);
+      const audit = await evalExpr(`
+        (() => {
+          const bodyText = document.body.innerText;
+          const html = document.documentElement.outerHTML;
+          const title = document.title;
+          const hasV2Main = !!document.querySelector('.v2-main');
+          const hasV2Card = !!document.querySelector('.v2-card');
+          const hasBreastCareAI = bodyText.includes('BreastCare AI') || title.includes('BreastCare AI') || html.includes('BreastCare AI');
+          const hasBreastCareMint = bodyText.includes('BreastCare Mint') || title.includes('BreastCare Mint') || html.includes('BreastCare Mint');
+          const hasLegacyWorkspaceHeading = !!document.querySelector('h1')?.innerText?.toLowerCase().includes('research workspace');
+          const hasStudioBrand = !!document.querySelector('.studio-brand');
+          return { title, hasV2Main, hasV2Card, hasBreastCareAI, hasBreastCareMint, hasLegacyWorkspaceHeading, hasStudioBrand };
+        })()
+      `);
+      console.log(`Audited route ${r.path} -> Title: "${audit.title}" | v2-main: ${audit.hasV2Main} | v2-card: ${audit.hasV2Card} | BreastCare: ${audit.hasBreastCareAI || audit.hasBreastCareMint}`);
+
+      if (audit.hasV2Main) {
+        defects.push({ id: 'V2-MAIN-01', severity: 'P1', route: r.path, defect: `Legacy container .v2-main found in DOM on ${r.path}` });
+      }
+      if (audit.hasV2Card) {
+        defects.push({ id: 'V2-CARD-01', severity: 'P1', route: r.path, defect: `Legacy container .v2-card found in DOM on ${r.path}` });
+      }
+      if (audit.hasBreastCareAI || audit.hasBreastCareMint) {
+        defects.push({ id: 'BRAND-01', severity: 'P0', route: r.path, defect: `Stale BreastCare branding found on ${r.path}` });
+      }
+      if (audit.hasLegacyWorkspaceHeading) {
+        defects.push({ id: 'BRAND-02', severity: 'P1', route: r.path, defect: `Legacy 'Research Workspace' heading found on ${r.path}` });
+      }
     }
 
     // ==========================================
