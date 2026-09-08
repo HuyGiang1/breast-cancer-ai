@@ -50,22 +50,22 @@ Every page listed in the route catalog was audited for accessibility, title corr
 | `/register.html` | Authentication | Create account · Breast Health Intelligence Studio | 200 | PASS |
 | `/forgot-password.html` | Authentication | Forgot password · Breast Health Intelligence Studio | 200 | PASS |
 | `/reset-password.html` | Authentication | Set a new password · Breast Health Intelligence Studio | 200 | PASS |
-| `/pages/dashboard.html` | Protected App | Breast Health Studio · Research Dashboard | 200 | PASS |
-| `/pages/profile.html` | Protected App | Profile & Security · Account Settings | 200 | PASS |
-| `/pages/ml-analysis.html` | Protected App | Structured Biomarker Analysis (WDBC) | 200 | PASS |
-| `/pages/dl-analysis.html` | Protected App | Mammography Image Inference (CBIS-DDSM) | 200 | PASS |
-| `/pages/multimodal.html` | Protected App | Multimodal Research Fusion (Experimental) | 200 | PASS |
-| `/pages/history.html` | Protected App | Prediction History & Analysis Records | 200 | PASS |
-| `/pages/patients.html` | Protected App (Doctor) | Patient Registry & Cohort Management | 200 | PASS |
-| `/pages/patient-detail.html`| Protected App (Doctor) | Patient Record & Clinical Timeline | 200 | PASS |
-| `/pages/advisor.html` | Protected App | AI Information Assistant · Research Support | 200 | PASS |
-| `/pages/data-explorer.html`| Protected App | Cohort Data Explorer & Feature Distributions | 200 | PASS |
-| `/pages/model-status.html` | Protected App | Model Runtime Status & Artifact Verification | 200 | PASS |
-| `/pages/explainability.html`| Protected App | Explainability Lab · SHAP & Grad-CAM | 200 | PASS |
-| `/pages/calibration.html` | Protected App | Reliability Calibration (Platt / Isotonic) | 200 | PASS |
-| `/pages/bias-audit.html` | Protected App | Subgroup Parity & Fairness Audit | 200 | PASS |
-| `/pages/study-comparison.html`| Protected App | Cross-Study Methodology & Protocol Bounds | 200 | PASS |
-| `/pages/architecture.html`| Protected App | System Architecture & Security Topology | 200 | PASS |
+| `/pages/dashboard.html` | Protected App | Overview · Breast Health Studio | 200 | PASS |
+| `/pages/profile.html` | Protected App | Profile · Breast Health Studio | 200 | PASS |
+| `/pages/ml-analysis.html` | Protected App | Structured ML · Breast Health Studio | 200 | PASS |
+| `/pages/dl-analysis.html` | Protected App | Mammography DL · Breast Health Studio | 200 | PASS |
+| `/pages/multimodal.html` | Protected App | Experimental Fusion · Breast Health Studio | 200 | PASS |
+| `/pages/research.html` | Protected App | Research Center · Breast Health Studio | 200 | PASS |
+| `/pages/model-comparison.html`| Protected App | Model Comparison · Breast Health Studio | 200 | PASS |
+| `/pages/datasets.html` | Protected App | Datasets · Breast Health Studio | 200 | PASS |
+| `/pages/explainability.html` | Protected App | Explainability · Breast Health Studio | 200 | PASS |
+| `/pages/calibration.html` | Protected App | Calibration · Breast Health Studio | 200 | PASS |
+| `/pages/model-status.html` | Protected App | Model Status · Breast Health Studio | 200 | PASS |
+| `/pages/history.html` | Protected App | Prediction History · Breast Health Studio | 200 | PASS |
+| `/pages/reports.html` | Protected App | Reports · Breast Health Studio | 200 | PASS |
+| `/pages/patients.html` | Protected App (Doctor) | Patients · Breast Health Studio | 200 | PASS |
+| `/pages/patient-detail.html` | Protected App (Doctor) | Patient · Breast Health Studio | 200 | PASS |
+| `/pages/advisor.html` | Protected App | AI Advisor · Breast Health Studio | 200 | PASS |
 
 ---
 
@@ -137,6 +137,7 @@ Every page listed in the route catalog was audited for accessibility, title corr
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **DEF-01** | P2 | Reports | Stale `BreastCare Mint` branding in `endpoints.py` report generator header & filename. | Updated title and export filename in `backend/app/api/endpoints.py` to `Breast Health Studio`. Synced to Docker container. | **RESOLVED** |
 | **DEF-02** | P3 | Nginx / Static | Browser auto-request for `/favicon.ico` returned HTTP 404 in logs. | Added explicit `location = /favicon.ico { access_log off; log_not_found off; return 204; }` in `deploy/nginx.conf` and reloaded Nginx. | **RESOLVED** |
+| **DEF-03** | P1 | Navigation & Legacy UI | `research.html`, `model-comparison.html`, `datasets.html`, `reports.html` omitted from previous report inventory, retaining legacy `BreastCare AI` titles, `v2-main` containers, and `v2-card` classes. Shell branding displayed `BC` emblem and `BreastCare AI` text. | Migrated all 4 routes to V3 shell, aligned page titles and shell branding to `Breast Health Studio` (`BH` badge), replaced all `v2-main`/`v2-card` instances with `.studio-main` and `.studio-card`, and reconciled report inventory. | **RESOLVED** |
 
 ---
 
