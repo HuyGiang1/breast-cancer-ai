@@ -1,12 +1,22 @@
 /**
- * Breast Health Intelligence Studio — Landing Experience Controller
- * Handles top navigation, mega-menus, mobile top-sheet, and interactive prototype preview.
+ * Breast Health Intelligence Studio — Landing & Canonical Overview Controller
+ *
+ * Phase 4R Batch A:
+ * - Session-aware Overview (guest vs authenticated user vs doctor)
+ * - Authenticated Quick Start bar
+ * - Canonical navigation with smooth anchor scrolling (#research, #learn)
+ * - Interactive telemetry preview (Study A WDBC vs Study B CBIS-DDSM)
+ * - Lazy-loading clinical video player
  */
+
+import { auth } from '../core/auth.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
+  initAuthSession();
   initInteractivePreview();
-  initLazyVideo();
+  initLazyVideos();
+  initSmoothAnchors();
 });
 
 /**
@@ -16,7 +26,6 @@ function initNavigation() {
   const mobileToggle = document.getElementById('mobileToggle');
   const topSheet = document.getElementById('mobileTopSheet');
   const topSheetClose = document.getElementById('topSheetClose');
-  const navLinks = document.querySelectorAll('.studio-top-sheet a, .studio-nav-link');
 
   if (!mobileToggle || !topSheet) return;
 
@@ -52,7 +61,7 @@ function initNavigation() {
     });
   }
 
-  // Close sheet on backdrop click (click outside content container)
+  // Close sheet on backdrop click
   topSheet.addEventListener('click', (e) => {
     if (e.target === topSheet) {
       closeSheet();
@@ -102,6 +111,164 @@ function initNavigation() {
       }
     });
   });
+}
+
+/**
+ * Session State & Authenticated Overview Adaptation
+ */
+function initAuthSession() {
+  const user = auth.user();
+  const authQuickStart = document.getElementById('authQuickStart');
+  const headerAuthActions = document.getElementById('headerAuthActions');
+  const topbarWorkspaceSlot = document.getElementById('topbarWorkspaceSlot');
+  const mobileWorkspaceSlot = document.getElementById('mobileWorkspaceSlot');
+  const mobileAccountSlot = document.getElementById('mobileAccountSlot');
+  const heroSecondaryCta = document.getElementById('heroSecondaryCta');
+  const quickStartGreeting = document.getElementById('quickStartGreeting');
+  const quickStartRoleBadge = document.getElementById('quickStartRoleBadge');
+  const quickStartDoctorCard = document.getElementById('quickStartDoctorCard');
+  const quickStartSignOutBtn = document.getElementById('quickStartSignOutBtn');
+
+  const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[char]));
+
+  if (user) {
+    // Authenticated User
+    const isDoctor = user.role === 'doctor';
+    const displayName = user.full_name || user.email.split('@')[0];
+
+    // Show Quick Start section
+    if (authQuickStart) {
+      authQuickStart.style.display = 'block';
+    }
+    if (quickStartGreeting) {
+      quickStartGreeting.textContent = `Welcome back, ${displayName}`;
+    }
+    if (quickStartRoleBadge) {
+      quickStartRoleBadge.textContent = isDoctor ? '👨‍⚕️ Physician / Doctor' : '🔬 Researcher';
+    }
+    if (quickStartDoctorCard) {
+      quickStartDoctorCard.style.display = isDoctor ? 'flex' : 'none';
+    }
+
+    // Topbar header auth identity
+    if (headerAuthActions) {
+      headerAuthActions.innerHTML = `
+        <span style="font-size: 0.8125rem; font-weight: 600; color: var(--slate-700); margin-right: 0.25rem;">
+          Welcome, ${esc(displayName)}
+        </span>
+        <a class="studio-btn studio-btn-outline studio-btn-sm" href="pages/profile.html">Profile</a>
+        <button class="studio-btn studio-btn-ghost studio-btn-sm" id="topbarSignOutBtn" type="button">Sign Out</button>
+      `;
+      document.getElementById('topbarSignOutBtn')?.addEventListener('click', () => {
+        auth.clear();
+        location.reload();
+      });
+    }
+
+    // Topbar workspace slot
+    if (topbarWorkspaceSlot) {
+      topbarWorkspaceSlot.innerHTML = isDoctor
+        ? `<a class="studio-nav-link" href="pages/patients.html">Doctor Workspace</a>`
+        : `<a class="studio-nav-link" href="pages/history.html">My Activity</a>`;
+    }
+
+    // Mobile sheet slots
+    if (mobileWorkspaceSlot) {
+      mobileWorkspaceSlot.innerHTML = `
+        <div class="mobile-nav-group">
+          <div class="mobile-nav-group-title">${isDoctor ? 'Clinical Workspace' : 'My Activity'}</div>
+          <div class="mobile-nav-links">
+            ${isDoctor ? '<a href="pages/patients.html">Doctor Workspace (Patient Registry)</a>' : ''}
+            <a href="pages/history.html">Prediction History</a>
+            <a href="pages/reports.html">Prediction Reports</a>
+          </div>
+        </div>
+      `;
+    }
+
+    if (mobileAccountSlot) {
+      mobileAccountSlot.innerHTML = `
+        <div class="mobile-nav-group">
+          <div class="mobile-nav-group-title">Account (${esc(displayName)})</div>
+          <div class="mobile-nav-links">
+            <a href="pages/profile.html">Profile &amp; Settings</a>
+            <a href="javascript:void(0)" id="mobileSignOutLink" style="color: var(--danger, #ef4444);">Sign Out</a>
+          </div>
+        </div>
+      `;
+      document.getElementById('mobileSignOutLink')?.addEventListener('click', () => {
+        auth.clear();
+        location.reload();
+      });
+    }
+
+    // Hero secondary CTA
+    if (heroSecondaryCta) {
+      heroSecondaryCta.textContent = isDoctor ? 'Doctor Workspace →' : 'Start Analysis →';
+      heroSecondaryCta.href = isDoctor ? 'pages/patients.html' : 'pages/ml-analysis.html';
+    }
+
+    // Quick start sign-out
+    if (quickStartSignOutBtn) {
+      quickStartSignOutBtn.addEventListener('click', () => {
+        auth.clear();
+        location.reload();
+      });
+    }
+
+  } else {
+    // Guest (Logged out)
+    if (authQuickStart) {
+      authQuickStart.style.display = 'none';
+    }
+    if (topbarWorkspaceSlot) {
+      topbarWorkspaceSlot.innerHTML = '';
+    }
+    if (mobileWorkspaceSlot) {
+      mobileWorkspaceSlot.innerHTML = '';
+    }
+    if (mobileAccountSlot) {
+      mobileAccountSlot.innerHTML = `
+        <div class="mobile-nav-group">
+          <div class="mobile-nav-group-title">Account</div>
+          <div class="mobile-nav-links">
+            <a href="login.html?v=auth-v3">Sign In</a>
+            <a href="register.html?v=auth-v3">Create Account</a>
+          </div>
+        </div>
+      `;
+    }
+  }
+}
+
+/**
+ * Smooth Anchor Scrolling for #research and #learn Hub
+ */
+function initSmoothAnchors() {
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const hash = link.getAttribute('href');
+      if (hash === '#' || hash === '') return;
+      const target = document.querySelector(hash);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+        history.pushState(null, '', hash);
+      }
+    });
+  });
+
+  // Handle direct URL with hash on page load
+  if (location.hash) {
+    setTimeout(() => {
+      const target = document.querySelector(location.hash);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 150);
+  }
 }
 
 /**
@@ -198,27 +365,29 @@ function initInteractivePreview() {
 }
 
 /**
- * Lazy Video Player Controller (Beat 09)
- * Avoids loading third-party iframes on initial load.
- * Instantiates privacy-enhanced YouTube embed upon explicit user activation.
+ * Lazy Video Player Controller
+ * Avoids loading third-party iframes on initial page load.
+ * Instantiates privacy-enhanced YouTube embed upon user activation.
  */
-function initLazyVideo() {
-  const videoContainer = document.getElementById('videoContainer');
-  if (!videoContainer) return;
-
-  videoContainer.addEventListener('click', () => {
-    videoContainer.style.cursor = 'default';
-    videoContainer.innerHTML = `
-      <iframe
-        src="https://www.youtube-nocookie.com/embed/50CdcLJsIEI?autoplay=1&rel=0"
-        title="American Cancer Society Breast Cancer Screening Guideline Overview"
-        width="100%"
-        height="100%"
-        style="border: 0; position: absolute; inset: 0; width: 100%; height: 100%;"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        referrerpolicy="strict-origin-when-cross-origin"
-        allowfullscreen>
-      </iframe>
-    `;
-  }, { once: true });
+function initLazyVideos() {
+  const stages = document.querySelectorAll('.video-poster-stage[data-videoid]');
+  stages.forEach(stage => {
+    stage.addEventListener('click', () => {
+      const videoId = stage.dataset.videoid;
+      const title = stage.dataset.title || 'Educational Video';
+      stage.style.cursor = 'default';
+      stage.innerHTML = `
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0"
+          title="${title.replace(/"/g, '&quot;')}"
+          width="100%"
+          height="100%"
+          style="border: 0; position: absolute; inset: 0; width: 100%; height: 100%;"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen>
+        </iframe>
+      `;
+    }, { once: true });
+  });
 }

@@ -5,7 +5,7 @@ import { cleanAuthUrl } from '../core/config.js';
 
 cleanAuthUrl();
 
-if (guestOnly('pages/dashboard.html')) {
+if (guestOnly('index.html')) {
   initRegisterPage();
 }
 
@@ -122,8 +122,8 @@ function initRegisterPage() {
           password: password,
         });
 
-        // Auto-login session saved in authService.register; redirect to dashboard
-        window.location.assign('pages/dashboard.html');
+        // Auto-login session saved in authService.register; redirect to overview
+        window.location.assign('index.html');
       } catch (err) {
         const msg = String(err.message || '');
         if (msg.toLowerCase().includes('already registered') || err.status === 409) {
@@ -215,7 +215,7 @@ function initRegisterPage() {
 
     try {
       await authService.googleLogin(response.credential);
-      window.location.assign('pages/dashboard.html');
+      window.location.assign('index.html');
     } catch (err) {
       showAlert(err.message || 'Google account authentication failed.');
     }

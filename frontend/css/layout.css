@@ -1,5 +1,20 @@
 /* Studio Layout Architecture (Top-Navigation Canvas) */
 
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+[id] {
+  scroll-margin-top: calc(var(--topbar-height, 72px) + 20px);
+}
+
+
 .studio-container {
   width: 100%;
   max-width: var(--max-content-width);

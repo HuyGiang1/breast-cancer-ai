@@ -5,7 +5,7 @@ import { cleanAuthUrl } from '../core/config.js';
 
 cleanAuthUrl();
 
-if (guestOnly('pages/dashboard.html')) {
+if (guestOnly('index.html')) {
   initLoginPage();
 }
 
@@ -61,7 +61,7 @@ function initLoginPage() {
 
       try {
         await authService.login({ email, password });
-        window.location.assign('pages/dashboard.html');
+        window.location.assign('index.html');
       } catch (err) {
         showAlert(err.message || 'Authentication failed. Please check your credentials.');
       } finally {
@@ -148,7 +148,7 @@ function initLoginPage() {
 
     try {
       await authService.googleLogin(response.credential);
-      window.location.assign('pages/dashboard.html');
+      window.location.assign('index.html');
     } catch (err) {
       showAlert(err.message || 'Google authentication failed.');
     }

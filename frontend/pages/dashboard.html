@@ -1,1 +1,23 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Overview · Breast Health Studio</title><link rel="stylesheet" href="../css/app.css"></head><body><main class="studio-main" id="app"></main><script type="module" src="../js/pages/dashboard.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Overview · Breast Health Studio</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <script>
+    // Immediate backward-compatibility redirect to canonical Overview
+    const target = '../index.html' + (location.search || '') + (location.hash || '');
+    window.location.replace(target);
+  </script>
+</head>
+<body>
+  <main class="studio-main" id="app">
+    <section class="studio-card">
+      <p>Redirecting to Overview...</p>
+      <p><a href="../index.html">Click here if you are not redirected automatically.</a></p>
+    </section>
+  </main>
+  <script type="module" src="../js/pages/dashboard.js"></script>
+</body>
+</html>

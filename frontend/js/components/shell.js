@@ -50,17 +50,17 @@ export function mountShell(pageTitle) {
     <header class="studio-topbar" id="studioTopbar">
       <div class="studio-topbar-inner">
         <!-- Brand Emblem -->
-        <a class="studio-brand" href="dashboard.html" aria-label="Breast Health Studio Overview">
+        <a class="studio-brand" href="../index.html" aria-label="Breast Health Studio Overview">
           <span class="studio-brand-badge">BH</span>
           <span>Breast Health</span>
           <span class="studio-brand-tag">Studio</span>
         </a>
 
-        <!-- Desktop Global Navigation with Mega-Menus -->
+        <!-- Desktop Global Navigation -->
         <nav class="studio-nav" aria-label="Primary Navigation">
           <ul class="studio-nav-menu">
             <li class="studio-nav-item">
-              <a class="studio-nav-link ${activePage === 'dashboard.html' ? 'active' : ''}" href="dashboard.html">
+              <a class="studio-nav-link" href="../index.html">
                 Overview
               </a>
             </li>
@@ -101,78 +101,31 @@ export function mountShell(pageTitle) {
               </div>
             </li>
 
-            <!-- Research Mega-Menu -->
-            <li class="studio-nav-item" data-menu="research">
-              <button class="studio-nav-link" type="button" aria-expanded="false" aria-haspopup="true">
+            <!-- Research Anchor Link -->
+            <li class="studio-nav-item">
+              <a class="studio-nav-link" href="../index.html#research">
                 Research
-                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"></polyline></svg>
-              </button>
-              <div class="studio-mega-menu mega-menu-research" role="region" aria-label="Research Hub">
-                <a class="mega-card" href="research.html">
-                  <div class="mega-card-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                  </div>
-                  <strong>Research Center</strong>
-                  <p>Two separate studies on distinct patient cohorts.</p>
-                  <span class="mega-badge mega-badge-blue">Overview</span>
-                </a>
-
-                <a class="mega-card" href="model-comparison.html">
-                  <div class="mega-card-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                  </div>
-                  <strong>Model Benchmarks</strong>
-                  <p>Outer test metrics and 2,000-replicate bootstrap CIs.</p>
-                  <span class="mega-badge mega-badge-blue">Statistical Evidence</span>
-                </a>
-
-                <a class="mega-card" href="datasets.html">
-                  <div class="mega-card-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-                  </div>
-                  <strong>Dataset Explorer</strong>
-                  <p>WDBC &amp; CBIS-DDSM manifest splits with zero overlap.</p>
-                  <span class="mega-badge mega-badge-blue">Audit Transparency</span>
-                </a>
-
-                <a class="mega-card" href="explainability.html">
-                  <div class="mega-card-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                  </div>
-                  <strong>Explainability (XAI)</strong>
-                  <p>SHAP log-odds and Grad-CAM coarse attention maps.</p>
-                  <span class="mega-badge mega-badge-blue">Non-Causal XAI</span>
-                </a>
-
-                <a class="mega-card" href="calibration.html">
-                  <div class="mega-card-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                  </div>
-                  <strong>Calibration &amp; Reliability</strong>
-                  <p>Platt probability scaling for display and reliability only.</p>
-                  <span class="mega-badge mega-badge-blue">Brier &amp; Platt</span>
-                </a>
-              </div>
+              </a>
             </li>
 
-            <!-- Workspace Contextual Dropdown -->
+            <!-- Learn Anchor Link -->
             <li class="studio-nav-item">
-              <button class="studio-nav-link" type="button" aria-expanded="false" aria-haspopup="true">
-                Workspace
-                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 12 15 18 9"></polyline></svg>
-              </button>
-              <div class="studio-dropdown" role="menu">
-                <a href="patients.html" role="menuitem">
-                  <span>Patient Registry</span>
-                  <span class="mega-badge ${isDoctor ? 'mega-badge-teal' : 'mega-badge-amber'}">${isDoctor ? 'Active' : 'Doctor Only'}</span>
+              <a class="studio-nav-link" href="../index.html#learn">
+                Learn
+              </a>
+            </li>
+
+            <!-- Workspace Contextual Link (Role-Aware) -->
+            <li class="studio-nav-item">
+              ${isDoctor ? `
+                <a class="studio-nav-link ${activePage === 'patients.html' || activePage === 'patient-detail.html' ? 'active' : ''}" href="patients.html">
+                  Doctor Workspace
                 </a>
-                <a href="history.html" role="menuitem">
-                  <span>Prediction History</span>
+              ` : `
+                <a class="studio-nav-link ${activePage === 'history.html' || activePage === 'reports.html' ? 'active' : ''}" href="history.html">
+                  My Activity
                 </a>
-                <a href="reports.html" role="menuitem">
-                  <span>Prediction Reports</span>
-                </a>
-              </div>
+              `}
             </li>
 
             <!-- AI Guide Link -->
@@ -203,9 +156,12 @@ export function mountShell(pageTitle) {
     <div class="studio-top-sheet" id="studioTopSheet" aria-hidden="true">
       <div class="studio-top-sheet-content">
         <div class="mobile-nav-group">
-          <div class="mobile-nav-group-title">Overview</div>
+          <div class="mobile-nav-group-title">Navigation</div>
           <div class="mobile-nav-links">
-            <a href="dashboard.html">Command Dashboard</a>
+            <a href="../index.html">Overview</a>
+            <a href="../index.html#research">Research</a>
+            <a href="../index.html#learn">Learn</a>
+            <a href="advisor.html">AI Guide</a>
           </div>
         </div>
         <div class="mobile-nav-group">
@@ -217,19 +173,9 @@ export function mountShell(pageTitle) {
           </div>
         </div>
         <div class="mobile-nav-group">
-          <div class="mobile-nav-group-title">Research</div>
-          <div class="mobile-nav-links">
-            <a href="research.html">Research Center</a>
-            <a href="model-comparison.html">Model Benchmarks</a>
-            <a href="datasets.html">Dataset Explorer</a>
-            <a href="explainability.html">Explainability (XAI)</a>
-            <a href="calibration.html">Reliability &amp; Calibration</a>
-          </div>
-        </div>
-        <div class="mobile-nav-group">
           <div class="mobile-nav-group-title">Workspace</div>
           <div class="mobile-nav-links">
-            <a href="patients.html">Patient Registry</a>
+            ${isDoctor ? '<a href="patients.html">Doctor Workspace (Patient Registry)</a>' : ''}
             <a href="history.html">Prediction History</a>
             <a href="reports.html">Prediction Reports</a>
           </div>
@@ -244,6 +190,7 @@ export function mountShell(pageTitle) {
         </div>
       </div>
     </div>
+
   `;
 
   document.body.insertAdjacentHTML('afterbegin', topbarHtml);
