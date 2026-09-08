@@ -68,8 +68,8 @@
   gap: var(--space-6);
 }
 
-/* Legacy V2 compatibility fallback (Ensures existing interior pages display cleanly without sidebar offsets) */
-.v2-main, .v2-header {
+/* Studio V3 Core Layout */
+.studio-main, .studio-header, .v2-main, .v2-header {
   margin-left: auto;
   margin-right: auto;
   max-width: var(--max-content-width);
@@ -80,13 +80,13 @@
   display: none !important; /* Strictly purge left sidebar */
 }
 
-.v2-grid {
+.studio-grid, .v2-grid {
   display: grid;
   gap: var(--space-6);
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.v2-card {
+.studio-card, .v2-card {
   padding: var(--space-6);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
@@ -94,11 +94,18 @@
   box-shadow: var(--shadow-sm);
 }
 
+.studio-card.studio-empty, .v2-card.v2-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: var(--space-8) var(--space-6);
+}
+
 /* Responsive Grid Adaptations */
 @media (max-width: 1024px) {
   .studio-grid-split,
   .studio-grid-3col,
   .studio-grid-4col,
+  .studio-grid,
   .v2-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-6);
@@ -110,11 +117,12 @@
   .studio-grid-2col,
   .studio-grid-3col,
   .studio-grid-4col,
+  .studio-grid,
   .v2-grid {
     grid-template-columns: 1fr;
     gap: var(--space-6);
   }
-  .v2-main, .v2-header {
+  .studio-main, .studio-header, .v2-main, .v2-header {
     padding: var(--space-4);
   }
 }

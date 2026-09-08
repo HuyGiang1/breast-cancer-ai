@@ -19,7 +19,7 @@ if (requireAuth()) {
         <p>Account identity, connected authentication, and security for this research prototype.</p>
       </header>
       <div id="profile" class="profile-grid">
-        <section class="v2-card">Loading profile...</section>
+        <section class="studio-card">Loading profile...</section>
       </div>
     </section>
   `;
@@ -35,7 +35,7 @@ async function initProfile() {
     ]);
 
     root.innerHTML = `
-      <section class="v2-card">
+      <section class="studio-card">
         <h2>Account</h2>
         <form id="account">
           <label class="v2-field">Full name
@@ -49,7 +49,7 @@ async function initProfile() {
         </form>
       </section>
 
-      <section class="v2-card">
+      <section class="studio-card">
         <h2>Role / access</h2>
         <dl>
           <div>
@@ -60,14 +60,14 @@ async function initProfile() {
         <p>The backend remains the authority for all permissions.</p>
       </section>
 
-      <section class="v2-card">
+      <section class="studio-card">
         <h2>Connected accounts</h2>
         <p style="color:var(--slate-600);font-size:0.875rem;margin-bottom:1rem;">Link external identities to sign in with one click.</p>
         <div id="googleConnection"></div>
         <p id="connectionStatus" role="status" style="margin-top:0.75rem;font-size:0.875rem;"></p>
       </section>
 
-      <section class="v2-card">
+      <section class="studio-card">
         <h2>Security</h2>
         <form id="password">
           <label class="v2-field">Current password
@@ -81,7 +81,7 @@ async function initProfile() {
         </form>
       </section>
 
-      <section class="v2-card">
+      <section class="studio-card">
         <h2>Research prototype</h2>
         <p>This account provides access to research and educational workflows. It does not enable clinical diagnosis.</p>
         <button id="logout" class="v2-button secondary" type="button">Sign out</button>
@@ -129,7 +129,7 @@ async function initProfile() {
       location.assign('../login.html?v=auth-v3');
     });
   } catch (error) {
-    root.innerHTML = `<section class="v2-card"><h2>Profile unavailable</h2><p>${esc(error.message)}</p></section>`;
+    root.innerHTML = `<section class="studio-card"><h2>Profile unavailable</h2><p>${esc(error.message)}</p></section>`;
   }
 }
 

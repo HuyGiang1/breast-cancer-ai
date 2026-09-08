@@ -50,9 +50,9 @@ export function mountShell(pageTitle) {
     <header class="studio-topbar" id="studioTopbar">
       <div class="studio-topbar-inner">
         <!-- Brand Emblem -->
-        <a class="studio-brand" href="dashboard.html" aria-label="BreastCare AI Studio Overview">
-          <span class="studio-brand-badge">BC</span>
-          <span>BreastCare AI</span>
+        <a class="studio-brand" href="dashboard.html" aria-label="Breast Health Studio Overview">
+          <span class="studio-brand-badge">BH</span>
+          <span>Breast Health</span>
           <span class="studio-brand-tag">Studio</span>
         </a>
 
