@@ -11,7 +11,7 @@
 <body class="studio-body">
 
   <!-- ============================================================
-       PHASE 2: GLOBAL TOPBAR & MEGA-MENU NAVIGATION
+       PHASE 4R BATCH A: CANONICAL TOPBAR NAVIGATION
        ============================================================ -->
   <header class="studio-topbar" id="studioTopbar">
     <div class="studio-topbar-inner">
@@ -24,7 +24,12 @@
 
       <!-- Desktop Navigation Menu -->
       <nav class="studio-nav-menu" aria-label="Primary Navigation">
-        <!-- 1. Analyze Mega-Menu -->
+        <!-- 1. Overview Anchor/Page -->
+        <div class="studio-nav-item">
+          <a class="studio-nav-link active" href="index.html">Overview</a>
+        </div>
+
+        <!-- 2. Analyze Mega-Menu -->
         <div class="studio-nav-item">
           <button class="studio-nav-link" type="button" aria-haspopup="true" aria-expanded="false">
             <span>Analyze</span>
@@ -52,95 +57,20 @@
           </div>
         </div>
 
-        <!-- 2. Research Mega-Menu -->
+        <!-- 3. Research Section Anchor -->
         <div class="studio-nav-item">
-          <button class="studio-nav-link" type="button" aria-haspopup="true" aria-expanded="false">
-            <span>Research</span>
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg>
-          </button>
-          <div class="studio-mega-menu mega-menu-research" role="menu">
-            <a href="pages/research.html" class="mega-card" role="menuitem">
-              <span class="mega-card-icon">📊</span>
-              <strong>Study A (WDBC)</strong>
-              <p>Wisconsin Diagnostic Breast Center dataset, 5-fold CV, calibration curve, and 99.54% ROC-AUC evaluation.</p>
-              <span class="mega-badge mega-badge-teal">Tabular ML</span>
-            </a>
-            <a href="pages/model-comparison.html" class="mega-card" role="menuitem">
-              <span class="mega-card-icon">📈</span>
-              <strong>Study B (CBIS-DDSM)</strong>
-              <p>Curated Breast Imaging Subset, transfer learning pipeline, and validation-first model selection.</p>
-              <span class="mega-badge mega-badge-blue">Deep Learning</span>
-            </a>
-            <a href="pages/datasets.html" class="mega-card" role="menuitem">
-              <span class="mega-card-icon">🗄️</span>
-              <strong>Data Transparency</strong>
-              <p>Manifest structure, inferred study-like grouping audit (not verified patient-level grouping), zero leakage verification, and distribution splits.</p>
-              <span class="mega-badge mega-badge-teal">Zero Leakage</span>
-            </a>
-            <a href="pages/explainability.html" class="mega-card" role="menuitem">
-              <span class="mega-card-icon">🔍</span>
-              <strong>Explainability Suite</strong>
-              <p>SHAP model contribution analysis for tabular models and Grad-CAM saliency heatmaps for deep learning.</p>
-              <span class="mega-badge mega-badge-blue">Interpretable AI</span>
-            </a>
-            <a href="pages/calibration.html" class="mega-card" role="menuitem">
-              <span class="mega-card-icon">⚖️</span>
-              <strong>Reliability &amp; Calibration</strong>
-              <p>Platt sigmoid scaling, Brier reliability metrics, and confidence intervals for cautious interpretation.</p>
-              <span class="mega-badge mega-badge-teal">Platt Scaling</span>
-            </a>
-          </div>
+          <a class="studio-nav-link" href="#research">Research</a>
         </div>
 
-        <!-- 3. Learn Mega-Menu -->
+        <!-- 4. Learn Section Anchor -->
         <div class="studio-nav-item">
-          <button class="studio-nav-link" type="button" aria-haspopup="true" aria-expanded="false">
-            <span>Learn</span>
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg>
-          </button>
-          <div class="studio-mega-menu mega-menu-learn" role="menu">
-            <a href="#learn-anatomy" class="mega-card" role="menuitem">
-              <span class="mega-card-icon">🧬</span>
-              <strong>Breast Anatomy &amp; Biology</strong>
-              <p>Understanding lobules, milk ducts, stromal tissue, and cellular mechanisms of ductal proliferation.</p>
-              <span class="mega-badge mega-badge-teal">Foundations</span>
-            </a>
-            <a href="#learn-screening" class="mega-card" role="menuitem">
-              <span class="mega-card-icon">🩺</span>
-              <strong>Screening &amp; Mammography</strong>
-              <p>Evidence-based screening protocols, BI-RADS staging, and dense breast tissue clinical context.</p>
-              <span class="mega-badge mega-badge-blue">Clinical Guide</span>
-            </a>
-            <a href="#learn-lifestyle" class="mega-card" role="menuitem">
-              <span class="mega-card-icon">🥗</span>
-              <strong>Nutrition &amp; Lifestyle</strong>
-              <p>Peer-reviewed epidemiological insights on physical activity, metabolic health, and wellness factors.</p>
-              <span class="mega-badge mega-badge-amber">Non-Curative Health</span>
-            </a>
-            <a href="#featured-video" class="mega-card" role="menuitem">
-              <span class="mega-card-icon">🎬</span>
-              <strong>Curated Video Library</strong>
-              <p>Educational video lectures and clinical explainers curated from verified oncology institutions.</p>
-              <span class="mega-badge mega-badge-teal">Video Hub</span>
-            </a>
-          </div>
+          <a class="studio-nav-link" href="#learn">Learn</a>
         </div>
 
-        <!-- 4. Workspace Contextual Dropdown -->
-        <div class="studio-nav-item">
-          <button class="studio-nav-link" type="button" aria-haspopup="true" aria-expanded="false">
-            <span>Workspace</span>
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg>
-          </button>
-          <div class="studio-dropdown" role="menu">
-            <a href="pages/dashboard.html" role="menuitem">Overview Dashboard <span>→</span></a>
-            <a href="pages/patients.html" role="menuitem">Patient Registry <span>→</span></a>
-            <a href="pages/reports.html" role="menuitem">Prediction Reports <span>→</span></a>
-            <a href="pages/history.html" role="menuitem">Audit History <span>→</span></a>
-          </div>
-        </div>
+        <!-- 5. Workspace Slot (Role-Aware: Doctor Workspace or My Activity) -->
+        <div class="studio-nav-item" id="topbarWorkspaceSlot"></div>
 
-        <!-- 5. AI Guide Direct Link -->
+        <!-- 6. AI Guide Direct Link -->
         <div class="studio-nav-item">
           <a class="studio-nav-link" href="pages/advisor.html">AI Guide</a>
         </div>
@@ -154,9 +84,11 @@
           <span>Models Frozen</span>
         </div>
 
-        <!-- Authentication & Workspace CTAs -->
-        <a class="studio-btn studio-btn-ghost studio-btn-sm" href="login.html?v=auth-v3">Sign In</a>
-        <a class="studio-btn studio-btn-primary studio-btn-sm" href="pages/dashboard.html">Research Studio</a>
+        <!-- Dynamic Header Authentication State (Guest or Authenticated) -->
+        <div id="headerAuthActions" style="display: flex; align-items: center; gap: 0.5rem;">
+          <a class="studio-btn studio-btn-ghost studio-btn-sm" id="headerSignInBtn" href="login.html?v=auth-v3">Sign In</a>
+          <a class="studio-btn studio-btn-primary studio-btn-sm" id="headerRegisterBtn" href="register.html?v=auth-v3">Create Account</a>
+        </div>
 
         <!-- Mobile Menu Toggle Button -->
         <button id="mobileToggle" class="studio-mobile-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobileTopSheet">
@@ -180,6 +112,16 @@
       </div>
 
       <div class="mobile-nav-group">
+        <div class="mobile-nav-group-title">Navigation</div>
+        <div class="mobile-nav-links">
+          <a href="index.html">Overview</a>
+          <a href="#research">Research Story</a>
+          <a href="#learn">Learn Breast Health</a>
+          <a href="pages/advisor.html">AI Information Assistant</a>
+        </div>
+      </div>
+
+      <div class="mobile-nav-group">
         <div class="mobile-nav-group-title">AI Analysis Labs</div>
         <div class="mobile-nav-links">
           <a href="pages/ml-analysis.html">FNA Cytology Analysis (Study A)</a>
@@ -188,40 +130,78 @@
         </div>
       </div>
 
-      <div class="mobile-nav-group">
-        <div class="mobile-nav-group-title">Research &amp; Evidence</div>
-        <div class="mobile-nav-links">
-          <a href="pages/research.html">Study A · WDBC Logistic Regression</a>
-          <a href="pages/model-comparison.html">Study B · CBIS-DDSM EfficientNet</a>
-          <a href="pages/datasets.html">Dataset Integrity &amp; Splitting</a>
-          <a href="pages/explainability.html">Explainability (SHAP &amp; Grad-CAM)</a>
-          <a href="pages/calibration.html">Calibration &amp; Reliability</a>
-        </div>
-      </div>
+      <!-- Dynamic Mobile Workspace Slot -->
+      <div id="mobileWorkspaceSlot"></div>
 
-      <div class="mobile-nav-group">
-        <div class="mobile-nav-group-title">Breast Health Education</div>
-        <div class="mobile-nav-links">
-          <a href="#learn-anatomy">Anatomy &amp; Tumor Biology</a>
-          <a href="#learn-screening">Screening &amp; Mammography</a>
-          <a href="#learn-lifestyle">Nutrition &amp; Metabolic Health</a>
-          <a href="#featured-video">Curated Video Library</a>
-        </div>
-      </div>
+      <!-- Dynamic Mobile Account Slot -->
+      <div id="mobileAccountSlot"></div>
+    </div>
+  </div>
 
-      <div class="mobile-nav-group">
-        <div class="mobile-nav-group-title">Workspace</div>
-        <div class="mobile-nav-links">
-          <a href="pages/dashboard.html">Research Dashboard</a>
-          <a href="pages/patients.html">Patient Registry</a>
-          <a href="pages/reports.html">Prediction Reports</a>
-          <a href="pages/history.html">Audit History</a>
-          <a href="pages/advisor.html">AI Information Assistant</a>
-          <a href="login.html?v=auth-v3">Sign In to Account</a>
+  <!-- ============================================================
+       PHASE 4R BATCH A: AUTHENTICATED QUICK START BAR
+       ============================================================ -->
+  <section class="auth-quickstart-strip" id="authQuickStart" aria-label="Authenticated Quick Start">
+    <div class="studio-container">
+      <div class="auth-quickstart-inner">
+        <div class="auth-quickstart-header">
+          <div class="auth-quickstart-title">
+            <span id="quickStartGreeting">Welcome</span>
+            <span id="quickStartRoleBadge" class="auth-quickstart-user-badge">Researcher</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <a href="pages/profile.html" class="studio-btn studio-btn-ghost studio-btn-sm">Profile &amp; Settings</a>
+            <button id="quickStartSignOutBtn" type="button" class="studio-btn studio-btn-outline studio-btn-sm">Sign Out</button>
+          </div>
+        </div>
+
+        <div class="auth-quickstart-grid" id="quickStartGrid">
+          <a href="pages/ml-analysis.html" class="quickstart-card">
+            <div class="quickstart-icon">🔬</div>
+            <div class="quickstart-content">
+              <strong>FNA Cytology Analysis</strong>
+              <span>Study A · 30 nuclear features</span>
+            </div>
+          </a>
+          <a href="pages/dl-analysis.html" class="quickstart-card">
+            <div class="quickstart-icon">🩻</div>
+            <div class="quickstart-content">
+              <strong>Mammography Vision</strong>
+              <span>Study B · EfficientNet-B0</span>
+            </div>
+          </a>
+          <a href="pages/multimodal.html" class="quickstart-card">
+            <div class="quickstart-icon">⚡</div>
+            <div class="quickstart-content">
+              <strong>Experimental Fusion</strong>
+              <span>Heuristic 40/60 weighting</span>
+            </div>
+          </a>
+          <a href="pages/history.html" class="quickstart-card" id="quickStartHistoryCard">
+            <div class="quickstart-icon">📋</div>
+            <div class="quickstart-content">
+              <strong>My Analysis History</strong>
+              <span>Audit logs &amp; past inferences</span>
+            </div>
+          </a>
+          <a href="pages/patients.html" class="quickstart-card" id="quickStartDoctorCard" style="display: none;">
+            <div class="quickstart-icon">👨‍⚕️</div>
+            <div class="quickstart-content">
+              <strong>Doctor Workspace</strong>
+              <span>Patient Registry &amp; Management</span>
+            </div>
+          </a>
+          <a href="pages/reports.html" class="quickstart-card">
+            <div class="quickstart-icon">📄</div>
+            <div class="quickstart-content">
+              <strong>Prediction Reports</strong>
+              <span>Exportable clinical summaries</span>
+            </div>
+          </a>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
   <main>
     <!-- ============================================================
@@ -247,9 +227,9 @@
             </p>
 
             <div class="hero-actions">
-              <a class="studio-btn studio-btn-primary studio-btn-lg" href="#studies">Explore Research Studies</a>
-              <a class="studio-btn studio-btn-outline studio-btn-lg" href="#preview">Interactive Preview</a>
-              <a class="studio-btn studio-btn-ghost studio-btn-lg" href="login.html?v=auth-v3">Launch Workspace →</a>
+              <a class="studio-btn studio-btn-primary studio-btn-lg" id="heroPrimaryCta" href="#research">Explore Research Studies</a>
+              <a class="studio-btn studio-btn-outline studio-btn-lg" href="#learn">Learn Breast Health</a>
+              <a class="studio-btn studio-btn-ghost studio-btn-lg" id="heroSecondaryCta" href="login.html?v=auth-v3">Launch Workspace →</a>
             </div>
 
             <div class="hero-frozen-status">
@@ -318,18 +298,48 @@
     </section>
 
     <!-- ============================================================
-         BEAT 03: MODEL SELECTION STORY & VALIDATION BOARDS
+         BEAT 03: THE RESEARCH STORY (CANONICAL #RESEARCH SECTION)
          ============================================================ -->
-    <section id="studies" class="studio-section">
+    <section id="research" class="studio-section">
+      <span id="studies"></span>
       <div class="studio-container">
         <div class="section-header">
-          <span class="studio-eyebrow">Rigorous Candidate Selection</span>
-          <h2 class="section-title">How the Models Were Selected: A Development-First Story</h2>
+          <span class="studio-eyebrow">Scientific Evidence &amp; Methodological Transparency</span>
+          <h2 class="section-title">The Research Story: Two Separate Studies, One Commitment to Rigor</h2>
           <p class="section-lead">
-            Study A and Study B investigate fundamentally different clinical diagnostic domains with separate modalities and datasets. Candidates were evaluated and selected strictly on development/validation evidence—never test-set performance. Held-out test sets remained locked until post-selection confirmation.
+            Understand the project in 60 seconds: Study A and Study B investigate fundamentally different clinical diagnostic domains using completely separate modalities and patient cohorts. Candidates were evaluated strictly on development/validation evidence — never final test sets.
           </p>
           <div style="margin-top: 1rem; padding: 0.875rem 1.25rem; background-color: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius-lg); font-size: 0.875rem; color: #78350f; line-height: 1.5;">
-            <strong>⚠️ Scientific Guardrail:</strong> WDBC evaluates high-resolution cytological aspirates from palpable lesions; CBIS-DDSM evaluates screening mammograms with variable tissue densities. No cross-study ranking or combined leaderboards exist. Evaluations are strictly within-study.
+            <strong>⚠️ Critical Scientific Guardrail:</strong> WDBC evaluates high-resolution cytological aspirates from palpable lesions; CBIS-DDSM evaluates screening mammograms with variable tissue densities. No cross-study ranking or combined leaderboards exist. Evaluations are strictly within-study.
+          </div>
+        </div>
+
+        <!-- 60-Second Visual Research Summary Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-8);">
+          <div style="background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.25rem; box-shadow: var(--shadow-sm);">
+            <span class="research-step-badge step-badge-teal">Step A · What Did We Study?</span>
+            <h4 style="font-size: 1rem; font-weight: 700; color: var(--slate-900); margin: 0.25rem 0 0.5rem;">Two Distinct Biological Modalities</h4>
+            <p style="font-size: 0.8125rem; color: var(--slate-600); margin: 0; line-height: 1.5;">
+              <strong>Study A:</strong> 569 FNA biopsy cases with 30 nuclear morphology features (WDBC).<br>
+              <strong>Study B:</strong> 1,696 digital mammography scans (CBIS-DDSM full processed images).
+            </p>
+          </div>
+
+          <div style="background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.25rem; box-shadow: var(--shadow-sm);">
+            <span class="research-step-badge step-badge-blue">Step B · What Did We Test?</span>
+            <h4 style="font-size: 1rem; font-weight: 700; color: var(--slate-900); margin: 0.25rem 0 0.5rem;">Competitive Model Candidates</h4>
+            <p style="font-size: 0.8125rem; color: var(--slate-600); margin: 0; line-height: 1.5;">
+              <strong>Study A:</strong> Logistic Regression (selected), Random Forest, XGBoost.<br>
+              <strong>Study B:</strong> EfficientNet-B0 (selected), ResNet50, Custom CNN.
+            </p>
+          </div>
+
+          <div style="background: #ffffff; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.25rem; box-shadow: var(--shadow-sm);">
+            <span class="research-step-badge step-badge-slate">Step C · How Did We Select?</span>
+            <h4 style="font-size: 1rem; font-weight: 700; color: var(--slate-900); margin: 0.25rem 0 0.5rem;">Validation-First Selection</h4>
+            <p style="font-size: 0.8125rem; color: var(--slate-600); margin: 0; line-height: 1.5;">
+              Candidates were selected strictly on development/validation splits. Held-out test sets remained locked until post-selection confirmation.
+            </p>
           </div>
         </div>
 
@@ -680,7 +690,75 @@
                 </a>
               </div>
             </div>
-          </article>
+        </div>
+
+        <!-- Step G: Secondary Detailed Technical Research Hub -->
+        <div style="margin-top: var(--space-12); padding-top: var(--space-8); border-top: 1px solid var(--border-subtle);">
+          <div style="text-align: center; max-width: 60ch; margin: 0 auto 1.5rem;">
+            <span class="studio-eyebrow">Academic Research Dossiers</span>
+            <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--slate-950); margin: 0.25rem 0 0.5rem;">
+              Explore Technical Research Pages
+            </h3>
+            <p style="font-size: 0.875rem; color: var(--slate-600); margin: 0;">
+              For researchers and clinical investigators seeking comprehensive experimental protocols, distribution splits, bootstrap confidence intervals, and explainability maps.
+            </p>
+          </div>
+
+          <div class="research-deep-dive-grid">
+            <a href="pages/research.html" class="deep-dive-card">
+              <div>
+                <span class="studio-badge badge-teal">Study A (WDBC)</span>
+                <h4>Research Dossier</h4>
+                <p>Complete Wisconsin diagnostic study documentation, 5-fold CV splits, and ROC analysis.</p>
+              </div>
+              <span class="deep-dive-link-text">View Detailed Research →</span>
+            </a>
+
+            <a href="pages/model-comparison.html" class="deep-dive-card">
+              <div>
+                <span class="studio-badge badge-blue">Study B (CBIS-DDSM)</span>
+                <h4>Model Benchmarks</h4>
+                <p>Outer test evaluations, bootstrap 95% confidence intervals, and architecture trade-offs.</p>
+              </div>
+              <span class="deep-dive-link-text">Compare Models →</span>
+            </a>
+
+            <a href="pages/datasets.html" class="deep-dive-card">
+              <div>
+                <span class="studio-badge badge-neutral">Data Transparency</span>
+                <h4>Dataset Explorer</h4>
+                <p>Cohort demographics, partition manifests, and verified zero-leakage separation.</p>
+              </div>
+              <span class="deep-dive-link-text">Explore Datasets →</span>
+            </a>
+
+            <a href="pages/explainability.html" class="deep-dive-card">
+              <div>
+                <span class="studio-badge badge-teal">Interpretable AI</span>
+                <h4>Explainability Suite</h4>
+                <p>SHAP kernel contributions for nuclear features and Grad-CAM coarse visual attention.</p>
+              </div>
+              <span class="deep-dive-link-text">Inspect Explainability →</span>
+            </a>
+
+            <a href="pages/calibration.html" class="deep-dive-card">
+              <div>
+                <span class="studio-badge badge-blue">Reliability</span>
+                <h4>Platt Calibration</h4>
+                <p>Sigmoid scaling, Brier reliability metrics, and confidence intervals for cautious interpretation.</p>
+              </div>
+              <span class="deep-dive-link-text">Review Calibration →</span>
+            </a>
+
+            <a href="pages/model-status.html" class="deep-dive-card">
+              <div>
+                <span class="studio-badge badge-neutral">Runtime</span>
+                <h4>Model Status</h4>
+                <p>Real-time endpoint telemetry, cryptographic checkpoint hashes, and runtime health.</p>
+              </div>
+              <span class="deep-dive-link-text">Check Runtime Status →</span>
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -826,204 +904,485 @@
     </section>
 
     <!-- ============================================================
-         BEAT 05: UNDERSTANDING BREAST HEALTH
+         PHASE 4R BATCH A: CANONICAL #LEARN EDUCATIONAL HUB
          ============================================================ -->
-    <section id="learn-anatomy" class="studio-section">
+    <section id="learn" class="studio-section">
       <div class="studio-container">
-        <div class="editorial-split-card">
-          <div class="editorial-split-media">
-            <img src="assets/img/anatomy_diagram.svg" alt="Anatomical illustration of female breast tissue showing milk ducts, lobules, and adipose tissue" width="640" height="480">
-          </div>
-          <div class="editorial-split-content">
-            <span class="studio-eyebrow">Medical Foundations</span>
-            <h2 style="font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 800; margin-bottom: 1rem; color: var(--slate-950);">
-              Understanding Breast Tissue &amp; Cellular Architecture
-            </h2>
-            <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1rem;">
-              The adult female breast consists of glandular tissue, fibrous connective tissue, and adipose (fatty) tissue. Most breast malignancies originate within the epithelial lining of the milk ducts (ductal carcinoma) or the milk-producing lobules (lobular carcinoma).
-            </p>
-            <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1.5rem;">
-              Recognizing subtle architectural changes—such as microcalcifications, asymmetrical densities, or cellular pleomorphism—is the core objective of oncology screening and cytological biopsy analysis.
-            </p>
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-              <span class="studio-badge badge-neutral">Ductal vs Lobular</span>
-              <span class="studio-badge badge-neutral">Stroma &amp; Adipose</span>
-              <span class="studio-badge badge-neutral">Cellular Contours</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         BEAT 06: SCREENING & MAMMOGRAPHY
-         ============================================================ -->
-    <section id="learn-screening" class="studio-section" style="background-color: var(--surface-subtle);">
-      <div class="studio-container">
-        <div class="editorial-split-card" style="direction: rtl;">
-          <div class="editorial-split-media" style="direction: ltr;">
-            <img src="assets/img/mammography_tp_original.png" alt="Clinical high-resolution mammogram demonstrating focal soft-tissue asymmetry" width="640" height="480">
-          </div>
-          <div class="editorial-split-content" style="direction: ltr;">
-            <span class="studio-eyebrow">Diagnostic Imaging</span>
-            <h2 style="font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 800; margin-bottom: 1rem; color: var(--slate-950);">
-              Screening Guidelines &amp; Mammography Modalities
-            </h2>
-            <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1rem;">
-              Screening mammography remains the primary evidence-based modality proven to reduce breast cancer mortality through early detection before palpable symptoms appear.
-            </p>
-            <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1.5rem;">
-              Factors such as breast tissue density (categorized under BI-RADS A through D) significantly impact radiological sensitivity. Women with dense breast tissue often benefit from supplementary screening modalities such as automated breast ultrasound (ABUS) or breast MRI under clinical guidance.
-            </p>
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-              <span class="studio-badge badge-neutral">BI-RADS Classification</span>
-              <span class="studio-badge badge-neutral">Dense Tissue Considerations</span>
-              <span class="studio-badge badge-neutral">Digital Tomosynthesis</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         BEAT 07: EVIDENCE-BASED NUTRITION & LIFESTYLE
-         ============================================================ -->
-    <section id="learn-lifestyle" class="studio-section">
-      <div class="studio-container">
-        <div class="editorial-split-card">
-          <div class="editorial-split-media">
-            <img src="assets/img/nutrition_lifestyle.svg" alt="AICR New American Plate proportion model showing plant-forward dietary pattern and hydration" width="800" height="500">
-          </div>
-          <div class="editorial-split-content">
-            <span class="studio-eyebrow">Public Health &amp; Prevention</span>
-            <h2 style="font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 800; margin-bottom: 1rem; color: var(--slate-950);">
-              Evidence-Based Nutrition &amp; Lifestyle Modalities
-            </h2>
-            <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1rem;">
-              Epidemiological evidence compiled by the American Institute for Cancer Research (AICR), World Cancer Research Fund (WCRF), and Memorial Sloan Kettering (MSK) establishes that balanced dietary patterns support long-term wellness and survivorship.
-            </p>
-            <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1rem;">
-              The AICR <em>New American Plate</em> model recommends covering at least 2/3 of your plate with plant foods (vegetables, fruits, whole grains, and legumes/beans), with 1/3 or less dedicated to other or animal-source foods (such as fish, poultry, or dairy).
-            </p>
-            <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1rem;">
-              As a distinct lifestyle recommendation, the World Health Organization (WHO) and American Cancer Society advise regular physical activity (150–300 minutes weekly) to support metabolic health.
-            </p>
-            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem;">
-              <span class="studio-badge badge-teal">AICR New American Plate (≥ 2/3 Plant)</span>
-              <span class="studio-badge badge-blue">MSK Survivorship Education</span>
-              <span class="studio-badge badge-neutral">Active Treatment vs Prevention</span>
-            </div>
-            <div class="studio-alert alert-warning">
-              <span class="studio-alert-icon">ℹ️</span>
-              <div>
-                <strong>Evidence-Based Sourcing Notice:</strong> Nutritional guidance supports overall health but does not cure cancer. Nutritional needs during active chemotherapy/radiation differ substantially from general prevention and must be managed directly by clinical oncology dietitians (e.g., MSK Evelyn H. Lauder Breast Center protocols).
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         BEAT 08: EXPLAINABILITY & TRANSPARENCY
-         ============================================================ -->
-    <section id="explainability" class="studio-section" style="background-color: var(--surface-subtle);">
-      <div class="studio-container">
+        <!-- Hub Section Header -->
         <div class="section-header">
-          <span class="studio-eyebrow">Interpretability &amp; Safety</span>
-          <h2 class="section-title">Beyond Black-Box Predictions</h2>
+          <span class="studio-eyebrow">Evidence-Based Public Health Literacy</span>
+          <h2 class="section-title">Breast Health Education &amp; Clinical Guidance Hub</h2>
           <p class="section-lead">
-            Model interpretability is not an optional accessory; it is fundamental to responsible biomedical AI. We pair every prediction with empirical attribution mechanisms.
+            An accessible, clinically sourced knowledge resource for patients, families, and researchers. Explore breast biology, evidence-based screening schedules, early warning signs, nutrition, survivorship care, and curated clinical video lectures.
           </p>
         </div>
 
-        <div class="study-dual-grid">
-          <!-- SHAP Attribution Card -->
-          <article class="study-card-v3">
-            <div class="study-card-header">
-              <div>
-                <span class="studio-badge badge-teal">Study A · WDBC</span>
-                <h3 style="margin-top: 0.5rem; font-size: 1.125rem;">SHAP Feature Attribution</h3>
-              </div>
-              <span class="mega-badge mega-badge-teal">Kernel Explainer</span>
+        <!-- Topic Navigation Filter / Jump Chips -->
+        <nav class="learn-nav-pills" aria-label="Breast health topics">
+          <a class="learn-pill-link" href="#learn-anatomy">🧬 Anatomy &amp; Biology</a>
+          <a class="learn-pill-link" href="#learn-screening">🩺 Screening Guidelines</a>
+          <a class="learn-pill-link" href="#learn-warnings">⚠️ Warning Signs</a>
+          <a class="learn-pill-link" href="#learn-nutrition">🥗 Nutrition &amp; Lifestyle</a>
+          <a class="learn-pill-link" href="#learn-recovery">🕊️ Recovery &amp; Wellbeing</a>
+          <a class="learn-pill-link" href="#learn-myths">💡 Myths vs Facts</a>
+          <a class="learn-pill-link" href="#learn-videos">🎬 Video Library</a>
+          <a class="learn-pill-link" href="#learn-faq">❓ FAQ</a>
+        </nav>
+
+        <!-- Topic 1: Breast Anatomy & Biology -->
+        <div id="learn-anatomy" style="margin-top: var(--space-8);">
+          <div class="editorial-split-card">
+            <div class="editorial-split-media">
+              <img src="assets/img/anatomy_diagram.svg" alt="Anatomical illustration of female breast tissue showing milk ducts, lobules, and adipose tissue" width="640" height="480">
             </div>
-            <div class="study-card-body">
-              <div class="study-visual-box">
-                <img src="assets/img/ml_shap_bar.png" alt="SHAP global feature importance bar plot for WDBC Logistic Regression" width="600" height="337">
-              </div>
-              <p>
-                Calculates Shapley values to quantify how each of the 30 FNA features (such as worst concave points and texture error) shifts the log-odds toward malignant or benign predictions.
+            <div class="editorial-split-content">
+              <span class="studio-eyebrow">Medical Foundations</span>
+              <h3 style="font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; margin-bottom: 1rem; color: var(--slate-950);">
+                Understanding Breast Tissue &amp; Cellular Architecture
+              </h3>
+              <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1rem;">
+                The adult female breast consists of glandular tissue (lobules and milk ducts), fibrous connective stroma, and protective adipose (fatty) tissue. Most breast malignancies originate within the epithelial lining of the terminal ductal lobular units (ductal carcinoma) or the milk-producing lobules (lobular carcinoma).
               </p>
-              <div class="studio-alert alert-info" style="margin-top: 1rem;">
-                <small>⚠️ SHAP explains mathematical model contribution—not biological causality or pathology ground truth.</small>
-              </div>
-            </div>
-          </article>
-
-          <!-- Grad-CAM Saliency Card -->
-          <article class="study-card-v3">
-            <div class="study-card-header">
-              <div>
-                <span class="studio-badge badge-blue">Study B · CBIS-DDSM</span>
-                <h3 style="margin-top: 0.5rem; font-size: 1.125rem;">Grad-CAM Convolutional Saliency</h3>
-              </div>
-              <span class="mega-badge mega-badge-blue">Conv5 Activations</span>
-            </div>
-            <div class="study-card-body">
-              <div class="study-visual-box">
-                <img src="assets/img/efficientnet_gradcam_examples.png" alt="Grad-CAM activation heatmaps overlaid onto mammographic tissue" width="600" height="337">
-              </div>
-              <p>
-                Generates visual attention heatmaps by computing gradients of the final convolutional layer with respect to the malignant class score in the EfficientNet-B0 network.
+              <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1.5rem;">
+                Recognizing subtle structural changes—such as microcalcifications, asymmetrical densities, or cellular pleomorphism—is the core objective of radiological screening and cytological biopsy analysis.
               </p>
-              <div class="studio-alert alert-info" style="margin-top: 1rem;">
-                <small>⚠️ Grad-CAM shows network feature activation regions—it does not delineate tumor margins or replace radiological segmentation.</small>
-              </div>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         BEAT 09: FEATURED CURATED VIDEO PREVIEW
-         ============================================================ -->
-    <section id="featured-video" class="studio-section">
-      <div class="studio-container">
-        <div class="section-header">
-          <span class="studio-eyebrow">Screening &amp; Mammography</span>
-          <h2 class="section-title">Verified Clinical Screening Guidance</h2>
-          <p class="section-lead">
-            Official educational video lecture published by the American Cancer Society explaining screening guideline parameters and clinical evidence.
-          </p>
-        </div>
-
-        <div class="editorial-split-card">
-          <div id="videoContainer" class="editorial-split-media" style="position: relative; cursor: pointer; min-height: 360px; background: #020617; border-radius: var(--radius-lg); overflow: hidden;">
-            <img src="assets/img/video_poster_screening.svg" alt="American Cancer Society Breast Cancer Screening Guideline Overview Video Poster" width="960" height="540" style="width: 100%; height: 100%; object-fit: cover;">
-            <div id="playBtnOverlay" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background-color: rgba(2, 6, 23, 0.3); transition: background-color var(--duration-fast);">
-              <div style="width: 64px; height: 64px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-xl);">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--teal-700)"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <span class="studio-badge badge-teal">Ductal vs Lobular</span>
+                <span class="studio-badge badge-neutral">Stroma &amp; Adipose</span>
+                <span class="studio-badge badge-neutral">Terminal Duct Lobular Units (TDLU)</span>
               </div>
             </div>
           </div>
-          <div class="editorial-split-content">
-            <span class="studio-badge badge-blue">Screening &amp; Mammography</span>
-            <h3 style="font-size: 1.5rem; font-weight: 800; margin: 0.75rem 0; color: var(--slate-950);">
-              American Cancer Society Breast Cancer Screening Guideline Overview
+        </div>
+
+        <!-- Topic 2: Screening Guidelines by Age & Risk -->
+        <div id="learn-screening" style="margin-top: var(--space-12); padding-top: var(--space-8); border-top: 1px solid var(--border-subtle);">
+          <div class="editorial-split-card" style="direction: rtl;">
+            <div class="editorial-split-media" style="direction: ltr;">
+              <img src="assets/img/mammography_tp_original.png" alt="Clinical high-resolution mammogram demonstrating focal soft-tissue asymmetry" width="640" height="480">
+            </div>
+            <div class="editorial-split-content" style="direction: ltr;">
+              <span class="studio-eyebrow">Diagnostic Imaging</span>
+              <h3 style="font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; margin-bottom: 1rem; color: var(--slate-950);">
+                Screening Guidelines &amp; Mammography Modalities
+              </h3>
+              <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1rem;">
+                Screening mammography remains the primary evidence-based modality proven to reduce breast cancer mortality through early detection before palpable symptoms appear.
+              </p>
+              <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1.5rem;">
+                Breast tissue density (categorized under BI-RADS A through D) significantly influences radiographic sensitivity. High tissue density can obscure lesions, leading clinicians to recommend supplementary automated breast ultrasound (ABUS) or breast MRI.
+              </p>
+              <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <span class="studio-badge badge-blue">BI-RADS Staging</span>
+                <span class="studio-badge badge-neutral">Dense Tissue Sensitivity</span>
+                <span class="studio-badge badge-neutral">Digital Tomosynthesis</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Restored Age-Stratified Screening Guidance Table -->
+          <div style="margin-top: var(--space-8);">
+            <h4 style="font-size: 1.125rem; font-weight: 700; color: var(--slate-900); margin-bottom: 0.5rem;">
+              Evidence-Based Screening Schedule by Age &amp; Risk Profile
+            </h4>
+            <p style="font-size: 0.875rem; color: var(--slate-600); margin-bottom: 1rem;">
+              Guidelines synthesized from the American Cancer Society (ACS) and U.S. Preventive Services Task Force (USPSTF). Individual schedules should always be confirmed with your healthcare provider.
+            </p>
+
+            <div class="screening-table-wrap">
+              <table class="screening-table" aria-label="Breast cancer screening recommendations by age group">
+                <thead>
+                  <tr>
+                    <th scope="col">Age / Risk Group</th>
+                    <th scope="col">Clinical Recommendation</th>
+                    <th scope="col">Primary Modality</th>
+                    <th scope="col">Interval</th>
+                    <th scope="col">Authoritative Source</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Ages 20 – 39</strong><br><small class="text-muted">Average Risk</small></td>
+                    <td>Breast self-awareness and clinical breast examination during periodic health assessments. Formal mammography is not routinely indicated for average risk.</td>
+                    <td>Clinical Breast Exam (CBE)</td>
+                    <td>Periodic</td>
+                    <td>ACS / NCI Clinical Consensus</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Ages 40 – 44</strong><br><small class="text-muted">Average Risk</small></td>
+                    <td>Women have the choice to begin annual screening mammography based on individual values, preferences, and clinical shared decision-making.</td>
+                    <td>2D / 3D Screening Mammography</td>
+                    <td>Annual (Elective)</td>
+                    <td>ACS Screening Guideline (JAMA 2015)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Ages 45 – 54</strong><br><small class="text-muted">Average Risk</small></td>
+                    <td>Women should undergo regular screening mammography every year. This age window represents the peak benefit for annual detection.</td>
+                    <td>Digital Mammography / DBT</td>
+                    <td>Every Year</td>
+                    <td>ACS Guideline / USPSTF Reference</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Ages 55 and Older</strong><br><small class="text-muted">Average Risk</small></td>
+                    <td>Women can transition to biennial (every 2 years) mammography or choose to continue annual screening. Screening should continue as long as overall health is good and life expectancy is 10+ years.</td>
+                    <td>Digital Mammography / DBT</td>
+                    <td>Every 1 to 2 Years</td>
+                    <td>ACS Guidelines / USPSTF Update</td>
+                  </tr>
+                  <tr>
+                    <td><strong>High-Risk Individuals</strong><br><small class="text-muted">BRCA1/2, &gt;20% Lifetime Risk</small></td>
+                    <td>Annual screening with both breast MRI and digital mammogram starting typically at age 30, coordinated under specialized genetic and oncology management.</td>
+                    <td>Contrast Breast MRI + Mammography</td>
+                    <td>Annual (Alternating)</td>
+                    <td>American College of Radiology (ACR) / ACS</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Dense Breast Tissue</strong><br><small class="text-muted">BI-RADS C or D</small></td>
+                    <td>Parenchymal masking reduces standard mammography sensitivity. Supplemental screening with automated breast ultrasound (ABUS) or MRI is recommended upon clinical assessment.</td>
+                    <td>Mammogram + Supplemental Ultrasound/MRI</td>
+                    <td>Per Clinical Protocol</td>
+                    <td>ACR BI-RADS Atlas / FDA Dense Tissue Rule</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--slate-500); margin-top: 0.5rem; line-height: 1.4;">
+              Source Registry Citation: Sourced from peer-reviewed American Cancer Society guidelines (Oeffinger et al., JAMA 2015;314(15):1599-1614) and ACR BI-RADS Atlas 5th Edition.
+            </div>
+          </div>
+        </div>
+
+        <!-- Topic 3: Warning Signs (When to Seek Evaluation) -->
+        <div id="learn-warnings" style="margin-top: var(--space-12); padding-top: var(--space-8); border-top: 1px solid var(--border-subtle);">
+          <div style="max-width: 75ch;">
+            <span class="studio-eyebrow">Early Recognition</span>
+            <h3 style="font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; margin: 0.25rem 0 0.75rem; color: var(--slate-950);">
+              Recognizing Warning Signs: When to Seek Medical Evaluation
             </h3>
-            <p style="color: var(--slate-600); font-size: 0.9375rem; line-height: 1.6; margin-bottom: 1.25rem;">
-              An authoritative walkthrough by the American Cancer Society outlining evidence-based screening recommendations, age milestones, annual mammography schedules, and dense breast tissue clinical context.
+            <p style="color: var(--slate-700); line-height: 1.6; margin-bottom: 1rem;">
+              Familiarity with your baseline breast anatomy is vital for noticing changes early. The following visual guide outlines common changes that warrant a timely professional clinical evaluation.
             </p>
-            <div style="padding: 0.75rem 1rem; background-color: var(--slate-50); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); font-size: 0.8125rem; color: var(--slate-600); margin-bottom: 1.25rem;">
-              <div><strong>Publisher:</strong> American Cancer Society (ACS)</div>
-              <div><strong>Verified Duration:</strong> 05:40 min · Sourced via Official YouTube (50CdcLJsIEI)</div>
-              <div><strong>Topic:</strong> Screening Guidelines &amp; Clinical Mammography</div>
+          </div>
+
+          <!-- Non-Alarmist Educational Framing Notice -->
+          <div class="studio-alert alert-info" style="margin-bottom: var(--space-6);">
+            <span class="studio-alert-icon">ℹ️</span>
+            <div>
+              <strong>Important Educational Framing:</strong> These changes can have many non-malignant causes (such as benign cysts, fibroadenomas, hormonal fluctuations, or benign infections). Experiencing one of these signs does <em>not</em> mean you have breast cancer, but persistent or concerning changes should always be evaluated promptly by a qualified healthcare professional.
             </div>
-            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-              <a href="https://www.youtube.com/watch?v=50CdcLJsIEI" target="_blank" rel="noopener noreferrer" class="studio-btn studio-btn-outline studio-btn-sm">Watch on YouTube ↗</a>
-              <a href="#learn-screening" class="studio-btn studio-btn-primary studio-btn-sm">View Screening Guidelines ↓</a>
+          </div>
+
+          <div class="warning-signs-grid">
+            <div class="warning-sign-card">
+              <span class="warning-sign-icon">🔍</span>
+              <h4>New Lump or Mass</h4>
+              <p>A distinct lump in the breast or armpit. Malignant lumps are frequently painless and hard with irregular borders, but tender, soft, or rounded lumps can also occur.</p>
             </div>
+
+            <div class="warning-sign-card">
+              <span class="warning-sign-icon">🩺</span>
+              <h4>Swelling or Thickening</h4>
+              <p>Swelling of all or part of the breast, or an area of thickened tissue that feels noticeably different from surrounding areas, even without a distinct lump.</p>
+            </div>
+
+            <div class="warning-sign-card">
+              <span class="warning-sign-icon">🪞</span>
+              <h4>Skin Dimpling or Puckering</h4>
+              <p>Surface indentations, puckering, or texture changes resembling an orange peel (peau d'orange), often caused by subtle tethering of subcutaneous ligaments.</p>
+            </div>
+
+            <div class="warning-sign-card">
+              <span class="warning-sign-icon">🔄</span>
+              <h4>Nipple Retraction or Inversion</h4>
+              <p>A nipple that newly turns inward, inverts, or shifts orientation. Pre-existing lifelong inverted nipples are generally benign, but recent changes require review.</p>
+            </div>
+
+            <div class="warning-sign-card">
+              <span class="warning-sign-icon">🔴</span>
+              <h4>Redness, Flaking, or Scaliness</h4>
+              <p>Persistent redness, flaking, scabbing, or thickening of the nipple or areolar skin that does not resolve with standard topical moisturizers.</p>
+            </div>
+
+            <div class="warning-sign-card">
+              <span class="warning-sign-icon">💧</span>
+              <h4>Unusual Nipple Discharge</h4>
+              <p>Discharge occurring spontaneously without squeezing, particularly if clear, watery, or blood-tinged, and localized to one breast.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Topic 4: Evidence-Based Nutrition & Lifestyle -->
+        <div id="learn-nutrition" style="margin-top: var(--space-12); padding-top: var(--space-8); border-top: 1px solid var(--border-subtle);">
+          <span id="learn-lifestyle"></span>
+          <div class="editorial-split-card">
+            <div class="editorial-split-media">
+              <img src="assets/img/nutrition_lifestyle.svg" alt="AICR New American Plate proportion model showing plant-forward dietary pattern and hydration" width="800" height="500">
+            </div>
+            <div class="editorial-split-content">
+              <span class="studio-eyebrow">Public Health &amp; Prevention</span>
+              <h3 style="font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; margin-bottom: 1rem; color: var(--slate-950);">
+                Evidence-Based Nutrition &amp; Lifestyle Modalities
+              </h3>
+              <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1rem;">
+                Epidemiological evidence compiled by the American Institute for Cancer Research (AICR), World Cancer Research Fund (WCRF), and Memorial Sloan Kettering (MSK) establishes that balanced dietary patterns support long-term wellness and survivorship.
+              </p>
+              <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1rem;">
+                The AICR <em>New American Plate</em> model recommends covering at least 2/3 of your plate with plant foods (vegetables, fruits, whole grains, and legumes/beans), with 1/3 or less dedicated to other or animal-source foods (such as fish, poultry, or dairy).
+              </p>
+              <p style="color: var(--slate-700); line-height: 1.65; margin-bottom: 1rem;">
+                As a distinct lifestyle recommendation, the World Health Organization (WHO) and American Cancer Society advise regular physical activity (150–300 minutes weekly) to support metabolic health.
+              </p>
+              <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                <span class="studio-badge badge-teal">AICR New American Plate (≥ 2/3 Plant)</span>
+                <span class="studio-badge badge-blue">MSK Survivorship Education</span>
+                <span class="studio-badge badge-neutral">Active Treatment vs Prevention</span>
+              </div>
+              <div class="studio-alert alert-warning">
+                <span class="studio-alert-icon">ℹ️</span>
+                <div>
+                  <strong>Evidence-Based Sourcing Notice:</strong> Nutritional guidance supports overall health but does not cure cancer. No specific food cures cancer or lowers mathematical AI risk scores. Nutritional needs during active chemotherapy/radiation differ substantially from general prevention and must be managed directly by clinical oncology dietitians (e.g., MSK Evelyn H. Lauder Breast Center protocols).
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Topic 5: Recovery & Wellbeing -->
+        <div id="learn-recovery" style="margin-top: var(--space-12); padding-top: var(--space-8); border-top: 1px solid var(--border-subtle);">
+          <div style="max-width: 75ch;">
+            <span class="studio-eyebrow">Survivorship &amp; Self-Care</span>
+            <h3 style="font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; margin: 0.25rem 0 0.75rem; color: var(--slate-950);">
+              Supportive Care, Recovery &amp; Survivorship Pathways
+            </h3>
+            <p style="color: var(--slate-700); line-height: 1.6; margin-bottom: 1rem;">
+              Navigating clinical investigations or recovering after treatment involves emotional resilience, physical pacing, and coordinated family support.
+            </p>
+          </div>
+
+          <div class="recovery-grid">
+            <div class="recovery-card">
+              <span style="font-size: 1.75rem; display: block; margin-bottom: 0.5rem;">🌙</span>
+              <h4>Rest &amp; Energy Pacing</h4>
+              <p>Acknowledge fatigue as a physiological signal. Prioritize sleep, take short restorative breaks, and delegate non-essential daily tasks during treatment.</p>
+            </div>
+
+            <div class="recovery-card">
+              <span style="font-size: 1.75rem; display: block; margin-bottom: 0.5rem;">🚶‍♀️</span>
+              <h4>Gentle Movement</h4>
+              <p>Doctor-approved walking or range-of-motion arm exercises help sustain stamina, manage lymphedema risk, and boost mood during recovery.</p>
+            </div>
+
+            <div class="recovery-card">
+              <span style="font-size: 1.75rem; display: block; margin-bottom: 0.5rem;">📝</span>
+              <h4>Symptom &amp; Health Diary</h4>
+              <p>Keeping a brief log of symptoms, medication schedules, and questions empowers productive, focused dialogues during subsequent clinic visits.</p>
+            </div>
+
+            <div class="recovery-card">
+              <span style="font-size: 1.75rem; display: block; margin-bottom: 0.5rem;">🤝</span>
+              <h4>Emotional &amp; Family Support</h4>
+              <p>Engage oncology social workers, peer support groups, and family caregivers. Open communication relieves anxiety and reduces isolation.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Topic 6: Myths vs Facts -->
+        <div id="learn-myths" style="margin-top: var(--space-12); padding-top: var(--space-8); border-top: 1px solid var(--border-subtle);">
+          <div style="max-width: 75ch;">
+            <span class="studio-eyebrow">Clarity &amp; Evidence</span>
+            <h3 style="font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; margin: 0.25rem 0 0.75rem; color: var(--slate-950);">
+              Separating Common Myths from Medical Facts
+            </h3>
+            <p style="color: var(--slate-700); line-height: 1.6; margin-bottom: 1rem;">
+              Misinformation can produce unwarranted panic or delay essential medical care. Here is the verified clinical evidence behind common misconceptions.
+            </p>
+          </div>
+
+          <div class="myths-facts-grid">
+            <div class="myth-fact-card">
+              <div class="myth-part">
+                <div class="myth-part-header">❌ Common Myth</div>
+                <h4>"Finding a breast lump always means you have cancer."</h4>
+              </div>
+              <div class="fact-part">
+                <div class="fact-part-header">✅ Medical Fact</div>
+                <p>Approximately 80% of breast lumps evaluated in clinical practice turn out to be benign conditions, such as fluid-filled cysts or benign fibroadenomas. However, any new lump must be professionally examined to establish an accurate diagnosis.</p>
+              </div>
+            </div>
+
+            <div class="myth-fact-card">
+              <div class="myth-part">
+                <div class="myth-part-header">❌ Common Myth</div>
+                <h4>"If breast cancer does not run in my family, I am not at risk."</h4>
+              </div>
+              <div class="fact-part">
+                <div class="fact-part-header">✅ Medical Fact</div>
+                <p>Roughly 85% of breast cancers occur in individuals with no prior family history. They arise primarily from non-inherited factors, aging, hormonal exposure, and somatic genetic mutations occurring over a lifetime.</p>
+              </div>
+            </div>
+
+            <div class="myth-fact-card">
+              <div class="myth-part">
+                <div class="myth-part-header">❌ Common Myth</div>
+                <h4>"An AI algorithm or online tool can diagnose breast cancer."</h4>
+              </div>
+              <div class="fact-part">
+                <div class="fact-part-header">✅ Medical Fact</div>
+                <p>AI software calculates statistical probability estimates based on retrospective research data. Only a licensed physician using physical exams, diagnostic mammography/ultrasound, and pathology biopsy can provide a definitive medical diagnosis.</p>
+              </div>
+            </div>
+
+            <div class="myth-fact-card">
+              <div class="myth-part">
+                <div class="myth-part-header">❌ Common Myth</div>
+                <h4>"Screening mammograms expose patients to dangerous radiation levels."</h4>
+              </div>
+              <div class="fact-part">
+                <div class="fact-part-header">✅ Medical Fact</div>
+                <p>Screening mammograms utilize very low, tightly regulated radiation doses—comparable to roughly 7 weeks of natural background radiation. The proven mortality reduction benefit of early detection far outweighs the minimal radiation exposure.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Topic 7: Curated Clinical Video Library -->
+        <div id="learn-videos" style="margin-top: var(--space-12); padding-top: var(--space-8); border-top: 1px solid var(--border-subtle);">
+          <span id="featured-video"></span>
+          <div style="max-width: 75ch;">
+            <span class="studio-eyebrow">Verified Video Education</span>
+            <h3 style="font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; margin: 0.25rem 0 0.75rem; color: var(--slate-950);">
+              Curated Clinical Video Library
+            </h3>
+            <p style="color: var(--slate-700); line-height: 1.6; margin-bottom: 1rem;">
+              Educational video lectures and clinical explainers curated from verified oncology institutions. Videos use lazy loading to preserve page performance until activated.
+            </p>
+          </div>
+
+          <div class="video-library-grid">
+            <!-- Video 1: ACS Guideline Overview -->
+            <div class="video-player-card">
+              <div class="video-poster-stage" id="videoContainer1" data-videoid="50CdcLJsIEI" data-title="American Cancer Society Breast Cancer Screening Guideline Overview">
+                <img src="assets/img/video_poster_screening.svg" alt="ACS Breast Cancer Screening Guideline Overview Video Poster" width="960" height="540">
+                <div class="video-play-button">
+                  <div class="play-circle">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--teal-700)"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  </div>
+                </div>
+                <span class="video-duration-pill">05:40 min</span>
+              </div>
+              <div class="video-meta-body">
+                <span class="studio-badge badge-blue" style="align-self: flex-start;">Screening Protocols</span>
+                <h4>American Cancer Society Screening Guideline Overview</h4>
+                <p>An authoritative walkthrough outlining evidence-based screening recommendations, age milestones, annual mammography schedules, and dense breast tissue clinical context.</p>
+                <div class="video-details-box">
+                  <div><strong>Publisher:</strong> American Cancer Society (ACS)</div>
+                  <div><strong>Duration:</strong> 05:40 min · Verified Official YouTube (50CdcLJsIEI)</div>
+                  <div><strong>Topic:</strong> Screening Guidelines &amp; Clinical Mammography</div>
+                </div>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                  <a href="https://www.youtube.com/watch?v=50CdcLJsIEI" target="_blank" rel="noopener noreferrer" class="studio-btn studio-btn-outline studio-btn-sm">Watch on YouTube ↗</a>
+                  <a href="#learn-screening" class="studio-btn studio-btn-ghost studio-btn-sm">Screening Table ↑</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Video 2: ACS Science Behind Screening -->
+            <div class="video-player-card">
+              <div class="video-poster-stage" id="videoContainer2" data-videoid="oZYRmApgoUI" data-title="The Science Behind the New Breast Cancer Screening Guideline">
+                <img src="assets/img/mammography_tp_original.png" alt="Radiographic scan illustrating screening early detection" width="640" height="480">
+                <div class="video-play-button">
+                  <div class="play-circle">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--blue-700)"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  </div>
+                </div>
+                <span class="video-duration-pill">02:21 min</span>
+              </div>
+              <div class="video-meta-body">
+                <span class="studio-badge badge-teal" style="align-self: flex-start;">Clinical Evidence</span>
+                <h4>The Science Behind Breast Cancer Screening Guidelines</h4>
+                <p>Discussion of clinical evidence, mortality reduction modeling, and risk-benefit analyses guiding regular screening intervals and clinical practice.</p>
+                <div class="video-details-box">
+                  <div><strong>Publisher:</strong> American Cancer Society (ACS)</div>
+                  <div><strong>Duration:</strong> 02:21 min · Verified Official YouTube (oZYRmApgoUI)</div>
+                  <div><strong>Topic:</strong> Interval Evidence &amp; Mortality Reduction</div>
+                </div>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                  <a href="https://www.youtube.com/watch?v=oZYRmApgoUI" target="_blank" rel="noopener noreferrer" class="studio-btn studio-btn-outline studio-btn-sm">Watch on YouTube ↗</a>
+                  <a href="#research" class="studio-btn studio-btn-ghost studio-btn-sm">Research Story ↑</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Topic 8: Frequently Asked Questions (FAQ) -->
+        <div id="learn-faq" style="margin-top: var(--space-12); padding-top: var(--space-8); border-top: 1px solid var(--border-subtle);">
+          <div style="max-width: 75ch;">
+            <span class="studio-eyebrow">Practical Q&amp;A</span>
+            <h3 style="font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; margin: 0.25rem 0 0.75rem; color: var(--slate-950);">
+              Frequently Asked Questions
+            </h3>
+            <p style="color: var(--slate-700); line-height: 1.6; margin-bottom: 1rem;">
+              Clear answers to common questions regarding AI probability scores, screening modalities, cytology features, and analysis privacy.
+            </p>
+          </div>
+
+          <div class="faq-accordion-list">
+            <details class="faq-item">
+              <summary>What does an AI probability score mean?</summary>
+              <div class="faq-answer">
+                An AI probability score represents a mathematical estimate generated by comparing your input features against retrospective clinical study cohorts. For example, Study A evaluates 30 cytological features against the frozen 0.360 threshold. The score indicates statistical pattern alignment, not a clinical diagnosis or medical certainty.
+              </div>
+            </details>
+
+            <details class="faq-item">
+              <summary>Does this platform diagnose breast cancer?</summary>
+              <div class="faq-answer">
+                No. This software is developed strictly as an academic research and educational prototype (<code style="background: rgba(0,0,0,0.05); padding: 2px 4px; border-radius: 4px;">clinical_use = false</code>). It cannot provide a definitive diagnosis. Definite medical diagnosis requires physical examination, diagnostic imaging, and histological biopsy interpreted by a licensed pathologist and oncologist.
+              </div>
+            </details>
+
+            <details class="faq-item">
+              <summary>What is screening mammography and why does tissue density matter?</summary>
+              <div class="faq-answer">
+                Screening mammography uses low-dose X-rays to image the internal architecture of breast tissue. When tissue is categorized as dense (BI-RADS C or D), both fibroglandular tissue and tumors appear white on radiography, potentially masking small lesions. In such cases, supplemental ultrasound or MRI may be recommended by your clinician.
+              </div>
+            </details>
+
+            <details class="faq-item">
+              <summary>What are WDBC fine needle aspirate (FNA) nuclear features?</summary>
+              <div class="faq-answer">
+                The Wisconsin Diagnostic Breast Center (WDBC) dataset contains 30 computerized morphometry measurements derived from digitized images of fine needle aspirates. These capture nuclear characteristics such as mean radius, texture, perimeter, area, smoothness, compactness, concavity, concave points, symmetry, and fractal dimension.
+              </div>
+            </details>
+
+            <details class="faq-item">
+              <summary>Why might the cytology (ML) and mammography (DL) models produce different results?</summary>
+              <div class="faq-answer">
+                Study A (WDBC) and Study B (CBIS-DDSM) evaluate completely different biological modalities from separate patient cohorts. Cytology evaluates microscopic nuclear morphology of aspirated cells from a focal biopsy, whereas mammography evaluates gross radiological tissue patterns across an entire breast image. Disagreements reflect differing diagnostic domains, not algorithmic conflict.
+              </div>
+            </details>
+
+            <details class="faq-item">
+              <summary>What should I do if I notice a concerning change or receive an elevated AI result?</summary>
+              <div class="faq-answer">
+                Do not panic. Schedule a clinical consultation with your primary care physician or a specialized breast health specialist. Bring previous mammography films or medical records if available. Most breast symptoms have benign causes, but prompt clinical evaluation ensures accurate clarity and peace of mind.
+              </div>
+            </details>
+
+            <details class="faq-item">
+              <summary>Where is my analysis history saved and how is my data protected?</summary>
+              <div class="faq-answer">
+                When signed in, your analysis history is stored securely in the system database linked to your user account. Guest explorations do not store personal records. For healthcare providers, the Doctor Workspace isolates records under designated patient IDs. Data is never shared with third parties or used for external advertising.
+              </div>
+            </details>
+
+            <details class="faq-item">
+              <summary>Does this educational content replace a doctor's consultation?</summary>
+              <div class="faq-answer">
+                Absolutely not. All educational articles, screening tables, and symptom guides are provided solely for public health literacy and to help patients prepare for productive conversations with their healthcare team. Never delay or modify medical treatment based on online educational content.
+              </div>
+            </details>
           </div>
         </div>
       </div>
@@ -1122,8 +1481,8 @@
           Test model predictions, examine SHAP and Grad-CAM interpretability visualizations, and review frozen research checkpoints.
         </p>
         <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-          <a class="studio-btn studio-btn-primary studio-btn-lg" href="pages/dashboard.html">Launch Research Studio</a>
-          <a class="studio-btn studio-btn-outline studio-btn-lg" href="#studies">Review Studies</a>
+          <a class="studio-btn studio-btn-primary studio-btn-lg" href="pages/ml-analysis.html">Start AI Analysis</a>
+          <a class="studio-btn studio-btn-outline studio-btn-lg" href="#research">Review Research Story</a>
         </div>
       </div>
     </section>
@@ -1142,7 +1501,7 @@
             An academic research prototype for breast cancer detection research, computer vision mammography, and public breast health education.
           </p>
           <div style="margin-top: 1rem;">
-            <span class="studio-badge badge-neutral" style="background: rgba(255,255,255,0.1); color: var(--slate-300);">Version 3.0 · Prototype</span>
+            <span class="studio-badge badge-neutral" style="background: rgba(255,255,255,0.1); color: var(--slate-300);">Version 4.0 · Research Prototype</span>
           </div>
         </div>
 
@@ -1152,16 +1511,17 @@
             <li><a href="pages/ml-analysis.html">FNA Cytology Analysis</a></li>
             <li><a href="pages/dl-analysis.html">Mammography Vision</a></li>
             <li><a href="pages/multimodal.html">Multimodal Experiment</a></li>
-            <li><a href="pages/dashboard.html">Overview Dashboard</a></li>
+            <li><a href="index.html">Overview Hub</a></li>
           </ul>
         </div>
 
         <div class="footer-col">
           <h5>Research &amp; Data</h5>
           <ul class="footer-links">
-            <li><a href="pages/research.html">Study A (WDBC)</a></li>
-            <li><a href="pages/model-comparison.html">Study B (CBIS-DDSM)</a></li>
-            <li><a href="pages/datasets.html">Dataset Integrity</a></li>
+            <li><a href="#research">Research Story (Overview)</a></li>
+            <li><a href="pages/research.html">Study A (WDBC Dossier)</a></li>
+            <li><a href="pages/model-comparison.html">Study B (CBIS Benchmarks)</a></li>
+            <li><a href="pages/datasets.html">Dataset Integrity &amp; Splits</a></li>
             <li><a href="pages/explainability.html">Explainability Suite</a></li>
             <li><a href="pages/calibration.html">Platt Calibration</a></li>
           </ul>
@@ -1172,7 +1532,10 @@
           <ul class="footer-links">
             <li><a href="#learn-anatomy">Anatomy &amp; Biology</a></li>
             <li><a href="#learn-screening">Screening Protocols</a></li>
+            <li><a href="#learn-warnings">Warning Signs</a></li>
             <li><a href="#learn-lifestyle">Nutrition &amp; Lifestyle</a></li>
+            <li><a href="#learn-videos">Video Library</a></li>
+            <li><a href="#learn-faq">FAQ</a></li>
             <li><a href="#safety">Research Limitations</a></li>
             <li><a href="https://github.com/HuyGiang1/breast-cancer-ai">GitHub Repository</a></li>
           </ul>
