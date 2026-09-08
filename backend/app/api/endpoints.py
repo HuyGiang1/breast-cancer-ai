@@ -330,7 +330,7 @@ def _build_prediction_report_html(row: dict, current_user: dict) -> str:
 
     prediction_type = str(row.get("prediction_type") or "unknown").upper()
     diagnosis = str(row.get("diagnosis") or "N/A")
-    title = f"BreastCare Mint - AI Prediction Report #{int(row['id'])}"
+    title = f"Breast Health Studio - AI Prediction Report #{int(row['id'])}"
     patient_rows = [
         ("Người xuất báo cáo", current_user.get("full_name")),
         ("Email", current_user.get("email")),
@@ -1053,7 +1053,7 @@ def export_prediction_report(
 ):
     row = _fetch_owned_prediction(prediction_id, current_user)
     html = _build_prediction_report_html(row, current_user)
-    filename = f"breastcare_prediction_report_{prediction_id}.html"
+    filename = f"breast_health_studio_prediction_report_{prediction_id}.html"
     return Response(
         content=html,
         media_type="text/html; charset=utf-8",
