@@ -34,6 +34,18 @@ export const authService = {
     return result;
   },
 
+  linkGoogle: (credential) =>
+    request('/auth/google/link/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential }),
+    }),
+
+  unlinkGoogle: () =>
+    request('/auth/google/unlink/', {
+      method: 'POST',
+    }),
+
   me: () => request('/auth/me/'),
   updateProfile: (payload) =>
     request('/auth/profile/', {

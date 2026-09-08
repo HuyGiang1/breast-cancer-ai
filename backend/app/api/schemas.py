@@ -124,6 +124,13 @@ class GoogleConfigResponse(BaseModel):
     client_id: Optional[str] = None
 
 
+class GoogleLinkResponse(BaseModel):
+    message: str
+    provider: str = "google"
+    email: str
+    connected: bool = True
+
+
 class AuthResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"

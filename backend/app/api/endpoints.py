@@ -4,8 +4,12 @@ from fastapi import APIRouter, HTTPException, Depends, File, UploadFile, Form, H
 from fastapi.responses import FileResponse, Response
 from pydantic import ValidationError
 from typing import List, Dict, Any, Optional
-from google.oauth2 import id_token as google_id_token
-from google.auth.transport import requests as google_requests
+try:
+    from google.oauth2 import id_token as google_id_token
+    from google.auth.transport import requests as google_requests
+except ImportError:
+    google_id_token = None
+    google_requests = None
 from app.api.schemas import (
     PredictionRequest,
     PredictionResponse,
@@ -14,6 +18,7 @@ from app.api.schemas import (
     LoginRequest,
     GoogleAuthRequest,
     GoogleConfigResponse,
+    GoogleLinkResponse,
     AuthResponse,
     ForgotPasswordRequest,
     ResetPasswordRequest,
@@ -632,6 +637,11 @@ def google_auth(request: GoogleAuthRequest):
             status_code=503,
             detail="Google Sign-In is not configured on this server (GOOGLE_CLIENT_ID required).",
         )
+    if google_id_token is None or google_requests is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Google authentication library is not installed on this server.",
+        )
 
     try:
         id_info = google_id_token.verify_oauth2_token(
@@ -706,9 +716,128 @@ def google_auth(request: GoogleAuthRequest):
     )
 
 
+@router.post("/auth/google/link/", response_model=GoogleLinkResponse)
+def link_google(request: GoogleAuthRequest, current_user: dict = Depends(get_current_user)):
+    client_id = os.getenv("GOOGLE_CLIENT_ID")
+    if not client_id:
+        raise HTTPException(
+            status_code=503,
+            detail="Google Sign-In is not configured on this server (GOOGLE_CLIENT_ID required).",
+        )
+    if google_id_token is None or google_requests is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Google authentication library is not installed on this server.",
+        )
+
+    try:
+        id_info = google_id_token.verify_oauth2_token(
+            request.credential,
+            google_requests.Request(),
+            client_id,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=401, detail=f"Invalid Google ID token: {exc}")
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Failed to communicate with Google authentication services: {exc}")
+
+    if id_info.get("aud") != client_id:
+        raise HTTPException(status_code=401, detail="Google token audience mismatch")
+    if id_info.get("iss") not in {"accounts.google.com", "https://accounts.google.com"}:
+        raise HTTPException(status_code=401, detail="Invalid Google token issuer")
+    if not id_info.get("email_verified") or str(id_info.get("email_verified")).lower() != "true":
+        raise HTTPException(status_code=400, detail="Google email is not verified")
+
+    sub = str(id_info.get("sub"))
+    google_email = str(id_info.get("email")).lower().strip()
+    user_id = current_user["id"]
+    user_email = current_user["email"].lower().strip()
+
+    # Initial implementation requirement: verified Google email must match the authenticated user's account email
+    if google_email != user_email:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Google account email ({google_email}) does not match your account email ({user_email}).",
+        )
+
+    # Check if this Google sub is already linked to another user
+    existing_link = db.fetch_one(
+        "SELECT user_id FROM oauth_accounts WHERE provider = 'google' AND provider_subject = ?",
+        (sub,),
+    )
+    if existing_link is not None:
+        if int(existing_link["user_id"]) == user_id:
+            return GoogleLinkResponse(
+                message="Google account is already connected.",
+                provider="google",
+                email=google_email,
+                connected=True,
+            )
+        raise HTTPException(
+            status_code=409,
+            detail="This Google account is already linked to another user.",
+        )
+
+    # If current user already had a google link, update it; otherwise insert
+    user_existing = db.fetch_one(
+        "SELECT id FROM oauth_accounts WHERE user_id = ? AND provider = 'google'",
+        (user_id,),
+    )
+    if user_existing is not None:
+        db.execute(
+            "UPDATE oauth_accounts SET provider_subject = ?, email = ? WHERE user_id = ? AND provider = 'google'",
+            (sub, google_email, user_id),
+        )
+    else:
+        db.execute(
+            """
+            INSERT INTO oauth_accounts (user_id, provider, provider_subject, email, created_at)
+            VALUES (?, 'google', ?, ?, ?)
+            """,
+            (user_id, sub, google_email, utc_now_iso()),
+        )
+
+    return GoogleLinkResponse(
+        message="Google account connected successfully.",
+        provider="google",
+        email=google_email,
+        connected=True,
+    )
+
+
+@router.post("/auth/google/unlink/", response_model=Dict[str, str])
+def unlink_google(current_user: dict = Depends(get_current_user)):
+    user_id = current_user["id"]
+    user_row = db.fetch_one("SELECT password_hash FROM users WHERE id = ?", (user_id,))
+    if user_row is None or str(user_row["password_hash"]).startswith("oauth:"):
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot disconnect Google account without a password set. Please set a password first in Security.",
+        )
+    db.execute(
+        "DELETE FROM oauth_accounts WHERE user_id = ? AND provider = 'google'",
+        (user_id,),
+    )
+    return {"message": "Google account disconnected successfully."}
+
+
 @router.get("/auth/me/", response_model=Dict[str, Any])
 def me(current_user: dict = Depends(get_current_user)):
-    return current_user
+    user_row = db.fetch_one("SELECT password_hash FROM users WHERE id = ?", (current_user["id"],))
+    has_password = user_row is not None and not str(user_row["password_hash"]).startswith("oauth:")
+    oauth_rows = db.fetch_all(
+        "SELECT provider, email, created_at FROM oauth_accounts WHERE user_id = ?",
+        (current_user["id"],),
+    )
+    oauth_accounts = [
+        {"provider": r["provider"], "email": r["email"], "created_at": r["created_at"]}
+        for r in oauth_rows
+    ]
+    return {
+        **current_user,
+        "has_password": has_password,
+        "oauth_accounts": oauth_accounts,
+    }
 
 
 @router.post("/auth/logout/", response_model=Dict[str, str])
@@ -759,7 +888,7 @@ def change_password(request: ChangePasswordRequest, current_user: dict = Depends
 def forgot_password(request: ForgotPasswordRequest):
     row = db.fetch_one("SELECT id FROM users WHERE email = ?", (request.email.lower(),))
     if row is None:
-        return ForgotPasswordResponse(message="If the email exists, a reset token has been created.")
+        return ForgotPasswordResponse(message="If an account exists for this email, a password reset link has been sent.")
 
     token = create_password_reset_token()
     expires_at = future_iso(2)
@@ -770,13 +899,16 @@ def forgot_password(request: ForgotPasswordRequest):
         """,
         (int(row["id"]), token, expires_at, utc_now_iso()),
     )
-    send_password_reset_email(
-        email=request.email.lower(),
-        reset_token=token,
-        expires_at=expires_at,
-    )
+    try:
+        send_password_reset_email(
+            email=request.email.lower(),
+            reset_token=token,
+            expires_at=expires_at,
+        )
+    except Exception as exc:
+        print(f"Password reset mail delivery error: {exc}")
     return ForgotPasswordResponse(
-        message="Email dat lai mat khau da duoc gui neu tai khoan ton tai.",
+        message="If an account exists for this email, a password reset link has been sent.",
         reset_token=token if os.getenv("APP_MAIL_MODE", "file").strip().lower() == "file" else None,
         expires_at=expires_at,
     )
