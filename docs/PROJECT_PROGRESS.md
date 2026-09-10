@@ -9,13 +9,20 @@ Last updated: 2026-09-07
 - Current branch: `feat/product-experience-v4`
 - Baseline commits: `5b6c72c` (legacy rich functional baseline) and `8eba137` (committed V3 baseline)
 - Parity matrix: `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged, sum reconciled: 52)
-- Current work: **Batch A (Overview / Learn / Research Restoration) COMPLETED (PASS)**
-  - Canonical authenticated & guest Overview on `index.html` with compact identity and quick-start bar.
-  - Safe compatibility redirect from `/pages/dashboard.html` to `../index.html`.
-  - 60-second visual research narrative in `#research` with validation-first selection and exact frozen metrics.
-  - Comprehensive educational hub in `#learn` (anatomy, source-backed screening, warning signs, nutrition, video library, FAQ).
+- Current work: **Batch B (Structured ML Parity & Workstation Rebuild) COMPLETED (PASS)**
+  - Fully rebuilt `/pages/ml-analysis.html` into a professional data-lab analysis workstation.
+  - Reproducible WDBC development reference artifact (`scripts/build_wdbc_feature_reference.py`, N=455, test excluded).
+  - Restored canonical Benign and Malignant research presets without auto-prediction.
+  - Restored Clear All action with confirmation safeguard.
+  - Restored robust multi-format CSV import with multi-row interactive preview and CSV template download.
+  - Restored lab report image OCR feature extraction review modal.
+  - Added live 4-tier development reference validation and outlier safeguard confirmation modal.
+  - Implemented exact closed-form frozen Logistic Regression log-odds contributions ($z_i = w_i \cdot \frac{x_i - \mu_i}{\sigma_i}$) matching `predict_proba` with $\Delta < 10^{-12}$.
+  - Restored educational AI advice display with provider badges and added general wellbeing guidance.
+  - Restored authenticated printable report link and contextual AI advisor handoff via `sessionStorage`.
+  - Restored doctor-only patient linkage selector with strict ownership RBAC.
   - All automated tests, crawlers, and browser E2E suites passing with 0 defects.
-- Next step: Batch B (Structured ML Parity Restoration) — await explicit user prompt.
+- Next step: Batch C (Mammography DL + Frozen Grad-CAM Restoration) — await explicit user prompt.
 
 ## Completed major milestones
 

@@ -8,10 +8,10 @@
 - Functional baseline commit: `5b6c72c` (legacy monolithic rich frontend)
 - Research: **FROZEN**
 - Runtime: **FROZEN**
-- Frontend: **PHASE 4R BATCH A COMPLETED (PASS)**
+- Frontend: **PHASE 4R BATCH B COMPLETED (PASS)**
 - Parity matrix: `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged, sum reconciled: 52)
-- QA report: `docs/v4/BATCH_A_HOME_RESEARCH_LEARN_QA.md`
-- Next phase: Batch B (Structured ML Parity Restoration) — await explicit user instruction. Do not start Batch B prematurely.
+- QA reports: `docs/v4/BATCH_A_HOME_RESEARCH_LEARN_QA.md`, `docs/v4/BATCH_B_STRUCTURED_ML_QA.md`
+- Next phase: Batch C (Mammography DL + Frozen Grad-CAM Restoration) — await explicit user instruction. Do not start Batch C prematurely.
 
 Do not retrain, change datasets/splits, tune on test, change thresholds/calibration/model selection, redesign the frontend, validate multimodal fusion, claim clinical use, merge main, tag, or create a release without explicit instruction.
 
