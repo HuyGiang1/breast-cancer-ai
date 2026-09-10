@@ -77,9 +77,16 @@ class PredictionResponse(BaseModel):
     advice_model: Optional[str] = None
     explanation_image: Optional[str] = None
     top_features: Optional[List[Dict[str, Any]]] = None
+    all_features: Optional[List[Dict[str, Any]]] = None
+    input_quality: Optional[Dict[str, Any]] = None
+    intercept: Optional[float] = None
+    total_logit: Optional[float] = None
+    id: Optional[int] = None
+    prediction_id: Optional[int] = None
     reliability_label: Optional[str] = None
     uncertainty_warning: Optional[str] = None
     uncertainty_reasons: Optional[List[str]] = None
+
 
 class MultiModalResponse(BaseModel):
     ml_result: PredictionResponse

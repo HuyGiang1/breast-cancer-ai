@@ -1205,7 +1205,7 @@ def predict_diagnosis(
             if patient_id is not None:
                 _require_doctor(current_user)
             _require_patient_ownership(current_user["id"], patient_id)
-            db.save_prediction(
+            saved_id = db.save_prediction(
                 user_id=current_user["id"],
                 patient_id=patient_id,
                 prediction_type="ml",
@@ -1220,6 +1220,8 @@ def predict_diagnosis(
                 input_payload=request.model_dump(),
                 response_payload=result,
             )
+            result["id"] = saved_id
+            result["prediction_id"] = saved_id
         return PredictionResponse(**result)
     except HTTPException:
         raise

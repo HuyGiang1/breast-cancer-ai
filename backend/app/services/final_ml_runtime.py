@@ -172,6 +172,18 @@ class FinalMLRuntimeService:
             return "Medium"
         return "High"
 
+    def _load_reference_data(self) -> dict[str, Any]:
+        ref_path = PROJECT_ROOT / "experiments" / "final" / "wdbc_feature_reference.json"
+        if not ref_path.is_file():
+            ref_path = PROJECT_ROOT / "frontend" / "content" / "wdbc_feature_reference.json"
+        if ref_path.is_file():
+            try:
+                with ref_path.open(encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception:
+                pass
+        return {}
+
     def predict(self, request_data: Any, model_name: str | None = None) -> dict[str, Any]:
         if self.model is None:
             raise FinalModelUnavailableError(self.health_error or "Final ML model is unavailable.")
@@ -187,6 +199,100 @@ class FinalMLRuntimeService:
 
         threshold = 0.36
         is_malignant = probability >= threshold
+
+        top_features: list[dict[str, Any]] = []
+        all_features: list[dict[str, Any]] = []
+        input_quality: dict[str, Any] = {
+            "within_common_range_count": 0,
+            "unusual_count": 0,
+            "extreme_count": 0,
+            "outside_observed_count": 0,
+            "outliers": [],
+        }
+        intercept: float | None = None
+        total_logit: float | None = None
+
+        if hasattr(self.model, "named_steps") and "scaler" in self.model.named_steps and "lr" in self.model.named_steps:
+            scaler = self.model.named_steps["scaler"]
+            lr = self.model.named_steps["lr"]
+            raw_row = raw_input[0]
+            std_row = (raw_row - scaler.mean_) / scaler.scale_
+            coefs = lr.coef_[0]
+            contribs = std_row * coefs
+            intercept = float(lr.intercept_[0])
+            total_logit = float(intercept + np.sum(contribs))
+
+            ref_map = self._load_reference_data().get("features", {})
+            api_names = list(API_TO_WDBC_FEATURE.keys())
+
+            for i, api_name in enumerate(api_names):
+                raw_val = float(raw_row[i])
+                std_val = float(std_row[i])
+                coef_val = float(coefs[i])
+                log_odds = float(contribs[i])
+                direction = "toward_malignant" if log_odds > 0 else "toward_benign"
+
+                feat_ref = ref_map.get(api_name, {})
+                display_name = feat_ref.get("display_name", api_name.replace("_", " ").title())
+                group = feat_ref.get("group", "Other")
+                description = feat_ref.get("description", "")
+                min_val = feat_ref.get("min")
+                p01 = feat_ref.get("p01")
+                p05 = feat_ref.get("p05")
+                p95 = feat_ref.get("p95")
+                p99 = feat_ref.get("p99")
+                max_val = feat_ref.get("max")
+
+                # Reference state check against WDBC development cohort
+                if min_val is not None and max_val is not None and (raw_val < min_val or raw_val > max_val):
+                    ref_state = "outside_observed"
+                    input_quality["outside_observed_count"] += 1
+                    input_quality["outliers"].append({
+                        "feature": api_name,
+                        "display_name": display_name,
+                        "raw_value": raw_val,
+                        "state": "outside_observed",
+                        "min": min_val,
+                        "max": max_val,
+                    })
+                elif p01 is not None and p99 is not None and (raw_val < p01 or raw_val > p99):
+                    ref_state = "extreme"
+                    input_quality["extreme_count"] += 1
+                    input_quality["outliers"].append({
+                        "feature": api_name,
+                        "display_name": display_name,
+                        "raw_value": raw_val,
+                        "state": "extreme",
+                        "p01": p01,
+                        "p99": p99,
+                    })
+                elif p05 is not None and p95 is not None and (raw_val < p05 or raw_val > p95):
+                    ref_state = "unusual"
+                    input_quality["unusual_count"] += 1
+                else:
+                    ref_state = "within_reference"
+                    input_quality["within_common_range_count"] += 1
+
+                item = {
+                    "feature": api_name,
+                    "display_name": display_name,
+                    "group": group,
+                    "description": description,
+                    "raw_value": raw_val,
+                    "standardized_value": round(std_val, 4),
+                    "coefficient": round(coef_val, 4),
+                    "log_odds_contribution": round(log_odds, 4),
+                    "direction": direction,
+                    "reference_state": ref_state,
+                    "reference_p05": p05,
+                    "reference_p95": p95,
+                    "reference_min": min_val,
+                    "reference_max": max_val,
+                }
+                all_features.append(item)
+
+            top_features = sorted(all_features, key=lambda x: abs(x["log_odds_contribution"]), reverse=True)
+
         return {
             "model_name": "Logistic Regression",
             "model_id": "wdbc-logistic-regression-v1",
@@ -199,8 +305,15 @@ class FinalMLRuntimeService:
             "probability_space": "raw",
             "risk_band": self._risk_band_from_probability(probability),
             "risk_band_scope": "research_demo_display_only",
-            "analysis_text": "Runtime explanation is not finally integrated for the frozen model.",
-            "top_features": [],
+            "analysis_text": (
+                f"Frozen Logistic Regression result: raw probability {probability * 100:.1f}%, "
+                f"classification '{'Malignant' if is_malignant else 'Benign'}' at cutoff {threshold}."
+            ),
+            "top_features": top_features,
+            "all_features": all_features,
+            "input_quality": input_quality,
+            "intercept": intercept,
+            "total_logit": total_logit,
         }
 
 
