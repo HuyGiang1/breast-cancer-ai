@@ -97,7 +97,15 @@ class MultiModalResponse(BaseModel):
     dl_result: PredictionResponse
     combined_diagnosis: str
     combined_confidence: float
+    combined_malignant_score: float
+    combined_threshold: float = 0.5
+    fusion_formula: str = "0.4 * ml_raw_probability + 0.6 * dl_raw_probability"
+    fusion_probability_space: str = "raw_branch_outputs"
+    branches_unpaired: bool = True
+    branch_agreement: bool
     combined_risk_band: Optional[str] = None
+    id: Optional[int] = None
+    prediction_id: Optional[int] = None
     advice: str
     advice_provider: Optional[str] = None
     advice_model: Optional[str] = None

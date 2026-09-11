@@ -142,22 +142,31 @@ class AIAdvisorService:
         dl_result: Dict[str, Any],
         combined_probability: float,
     ) -> Dict[str, str]:
+        branch_agreement = bool(ml_result.get("diagnosis") == dl_result.get("diagnosis"))
         payload = {
             "mode": "multimodal",
             "combined_probability": float(combined_probability),
             "combined_risk_band": self._risk_band(float(combined_probability)),
+            "branch_agreement": branch_agreement,
+            "branches_unpaired": True,
             "ml": {
                 "diagnosis": ml_result.get("diagnosis"),
+                "raw_probability": float(ml_result.get("raw_probability", ml_result.get("probability", 0.0))),
                 "probability": float(ml_result.get("probability", 0.0)),
+                "threshold": float(ml_result.get("decision_threshold", 0.36)),
                 "risk_band": ml_result.get("risk_band", "Medium"),
                 "model_name": ml_result.get("model_name", "Unknown"),
                 "top_features": ml_result.get("top_features") or [],
             },
             "dl": {
                 "diagnosis": dl_result.get("diagnosis"),
+                "raw_probability": float(dl_result.get("raw_probability", 0.0)),
                 "probability": float(dl_result.get("probability", 0.0)),
+                "calibrated_probability": float(dl_result.get("calibrated_probability", dl_result.get("probability", 0.0))),
+                "threshold": float(dl_result.get("decision_threshold", 0.515)),
                 "risk_band": dl_result.get("risk_band", "Medium"),
                 "model_name": dl_result.get("model_name", "Unknown"),
+                "explanation_status": dl_result.get("explanation_status", "unavailable"),
             },
         }
 
@@ -385,6 +394,19 @@ class AIAdvisorService:
         return ""
 
     def _external_prompt(self, payload: Dict[str, Any]) -> str:
+        if payload.get("mode") == "multimodal":
+            return (
+                "You are an educational AI assistant for experimental multimodal research. "
+                "Provide concise Vietnamese guidance in 4 clear points: "
+                "1) Structured ML branch review (WDBC), 2) Mammography DL branch review (CBIS-DDSM), "
+                "3) Agreement/disagreement synthesis with explicit unpaired dataset warning "
+                "(WDBC and CBIS-DDSM are unpaired observations; this software combination is NOT a validated clinical model), "
+                "and 4) Educational recommendation emphasizing clinical consultation. "
+                "CRITICAL: If the branches disagree, state that the software combination cannot resolve the disagreement as a diagnosis. "
+                "Never claim one model confirms or overrules the other. "
+                f"Case payload: {json.dumps(payload, ensure_ascii=False)}"
+            )
+
         return (
             "You are a clinical assistant for breast cancer screening support. "
             "Return concise Vietnamese advice in 4 bullets: risk summary, immediate next tests, "
@@ -764,16 +786,32 @@ class AIAdvisorService:
 
     def _local_multimodal(self, payload: Dict[str, Any]) -> str:
         p = float(payload.get("combined_probability", 0.0))
-        band = payload.get("combined_risk_band", "Medium")
         ml = payload.get("ml", {})
         dl = payload.get("dl", {})
+        ml_diag = ml.get("diagnosis", "Benign")
+        dl_diag = dl.get("diagnosis", "Benign")
+        ml_prob = float(ml.get("raw_probability", ml.get("probability", 0.0)))
+        dl_prob = float(dl.get("raw_probability", 0.0))
+        agreement = payload.get("branch_agreement", ml_diag == dl_diag)
+
+        if not agreement:
+            return (
+                f"AI Educational Guidance (Bất đồng nhánh): Hai nhánh nghiên cứu cho kết quả không đồng thuận "
+                f"(Nhánh ML FNA: {ml_diag}, xác suất thô {ml_prob*100:.1f}%; Nhánh DL ảnh nhũ ảnh: {dl_diag}, xác suất thô {dl_prob*100:.1f}%). "
+                f"Điểm kết hợp phần mềm thực nghiệm (40/60) là {p*100:.1f}%. "
+                "Vì mô hình ML (tập WDBC) và DL (tập CBIS-DDSM) được huấn luyện độc lập trên các tập dữ liệu không ghép cặp (unpaired), "
+                "công thức kết hợp thực nghiệm này không thể và không được dùng để phân xử bất đồng giữa hai nhánh. "
+                "Bất đồng này đòi hỏi thăm khám chuyên khoa trực tiếp và đối chiếu hình ảnh/giải phẫu bệnh từ bác sĩ. "
+                "Lưu ý: Kết quả mang tính chất nghiên cứu phần mềm, không phải chẩn đoán y khoa."
+            )
 
         return (
-            f"AI Advisor (Integrated): Nguy cơ tổng hợp ở mức {band} ({p*100:.1f}%), "
-            f"ML={float(ml.get('probability', 0.0))*100:.1f}% và DL={float(dl.get('probability', 0.0))*100:.1f}%. "
-            "Nếu nguy cơ trung bình-cao, nên khám chuyên khoa để làm xét nghiệm xác nhận và đối chiếu với tiền sử cá nhân. "
-            "Nếu nguy cơ thấp, tiếp tục tầm soát định kỳ theo lịch bác sĩ. "
-            "Lưu ý: Đây là hệ thống hỗ trợ quyết định, không thay thế chẩn đoán y khoa."
+            f"AI Educational Guidance (Đồng thuận nhánh): Cả hai nhánh nghiên cứu độc lập cùng cho chỉ dấu {ml_diag} "
+            f"(Nhánh ML FNA: {ml_prob*100:.1f}%, Nhánh DL ảnh: {dl_prob*100:.1f}%). "
+            f"Điểm kết hợp phần mềm thực nghiệm (40/60) là {p*100:.1f}%. "
+            "Lưu ý rằng sự đồng thuận giữa hai nhánh không đồng nghĩa với chẩn đoán y khoa đã xác thực, "
+            "do dữ liệu đầu vào không ghép cặp từ cùng một cá nhân trong quá trình huấn luyện mô hình. "
+            "Người dùng nên đối chiếu với kết luận từ bác sĩ chuyên khoa và xét nghiệm cận lâm sàng chính thức."
         )
 
     def _local_chat(self, message: str) -> str:

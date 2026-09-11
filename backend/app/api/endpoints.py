@@ -295,19 +295,19 @@ def _top_features_html(response_payload: Dict[str, Any]) -> str:
 
 def _explanation_image_html(response_payload: Dict[str, Any]) -> str:
     explanation_image = response_payload.get("explanation_image")
-    if not explanation_image:
-        dl_result = response_payload.get("dl_result")
-        if isinstance(dl_result, dict):
-            explanation_image = dl_result.get("explanation_image")
+    dl_result = response_payload.get("dl_result") if isinstance(response_payload.get("dl_result"), dict) else {}
+    if not explanation_image and dl_result:
+        explanation_image = dl_result.get("explanation_image")
 
     if not explanation_image:
-        if response_payload.get("explanation_status") == "available":
-            layer = response_payload.get("explanation_layer", "top_conv")
-            method = response_payload.get("explanation_method", "Grad-CAM")
+        explanation_status = response_payload.get("explanation_status") or dl_result.get("explanation_status")
+        if explanation_status == "available":
+            layer = response_payload.get("explanation_layer") or dl_result.get("explanation_layer", "top_conv")
+            method = response_payload.get("explanation_method") or dl_result.get("explanation_method", "Grad-CAM")
             return (
                 f"<div style='background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 16px;margin-top:8px;'>"
-                f"<p style='margin:0 0 6px 0;'><strong>Model Attention Analysis:</strong> Generated live using <code>{method}</code> on convolutional layer <code>{layer}</code>.</p>"
-                f"<p style='margin:0;font-size:0.85em;color:#64748b;'>Full image overlays are ephemeral to protect patient privacy and optimize repository storage.</p>"
+                f"<p style='margin:0 0 6px 0;'><strong>Phân tích vùng chú ý mô hình (Grad-CAM):</strong> Được tạo trực tiếp bằng <code>{escape(method)}</code> trên lớp tích chập <code>{escape(layer)}</code>.</p>"
+                f"<p style='margin:0;font-size:0.85em;color:#64748b;'>Hình ảnh heatmap giải thích được tạo cho phiên phân tích trực tiếp. Dữ liệu nhị phân không lưu vĩnh viễn để bảo vệ quyền riêng tư bệnh nhân và tối ưu hóa hệ thống lưu trữ.</p>"
                 f"</div>"
             )
         return "<p>Không có ảnh Grad-CAM cho lần dự đoán này.</p>"
@@ -339,7 +339,12 @@ def _build_prediction_report_html(row: dict, current_user: dict) -> str:
 
     prediction_type = str(row.get("prediction_type") or "unknown").upper()
     diagnosis = str(row.get("diagnosis") or "N/A")
-    title = f"Breast Health Studio - AI Prediction Report #{int(row['id'])}"
+    is_multimodal = prediction_type == "MULTIMODAL"
+    title = (
+        f"Breast Health Studio - Báo Cáo Phân Tích Thực Nghiệm Đa Nhánh (Fusion) #{int(row['id'])}"
+        if is_multimodal
+        else f"Breast Health Studio - AI Prediction Report #{int(row['id'])}"
+    )
     patient_rows = [
         ("Người xuất báo cáo", current_user.get("full_name")),
         ("Email", current_user.get("email")),
@@ -354,18 +359,33 @@ def _build_prediction_report_html(row: dict, current_user: dict) -> str:
             ]
         )
 
-    summary_rows = [
-        ("Mã dự đoán", row.get("id")),
-        ("Loại dự đoán", prediction_type),
-        ("Chẩn đoán AI", diagnosis),
-        ("Xác suất hiển thị", _format_report_percent(row.get("probability"))),
-        ("Xác suất gốc", _format_report_percent(row.get("raw_probability"))),
-        ("Mức nguy cơ", row.get("risk_band")),
-        ("Độ tin cậy diễn giải", response_payload.get("reliability_label")),
-        ("Mô hình", row.get("model_name")),
-        ("Hiệu chỉnh", row.get("calibration_mode")),
-        ("Thời gian tạo", row.get("created_at")),
-    ]
+    if is_multimodal:
+        combined_score = response_payload.get("combined_malignant_score", row.get("probability"))
+        summary_rows = [
+            ("Mã dự đoán", row.get("id")),
+            ("Loại quy trình", "KẾT HỢP PHẦN MỀM THỰC NGHIỆM (EXPERIMENTAL FUSION)"),
+            ("Chỉ dấu thực nghiệm", "Malignant-side (Nghiêng ác tính)" if diagnosis == "Malignant" else "Benign-side (Nghiêng lành tính)"),
+            ("Điểm kết hợp thực nghiệm", _format_report_percent(combined_score)),
+            ("Ngưỡng quyết định phần mềm", "0.50 (Điểm giữa phần mềm thực nghiệm, không phải ngưỡng lâm sàng được xác thực)"),
+            ("Công thức kết hợp", response_payload.get("fusion_formula", "0.4 * ml_raw_probability + 0.6 * dl_raw_probability")),
+            ("Không gian xác suất", response_payload.get("fusion_probability_space", "raw_branch_outputs")),
+            ("Tính chất dữ liệu", "KHÔNG GHÉP CẶP (UNPAIRED) — WDBC và CBIS-DDSM là hai tập độc lập, không từ cùng bệnh nhân"),
+            ("Trạng thái đồng thuận", "Đồng thuận 2 nhánh (Branch Agreement)" if response_payload.get("branch_agreement") else "BẤT ĐỒNG 2 NHÁNH (Branch Disagreement)"),
+            ("Thời gian tạo", row.get("created_at")),
+        ]
+    else:
+        summary_rows = [
+            ("Mã dự đoán", row.get("id")),
+            ("Loại dự đoán", prediction_type),
+            ("Chẩn đoán AI", diagnosis),
+            ("Xác suất hiển thị", _format_report_percent(row.get("probability"))),
+            ("Xác suất gốc", _format_report_percent(row.get("raw_probability"))),
+            ("Mức nguy cơ", row.get("risk_band")),
+            ("Độ tin cậy diễn giải", response_payload.get("reliability_label")),
+            ("Mô hình", row.get("model_name")),
+            ("Hiệu chỉnh", row.get("calibration_mode")),
+            ("Thời gian tạo", row.get("created_at")),
+        ]
 
     clinical_rows = _clinical_input_rows(input_payload)
     advice = row.get("advice") or response_payload.get("advice") or ""
@@ -383,6 +403,45 @@ def _build_prediction_report_html(row: dict, current_user: dict) -> str:
     <div class="note">{escape(str(uncertainty_warning or "Cần thận trọng khi diễn giải kết quả."))}</div>
     {f"<ul>{reason_items}</ul>" if reason_items else ""}
   </section>"""
+
+    # Multimodal branch details
+    multimodal_branches_html = ""
+    if is_multimodal:
+        ml_sub = response_payload.get("ml_result") or {}
+        dl_sub = response_payload.get("dl_result") or {}
+        ml_rows = [
+            ("Mô hình ML", ml_sub.get("model_name", "Logistic Regression")),
+            ("Tập dữ liệu nguồn", "WDBC (Wisconsin Diagnostic Breast Cancer) - 30 chỉ số tế bào học FNA"),
+            ("Xác suất ác tính thô", _format_report_percent(ml_sub.get("raw_probability", ml_sub.get("probability")))),
+            ("Ngưỡng phân loại thô", str(ml_sub.get("decision_threshold", 0.36))),
+            ("Phân loại nhánh ML", str(ml_sub.get("diagnosis", "N/A"))),
+        ]
+        dl_rows = [
+            ("Mô hình DL", dl_sub.get("model_name", "EfficientNet-B0")),
+            ("Tập dữ liệu nguồn", "CBIS-DDSM (Full Processed Image, 224x224x3)"),
+            ("Xác suất ác tính thô", _format_report_percent(dl_sub.get("raw_probability"))),
+            ("Ngưỡng phân loại thô", str(dl_sub.get("decision_threshold", 0.515))),
+            ("Phân loại nhánh DL", str(dl_sub.get("diagnosis", "N/A"))),
+            ("Xác suất hiệu chỉnh Platt (chỉ hiển thị)", _format_report_percent(dl_sub.get("calibrated_probability", dl_sub.get("probability")))),
+            ("Trạng thái Grad-CAM", str(dl_sub.get("explanation_status", "N/A"))),
+        ]
+        unpaired_box = """
+  <section>
+    <div class="unpaired-warning" style="background:#fff1f2;border:2px solid #fda4af;border-radius:8px;padding:16px;margin:20px 0;">
+      <h3 style="color:#9f1239;margin:0 0 8px 0;font-size:1.1em;">Cảnh báo giới hạn nghiên cứu: Dữ liệu không ghép cặp (Unpaired Data)</h3>
+      <p style="margin:0;color:#881337;line-height:1.5;">
+        Tập dữ liệu tế bào học WDBC và tập ảnh nhũ ảnh CBIS-DDSM là hai tập dữ liệu độc lập, hoàn toàn không ghép cặp từ cùng một bệnh nhân.
+        Quy trình này minh họa việc kết hợp hai nhánh ở cấp độ thuật toán phần mềm thực nghiệm,
+        <strong>KHÔNG PHẢI LÀ MÔ HÌNH ĐA PHƯƠNG THỨC LÂM SÀNG ĐÃ ĐƯỢC XÁC THỰC</strong>.
+        Nếu hai nhánh đưa ra kết luận bất đồng, công thức phần mềm thực nghiệm không có giá trị phân xử chẩn đoán.
+      </p>
+    </div>
+  </section>"""
+        multimodal_branches_html = f"""
+  {unpaired_box}
+  {_report_table("Chi tiết Nhánh 1: Dữ liệu cấu trúc tế bào học FNA (ML)", ml_rows)}
+  {_report_table("Chi tiết Nhánh 2: Ảnh nhũ ảnh số hóa (DL)", dl_rows)}
+"""
 
     return f"""<!doctype html>
 <html lang="vi">
@@ -411,28 +470,29 @@ def _build_prediction_report_html(row: dict, current_user: dict) -> str:
   {_report_table("Thông tin người dùng/bệnh nhân", patient_rows)}
   {_report_table("Tóm tắt kết quả AI", summary_rows)}
   {uncertainty_html}
-  {_report_table("Dữ liệu đầu vào lâm sàng", clinical_rows)}
+  {multimodal_branches_html}
+  {_report_table("Dữ liệu đầu vào lâm sàng (FNA 30 chỉ số)", clinical_rows)}
   <section>
-    <h2>Yếu tố giải thích / SHAP</h2>
-    {_top_features_html(response_payload)}
+    <h2>Yếu tố giải thích / Đóng góp đặc trưng (ML)</h2>
+    {_top_features_html(response_payload.get("ml_result") if is_multimodal else response_payload)}
   </section>
   <section>
-    <h2>Ảnh giải thích / Grad-CAM</h2>
+    <h2>Ảnh giải thích / Vùng chú ý Grad-CAM (DL)</h2>
     {_explanation_image_html(response_payload)}
   </section>
   <section>
-    <h2>Nhận định</h2>
+    <h2>Nhận định nghiên cứu</h2>
     <div class="block">{escape(str(analysis_text or "Chưa có nhận định chi tiết."))}</div>
   </section>
   <section>
-    <h2>Lời khuyên</h2>
-    <div class="block">{escape(str(advice or "Chưa có lời khuyên cho lần dự đoán này."))}</div>
+    <h2>Tư vấn & Hướng dẫn giáo dục</h2>
+    <div class="block">{escape(str(advice or "Chưa có tư vấn cho lần chạy này."))}</div>
   </section>
   <section>
-    <h2>Giới hạn sử dụng</h2>
+    <h2>Giới hạn sử dụng y khoa</h2>
     <div class="note">
-      Kết quả AI chỉ có giá trị hỗ trợ sàng lọc và nghiên cứu. Báo cáo này không thay thế
-      chẩn đoán, sinh thiết, giải phẫu bệnh hoặc quyết định điều trị của bác sĩ chuyên khoa.
+      Kết quả này chỉ có giá trị hỗ trợ nghiên cứu khoa học và minh họa thuật toán. Báo cáo này tuyệt đối không thay thế
+      chẩn đoán lâm sàng, sinh thiết, giải phẫu bệnh hoặc phác đồ điều trị của bác sĩ chuyên khoa có thẩm quyền.
     </div>
   </section>
 </body>
@@ -1344,24 +1404,30 @@ async def predict_multimodal(
             include_explanation=include_explanation,
         )
         
-        # 3. Fusion Logic
-        # Both services return malignant probability in [0, 1].
-        p_ml = float(ml_res['probability'])
-        p_dl = float(dl_res['probability'])
-        
-        # Give more weight to DL for visual evidence, but ML is strong for cellular detail
-        combined_p = (p_ml * 0.4) + (p_dl * 0.6)
-        is_mal = combined_p >= 0.5
-        extra_uncertainty_reasons: list[str] = []
-        if ml_res.get("diagnosis") != dl_res.get("diagnosis"):
+        # 3. Fusion Logic (Scientific Contract Correction)
+        # Strictly use raw malignant probabilities from both independent research branches.
+        # DO NOT use dl_res['probability'] or dl_res['calibrated_probability'] in the 40/60 formula.
+        p_ml_raw = float(ml_res.get("raw_probability", ml_res.get("probability", 0.0)))
+        p_dl_raw = float(dl_res.get("raw_probability", 0.0))
+
+        # 40% Structured ML (WDBC raw) + 60% Mammography DL (CBIS-DDSM raw)
+        combined_malignant_score = round((0.4 * p_ml_raw) + (0.6 * p_dl_raw), 6)
+        combined_p = combined_malignant_score
+        is_mal = combined_malignant_score >= 0.5
+        branch_agreement = bool(ml_res.get("diagnosis") == dl_res.get("diagnosis"))
+
+        extra_uncertainty_reasons: list[str] = [
+            "Tập dữ liệu WDBC và CBIS-DDSM không ghép cặp (unpaired); đây là kết hợp phần mềm thực nghiệm, không phải mô hình đa phương thức lâm sàng đã kiểm chứng."
+        ]
+        if not branch_agreement:
             extra_uncertainty_reasons.append(
-                "Nhánh ML lâm sàng và nhánh DL ảnh nhũ ảnh đang đưa ra kết luận khác nhau."
+                "Nhánh ML lâm sàng và nhánh DL ảnh nhũ ảnh đang đưa ra kết luận khác nhau. Điểm kết hợp thực nghiệm không thể phân xử bất đồng này."
             )
-        
+
         advice_result = ai_advisor_service.advice_for_multimodal(ml_res, dl_res, combined_p)
         uncertainty_payload = _build_uncertainty_payload(
             displayed_malignant_probability=combined_p,
-            label="đa phương thức",
+            label="đa phương thức thực nghiệm",
             extra_reasons=extra_uncertainty_reasons,
         )
 
@@ -1370,6 +1436,12 @@ async def predict_multimodal(
             dl_result=PredictionResponse(**dl_res),
             combined_diagnosis="Malignant" if is_mal else "Benign",
             combined_confidence=combined_p if is_mal else (1 - combined_p),
+            combined_malignant_score=combined_malignant_score,
+            combined_threshold=0.5,
+            fusion_formula="0.4 * ml_raw_probability + 0.6 * dl_raw_probability",
+            fusion_probability_space="raw_branch_outputs",
+            branches_unpaired=True,
+            branch_agreement=branch_agreement,
             combined_risk_band=_risk_band(combined_p),
             advice=advice_result["advice"],
             advice_provider=advice_result["provider"],
@@ -1380,14 +1452,20 @@ async def predict_multimodal(
             if patient_id is not None:
                 _require_doctor(current_user)
             _require_patient_ownership(current_user["id"], patient_id)
-            db.save_prediction(
+
+            # Strip large base64 explanation image before SQLite persistence to prevent database bloat
+            persist_payload = response.model_dump()
+            if isinstance(persist_payload.get("dl_result"), dict):
+                persist_payload["dl_result"].pop("explanation_image", None)
+
+            saved_id = db.save_prediction(
                 user_id=current_user["id"],
                 patient_id=patient_id,
                 prediction_type="multimodal",
                 model_name=f"ML:{ml_res.get('model_name')}|DL:{dl_res.get('model_name')}",
                 diagnosis=response.combined_diagnosis,
-                probability=response.combined_confidence,
-                raw_probability=None,
+                probability=response.combined_malignant_score,
+                raw_probability=response.combined_malignant_score,
                 calibration_mode="fusion_weighted_average",
                 risk_band=response.combined_risk_band,
                 advice=response.advice,
@@ -1398,8 +1476,10 @@ async def predict_multimodal(
                     "dl_model": dl_model,
                     "image_filename": image_file.filename,
                 },
-                response_payload=response.model_dump(),
+                response_payload=persist_payload,
             )
+            response.id = saved_id
+            response.prediction_id = saved_id
         return response
     except HTTPException:
         raise
