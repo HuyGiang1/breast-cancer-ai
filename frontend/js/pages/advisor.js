@@ -27,15 +27,17 @@ if (requireAuth('../login.html')) {
   ];
 
   if (contextData) {
+    const isDl = contextData.analysis_type === 'dl';
     const pId = contextData.prediction_id ? `#${contextData.prediction_id}` : 'Recent Session';
     const probStr = (Number(contextData.raw_probability) * 100).toFixed(1);
+    const contextTitle = isDl ? `Mammography Analysis ${pId}` : `Structured Analysis ${pId}`;
     contextBannerHtml = `
       <div style="background:#f0fdfa;border:1.5px solid #99f6e4;border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
         <div>
           <span style="background:#0f766e;color:#fff;font-size:0.75rem;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;margin-right:8px;">
             Active Context
           </span>
-          <strong style="color:#0f766e;">Discussing Structured Analysis ${pId}</strong>:
+          <strong style="color:#0f766e;">Discussing ${contextTitle}</strong>:
           ${contextData.classification} (${probStr}% raw probability vs threshold ${contextData.threshold})
         </div>
         <button id="clearContextBtn" class="v2-button secondary btn-xs" type="button" style="padding:4px 8px;font-size:0.75rem;">
@@ -44,12 +46,23 @@ if (requireAuth('../login.html')) {
       </div>
     `;
 
-    dynamicSuggestions = [
-      `Explain why the model predicted ${contextData.classification}`,
-      'Which nuclear morphology features contributed most to this result?',
-      `What does the raw probability of ${probStr}% mean relative to threshold ${contextData.threshold}?`,
-      ...dynamicSuggestions.slice(0, 5),
-    ];
+    if (isDl) {
+      dynamicSuggestions = [
+        `Explain why the model predicted ${contextData.classification}`,
+        `What does the raw probability of ${probStr}% mean relative to threshold ${contextData.threshold}?`,
+        'How should the Grad-CAM model-attention heatmap be interpreted?',
+        'Why does Grad-CAM not establish tumor localization or boundaries?',
+        'What does Platt calibration mean for this mammogram?',
+        ...dynamicSuggestions.slice(0, 3),
+      ];
+    } else {
+      dynamicSuggestions = [
+        `Explain why the model predicted ${contextData.classification}`,
+        'Which nuclear morphology features contributed most to this result?',
+        `What does the raw probability of ${probStr}% mean relative to threshold ${contextData.threshold}?`,
+        ...dynamicSuggestions.slice(0, 5),
+      ];
+    }
   }
 
   app.innerHTML = `
@@ -112,7 +125,11 @@ if (requireAuth('../login.html')) {
       // If we have active context, prepend subtle non-clinical system grounding to the question
       let payloadMessage = clean;
       if (contextData && turns.length <= 1) {
-        payloadMessage = `[Context: Structured ML Analysis on WDBC; Classification=${contextData.classification}; Raw probability=${(contextData.raw_probability * 100).toFixed(1)}%; Cutoff=${contextData.threshold}] ${clean}`;
+        if (contextData.analysis_type === 'dl') {
+          payloadMessage = `[Context: Mammography DL Analysis on CBIS-DDSM; Model=EfficientNet-B0; Classification=${contextData.classification}; Raw probability=${(contextData.raw_probability * 100).toFixed(1)}%; Cutoff=${contextData.threshold}; Grad-CAM=${contextData.gradcam_status || 'available'}] ${clean}`;
+        } else {
+          payloadMessage = `[Context: Structured ML Analysis on WDBC; Classification=${contextData.classification}; Raw probability=${(contextData.raw_probability * 100).toFixed(1)}%; Cutoff=${contextData.threshold}] ${clean}`;
+        }
       }
 
       const result = await advisorService.ask(payloadMessage, turns.slice(-10, -1));
