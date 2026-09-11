@@ -927,3 +927,683 @@
     animation: none !important;
   }
 }
+
+/* ==========================================================================
+   Mammography DL Medical Imaging Workstation Styling
+   Theme: Precision Medical Imaging / Radiology Canvas
+   ========================================================================== */
+
+.dl-workstation {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 16px 48px;
+}
+
+/* 3-Column Inspection Grid */
+.dl-workspace-grid {
+  display: grid;
+  grid-template-columns: 310px 1fr 320px;
+  gap: 20px;
+  align-items: start;
+}
+
+/* Side Card Containers */
+.dl-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.dl-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Upload Drop Zone */
+.dl-upload-dropzone {
+  border: 2px dashed #94a3b8;
+  border-radius: 10px;
+  background: #f8fafc;
+  padding: 28px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.dl-upload-dropzone:hover,
+.dl-upload-dropzone.dragover {
+  border-color: #0f766e;
+  background: #f0fdfa;
+}
+
+.dl-upload-dropzone:focus-visible {
+  outline: 2px solid #0f766e;
+  outline-offset: 2px;
+}
+
+.dl-upload-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.dl-upload-primary-text {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.dl-upload-subtext {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.dl-upload-file-btn {
+  margin-top: 6px;
+  display: inline-block;
+  background: #0f766e;
+  color: #ffffff;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+/* Demo Presets Bar */
+.dl-presets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.dl-preset-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  color: #1e293b;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.dl-preset-btn:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.dl-preset-btn.benign:hover {
+  background: #f0fdf4;
+  border-color: #86efac;
+  color: #166534;
+}
+
+.dl-preset-btn.malignant:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #991b1b;
+}
+
+/* Medical Imaging Canvas */
+.dl-canvas-panel {
+  background: #090d16;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 16px;
+  color: #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 480px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+.dl-canvas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.dl-canvas-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #64dfdf;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dl-canvas-badge {
+  background: rgba(100, 223, 223, 0.15);
+  border: 1px solid rgba(100, 223, 223, 0.3);
+  color: #64dfdf;
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.dl-canvas-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, #101726 0%, #060910 100%);
+  border-radius: 8px;
+  min-height: 380px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dl-canvas-empty {
+  text-align: center;
+  color: #64748b;
+  padding: 32px 16px;
+}
+
+.dl-canvas-img {
+  max-width: 100%;
+  max-height: 480px;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  image-rendering: auto;
+}
+
+.dl-canvas-metadata-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dl-canvas-metadata-bar strong {
+  color: #e2e8f0;
+}
+
+/* Image Controls Bar below canvas */
+.dl-canvas-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Transparency Note */
+.dl-transparency-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.78rem;
+  color: #475569;
+  line-height: 1.5;
+  margin-top: 12px;
+}
+
+.dl-transparency-box strong {
+  color: #1e293b;
+}
+
+/* Execution Sidebar */
+.dl-run-btn {
+  width: 100%;
+  background: #0f766e;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(15, 118, 110, 0.25);
+}
+
+.dl-run-btn:hover:not(:disabled) {
+  background: #0d635d;
+}
+
+.dl-run-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Stage Progress Tracker */
+.dl-stages-tracker {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dl-stage-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: #64748b;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.dl-stage-item.active {
+  background: #f0fdfa;
+  border-color: #99f6e4;
+  color: #0f766e;
+  font-weight: 600;
+}
+
+.dl-stage-item.completed {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+}
+
+.dl-stage-icon {
+  width: 16px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+/* Full-Width Result Workspace */
+.dl-result-workspace {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+}
+
+.dl-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 16px;
+}
+
+.dl-result-header h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Classification Dominant Banner */
+.dl-classification-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px 24px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+}
+
+.dl-classification-banner.benign {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.dl-classification-banner.malignant {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.dl-class-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.dl-classification-banner.benign .dl-class-badge {
+  color: #166534;
+}
+
+.dl-classification-banner.malignant .dl-class-badge {
+  color: #991b1b;
+}
+
+.dl-class-subtext {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* Metric Split: Raw vs Calibrated */
+.dl-metrics-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.dl-metric-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dl-metric-card.primary {
+  border-color: #cbd5e1;
+  background: #fdfefe;
+}
+
+.dl-metric-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #475569;
+}
+
+.dl-metric-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.dl-metric-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.dl-metric-threshold-badge {
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.dl-metric-distance {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0f766e;
+}
+
+.dl-metric-note {
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.45;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 10px;
+}
+
+/* Uncertainty Banner */
+.dl-uncertainty-banner {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.88rem;
+  color: #92400e;
+}
+
+/* Image Comparison Workspace */
+.dl-comparison-section {
+  background: #090d16;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 20px;
+  color: #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dl-comparison-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+}
+
+.dl-comparison-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.dl-comp-tab {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dl-comp-tab.active {
+  background: #0f766e;
+  border-color: #14b8a6;
+  color: #ffffff;
+}
+
+.dl-comparison-views {
+  display: grid;
+  gap: 16px;
+}
+
+.dl-comparison-views.side-by-side {
+  grid-template-columns: 1fr 1fr;
+}
+
+.dl-comparison-views.single {
+  grid-template-columns: 1fr;
+}
+
+.dl-view-box {
+  background: #030712;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.dl-view-box-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dl-view-box-img {
+  max-width: 100%;
+  max-height: 440px;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+}
+
+.dl-comparison-disclaimer {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+  padding: 10px 14px;
+  border-left: 3px solid #64dfdf;
+  line-height: 1.5;
+}
+
+/* Result Guidance & Next Steps */
+.dl-guidance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.dl-guidance-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 20px;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #334155;
+}
+
+.dl-guidance-card h4 {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dl-guidance-card ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.dl-guidance-card li {
+  margin-bottom: 6px;
+}
+
+/* AI Guidance Banner */
+.dl-ai-advice-card {
+  background: #f0fdfa;
+  border: 1.5px solid #99f6e4;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.dl-ai-advice-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.dl-ai-badge {
+  background: #0f766e;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+/* Result Action Bar */
+.dl-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 20px;
+}
+
+/* Responsive Overrides for DL Workstation */
+@media (max-width: 1100px) {
+  .dl-workspace-grid {
+    grid-template-columns: 1fr;
+  }
+  .dl-metrics-split {
+    grid-template-columns: 1fr;
+  }
+  .dl-comparison-views.side-by-side {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .dl-guidance-grid {
+    grid-template-columns: 1fr;
+  }
+  .dl-action-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .dl-action-bar button,
+  .dl-action-bar a {
+    width: 100%;
+    text-align: center;
+  }
+  .dl-canvas-body {
+    min-height: 260px;
+  }
+  .dl-view-box-img {
+    max-height: 300px;
+  }
+}
