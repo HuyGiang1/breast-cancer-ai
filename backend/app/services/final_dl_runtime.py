@@ -13,6 +13,13 @@ import numpy as np
 from PIL import Image
 
 from app.services.final_dl_calibration import apply_platt_calibration, classify_final_dl_raw_probability
+from app.services.final_dl_gradcam import (
+    GRADCAM_DISCLAIMER,
+    GRADCAM_LAYER,
+    GRADCAM_METHOD,
+    build_gradcam_models,
+    generate_gradcam_overlay,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 REGISTRY_PATH = PROJECT_ROOT / "models" / "model_registry.example.json"
@@ -51,6 +58,8 @@ class FinalDLRuntimeService:
         self.calibration_path = calibration_path or CALIBRATION_PATH
         self.model: Any | None = None
         self.calibration: dict[str, Any] | None = None
+        self.backbone_grad_model: Any | None = None
+        self.classifier_head: Any | None = None
         self.config: dict[str, Any] = {}
         self.model_sha256: str | None = None
         self.error: str | None = None
@@ -96,9 +105,14 @@ class FinalDLRuntimeService:
             model = _tensorflow().keras.models.load_model(path)
             if tuple(model.input_shape[1:]) != (224, 224, 3) or tuple(model.output_shape[1:]) != (1,):
                 raise FinalDLUnavailableError("Final DL model shape does not match the frozen contract.")
+            try:
+                self.backbone_grad_model, self.classifier_head, _ = build_gradcam_models(model)
+            except Exception as grad_err:
+                print(f"Warning: Grad-CAM models initialization failed: {grad_err}")
+                self.backbone_grad_model, self.classifier_head = None, None
             self.model, self.calibration, self.model_sha256, self.error = model, calibration, checksum, None
         except Exception as exc:
-            self.model, self.calibration, self.model_sha256, self.error = None, None, None, str(exc)
+            self.model, self.calibration, self.backbone_grad_model, self.classifier_head, self.model_sha256, self.error = None, None, None, None, None, str(exc)
 
     def get_available_models(self) -> list[str]:
         return ["EfficientNet-B0"] if self.model is not None else []
@@ -124,21 +138,60 @@ class FinalDLRuntimeService:
         if model_name and model_name not in {"EfficientNet-B0", "cbis-efficientnetb0-full-v1"}:
             raise ValueError("Only the final EfficientNet-B0 candidate is available.")
         tensor = preprocess_final_dl_image(image_bytes)
-        raw_probability = float(np.asarray(self.model(tensor, training=False)).reshape(-1)[0])
+
+        explanation_image: str | None = None
+        explanation_method: str = GRADCAM_METHOD
+        explanation_layer: str = GRADCAM_LAYER
+        explanation_status: str = "unavailable"
+        explanation_disclaimer: str = GRADCAM_DISCLAIMER
+
+        if include_explanation and self.backbone_grad_model is not None and self.classifier_head is not None:
+            try:
+                raw_prob, data_url = generate_gradcam_overlay(
+                    self.backbone_grad_model, self.classifier_head, tensor
+                )
+                raw_probability = raw_prob
+                explanation_image = data_url
+                explanation_status = "available"
+            except Exception as exc:
+                print(f"Warning: Runtime Grad-CAM generation failed: {exc}")
+                raw_probability = float(np.asarray(self.model(tensor, training=False)).reshape(-1)[0])
+                explanation_image = None
+                explanation_status = "unavailable"
+        else:
+            raw_probability = float(np.asarray(self.model(tensor, training=False)).reshape(-1)[0])
+
         if not 0.0 <= raw_probability <= 1.0:
             raise FinalDLUnavailableError("Final DL model returned an invalid probability.")
         calibrated = apply_platt_calibration(raw_probability, self.calibration)
         is_malignant = bool(classify_final_dl_raw_probability(raw_probability))
         return {
-            "model_name": "EfficientNet-B0", "model_id": "cbis-efficientnetb0-full-v1",
-            "prediction": int(is_malignant), "diagnosis": "Malignant" if is_malignant else "Benign",
-            "probability": calibrated, "raw_probability": raw_probability,
-            "calibrated_probability": calibrated, "calibration_mode": "platt_frozen",
-            "calibration": "Platt", "decision_threshold": 0.515,
-            "decision_probability_space": "raw", "probability_space": "calibrated_display",
-            "artifact_verified": True, "status": "research_demo", "risk_band": "High" if calibrated >= .65 else "Medium" if calibrated >= .35 else "Low",
-            "risk_band_scope": "research_demo_display_only", "analysis_text": "Research/demo model output. Runtime Grad-CAM is not integrated.",
-            "explanation_image": None,
+            "model_name": "EfficientNet-B0",
+            "model_id": "cbis-efficientnetb0-full-v1",
+            "prediction": int(is_malignant),
+            "diagnosis": "Malignant" if is_malignant else "Benign",
+            "probability": calibrated,
+            "raw_probability": raw_probability,
+            "calibrated_probability": calibrated,
+            "calibration_mode": "platt_frozen",
+            "calibration": "Platt",
+            "decision_threshold": 0.515,
+            "decision_probability_space": "raw",
+            "probability_space": "calibrated_display",
+            "artifact_verified": True,
+            "status": "research_demo",
+            "risk_band": "High" if calibrated >= 0.65 else "Medium" if calibrated >= 0.35 else "Low",
+            "risk_band_scope": "research_demo_display_only",
+            "analysis_text": (
+                "Research/demo model output. Grad-CAM shows coarse model-attention regions."
+                if explanation_status == "available"
+                else "Research/demo model output. Model attention visualization could not be generated for this run."
+            ),
+            "explanation_image": explanation_image,
+            "explanation_method": explanation_method,
+            "explanation_layer": explanation_layer,
+            "explanation_status": explanation_status,
+            "explanation_disclaimer": explanation_disclaimer,
         }
 
 

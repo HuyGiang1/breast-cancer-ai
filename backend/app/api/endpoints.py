@@ -301,6 +301,15 @@ def _explanation_image_html(response_payload: Dict[str, Any]) -> str:
             explanation_image = dl_result.get("explanation_image")
 
     if not explanation_image:
+        if response_payload.get("explanation_status") == "available":
+            layer = response_payload.get("explanation_layer", "top_conv")
+            method = response_payload.get("explanation_method", "Grad-CAM")
+            return (
+                f"<div style='background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 16px;margin-top:8px;'>"
+                f"<p style='margin:0 0 6px 0;'><strong>Model Attention Analysis:</strong> Generated live using <code>{method}</code> on convolutional layer <code>{layer}</code>.</p>"
+                f"<p style='margin:0;font-size:0.85em;color:#64748b;'>Full image overlays are ephemeral to protect patient privacy and optimize repository storage.</p>"
+                f"</div>"
+            )
         return "<p>Không có ảnh Grad-CAM cho lần dự đoán này.</p>"
 
     src = str(explanation_image)
@@ -1256,7 +1265,9 @@ async def predict_diagnosis_image(
             if patient_id is not None:
                 _require_doctor(current_user)
             _require_patient_ownership(current_user["id"], patient_id)
-            db.save_prediction(
+            persist_payload = dict(result)
+            persist_payload.pop("explanation_image", None)
+            saved_id = db.save_prediction(
                 user_id=current_user["id"],
                 patient_id=patient_id,
                 prediction_type="dl",
@@ -1273,8 +1284,10 @@ async def predict_diagnosis_image(
                     "content_type": file.content_type,
                     "include_explanation": include_explanation,
                 },
-                response_payload=result,
+                response_payload=persist_payload,
             )
+            result["id"] = saved_id
+            result["prediction_id"] = saved_id
         return PredictionResponse(**result)
     except HTTPException:
         raise

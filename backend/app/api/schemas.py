@@ -76,6 +76,10 @@ class PredictionResponse(BaseModel):
     advice_provider: Optional[str] = None
     advice_model: Optional[str] = None
     explanation_image: Optional[str] = None
+    explanation_method: Optional[str] = None
+    explanation_layer: Optional[str] = None
+    explanation_status: Optional[str] = None
+    explanation_disclaimer: Optional[str] = None
     top_features: Optional[List[Dict[str, Any]]] = None
     all_features: Optional[List[Dict[str, Any]]] = None
     input_quality: Optional[Dict[str, Any]] = None
