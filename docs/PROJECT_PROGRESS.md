@@ -9,20 +9,20 @@ Last updated: 2026-09-07
 - Current branch: `feat/product-experience-v4`
 - Baseline commits: `5b6c72c` (legacy rich functional baseline) and `8eba137` (committed V3 baseline)
 - Parity matrix: `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged, sum reconciled: 52)
-- Current work: **Batch B (Structured ML Parity & Workstation Rebuild) COMPLETED (PASS)**
-  - Fully rebuilt `/pages/ml-analysis.html` into a professional data-lab analysis workstation.
-  - Reproducible WDBC development reference artifact (`scripts/build_wdbc_feature_reference.py`, N=455, test excluded).
-  - Restored canonical Benign and Malignant research presets without auto-prediction.
-  - Restored Clear All action with confirmation safeguard.
-  - Restored robust multi-format CSV import with multi-row interactive preview and CSV template download.
-  - Restored lab report image OCR feature extraction review modal.
-  - Added live 4-tier development reference validation and outlier safeguard confirmation modal.
-  - Implemented exact closed-form frozen Logistic Regression log-odds contributions ($z_i = w_i \cdot \frac{x_i - \mu_i}{\sigma_i}$) matching `predict_proba` with $\Delta < 10^{-12}$.
-  - Restored educational AI advice display with provider badges and added general wellbeing guidance.
-  - Restored authenticated printable report link and contextual AI advisor handoff via `sessionStorage`.
-  - Restored doctor-only patient linkage selector with strict ownership RBAC.
-  - All automated tests, crawlers, and browser E2E suites passing with 0 defects.
-- Next step: Batch C (Mammography DL + Frozen Grad-CAM Restoration) — await explicit user prompt.
+- Current work: **Batch C (Mammography DL Parity & Grad-CAM Workstation) COMPLETED (PASS)**
+  - Fully rebuilt `/pages/dl-analysis.html` into a professional medical-imaging workstation.
+  - Runtime Grad-CAM implemented targeting `top_conv` on frozen EfficientNet-B0 (`cbis-efficientnetb0-full-v1`) with zero-dependency `JET_LUT` colormap.
+  - Multi-view visual comparison canvas: Side-by-Side (default), Original Mammogram, Grad-CAM Overlay.
+  - Restored canonical Benign (0.425 raw) and Malignant (0.614 raw) research examples with immediate canvas preview.
+  - Decoupled primary raw decision cutoff ($\tau \ge 51.5\%$) from Platt display calibration.
+  - Restored visible educational AI advice card with provider/model attribution and medical disclaimer.
+  - Restored authenticated printable report link (`/pages/reports.html?id=...`).
+  - Restored contextual AI advisor handoff via `sessionStorage` with specialized mammography dynamic prompts.
+  - Restored doctor-only patient linkage selector with strict RBAC.
+  - Fail-safe fallback: Grad-CAM failure does not abort inference and returns `explanation_status="unavailable"`.
+  - Database bloat safeguard: base64 overlays stripped before SQLite persistence.
+  - All automated tests, crawlers, and browser E2E suites passing with 0 defects (12 screenshots captured).
+- Next step: Batch D (Multimodal Fusion Restoration) — await explicit user prompt. Do NOT start Batch D prematurely.
 
 ## Completed major milestones
 
