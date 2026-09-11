@@ -60,6 +60,7 @@ export const authService = {
       body: JSON.stringify(payload),
     }),
   logout: () => request('/auth/logout/', { method: 'POST' }).finally(() => auth.clear()),
+  logoutAll: () => request('/auth/logout-all/', { method: 'POST' }).finally(() => auth.clear()),
   forgot: (email) =>
     request('/auth/forgot-password/', {
       method: 'POST',

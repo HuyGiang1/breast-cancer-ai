@@ -126,8 +126,10 @@ class ClinicalExtractionResponse(BaseModel):
 class RegisterRequest(BaseModel):
     email: str
     full_name: str
-    role: str = "user"
     password: str = Field(..., min_length=8)
+    account_type: Optional[str] = "personal"  # "personal" | "doctor"
+    doctor_invite_code: Optional[str] = None
+    role: Optional[str] = None  # Deprecated/Ignored: client-sent role is never trusted
 
 
 class LoginRequest(BaseModel):

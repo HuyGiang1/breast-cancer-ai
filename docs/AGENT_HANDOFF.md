@@ -8,10 +8,10 @@
 - Functional baseline commit: `5b6c72c` (legacy monolithic rich frontend)
 - Research: **FROZEN**
 - Runtime: **FROZEN**
-- Frontend: **PHASE 4R BATCH D COMPLETED (PASS)**
+- Frontend: **PHASE 4R BATCH E COMPLETED (PASS)**
 - Parity matrix: `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged, sum reconciled: 52)
-- QA reports: `docs/v4/BATCH_A_HOME_RESEARCH_LEARN_QA.md`, `docs/v4/BATCH_B_STRUCTURED_ML_QA.md`, `docs/v4/BATCH_C_MAMMOGRAPHY_DL_QA.md`, `docs/v4/BATCH_D_FUSION_QA.md`
-- Next phase: Batch E (Doctor Workspace, Patient Registry, Patient Detail, History, Reports, Account-Type Registration) — await explicit user instruction. Do NOT start Batch E prematurely.
+- QA reports: `docs/v4/BATCH_A_HOME_RESEARCH_LEARN_QA.md`, `docs/v4/BATCH_B_STRUCTURED_ML_QA.md`, `docs/v4/BATCH_C_MAMMOGRAPHY_DL_QA.md`, `docs/v4/BATCH_D_FUSION_QA.md`, `docs/v4/BATCH_E_DOCTOR_PERSONAL_WORKSPACE_QA.md`
+- Next phase: Batch F — await explicit user instruction. Do NOT start Batch F prematurely.
 
 Do not retrain, change datasets/splits, tune on test, change thresholds/calibration/model selection, redesign the frontend, validate multimodal fusion, claim clinical use, merge main, tag, or create a release without explicit instruction.
 

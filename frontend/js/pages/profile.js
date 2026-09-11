@@ -2,10 +2,15 @@ import { requireAuth } from '../core/guards.js';
 import { mountShell } from '../components/shell.js';
 import { authService } from '../services/auth.service.js';
 import { auth } from '../core/auth.js';
+import { toast } from '../components/toast.js';
 
 const esc = (s) =>
   String(s || '').replace(/[&<>"']/g, (c) => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
   }[c]));
 
 if (requireAuth()) {
@@ -14,10 +19,11 @@ if (requireAuth()) {
   app.innerHTML = `
     <section class="research-main">
       <header class="research-hero">
-        <span class="eyebrow">Authenticated account</span>
-        <h1>Your profile</h1>
-        <p>Account identity, connected authentication, and security for this research prototype.</p>
+        <span class="eyebrow">Authenticated Account</span>
+        <h1>Account &amp; Security</h1>
+        <p>Manage your account identity, role capabilities, connected authentications, and session security.</p>
       </header>
+      <div id="profileModalHost"></div>
       <div id="profile" class="profile-grid">
         <section class="studio-card">Loading profile...</section>
       </div>
@@ -28,94 +34,142 @@ if (requireAuth()) {
 
 async function initProfile() {
   const root = document.querySelector('#profile');
+  const modalHost = document.querySelector('#profileModalHost');
+
   try {
     const [user, googleConfig] = await Promise.all([
       authService.me(),
       authService.googleConfig().catch(() => ({ enabled: false })),
     ]);
 
+    const isDoctor = user.role === 'doctor';
+
     root.innerHTML = `
+      <!-- Account Type & Capabilities -->
       <section class="studio-card">
-        <h2>Account</h2>
+        <h2>Account Type &amp; Capabilities</h2>
+
+        <div class="profile-account-type-banner ${isDoctor ? 'doctor' : 'personal'}">
+          <div>
+            <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+              ${isDoctor ? 'Clinician Workspace' : 'Individual Assessment'}
+            </div>
+            <strong style="font-size: 1.125rem;">
+              ${isDoctor ? 'Doctor / Clinician Account' : 'Personal Analysis Account'}
+            </strong>
+          </div>
+          <span class="v2-badge ${isDoctor ? 'primary' : ''}">
+            ${isDoctor ? 'Doctor Role' : 'Personal User'}
+          </span>
+        </div>
+
+        <div class="profile-account-capabilities">
+          <p style="margin: 0 0 0.5rem 0; font-weight: 600; color: var(--slate-800);">Active Capabilities:</p>
+          <ul style="margin: 0; padding-left: 1.25rem; color: var(--slate-600); display: flex; flex-direction: column; gap: 0.25rem;">
+            <li>Wisconsin Cytology Structured Machine Learning evaluations</li>
+            <li>CBIS-DDSM Mammography Deep Learning &amp; Grad-CAM visual explainability</li>
+            <li>Experimental Multimodal Decision-Level Fusion analysis</li>
+            <li>Personal activity logs and print-ready research reports</li>
+            ${
+              isDoctor
+                ? '<li style="color: #1e40af; font-weight: 600;">Full Patient Registry management (Add / Edit / Delete patients)</li><li style="color: #1e40af; font-weight: 600;">Patient-associated diagnostic evaluations and longitudinal timelines</li>'
+                : '<li style="color: var(--slate-500); font-style: italic;">Patient Registry disabled (Personal use only)</li>'
+            }
+          </ul>
+        </div>
+
+        <div class="profile-disclaimer-card">
+          <strong>Research &amp; Educational Prototype:</strong>
+          This application is strictly designed for research and educational purposes. It does not provide medical licensing, clinical accreditation, or autonomous diagnostic capability. All decisions must be validated by certified medical professionals.
+        </div>
+      </section>
+
+      <!-- Account Identity -->
+      <section class="studio-card">
+        <h2>Account Identity</h2>
         <form id="account">
           <label class="v2-field">Full name
-            <input class="v2-input" name="full_name" required>
+            <input class="v2-input" name="full_name" value="${esc(user.full_name || '')}" required>
           </label>
-          <label class="v2-field">Email
-            <input class="v2-input" type="email" readonly>
+          <label class="v2-field">Email address
+            <input class="v2-input" type="email" value="${esc(user.email || '')}" readonly style="background: #f8fafc; color: var(--slate-600);">
           </label>
-          <p id="accountStatus" role="status"></p>
-          <button class="v2-button">Save name</button>
+          <p id="accountStatus" role="status" style="font-size: 0.875rem;"></p>
+          <button class="v2-button">Save profile name</button>
         </form>
       </section>
 
+      <!-- Connected Accounts (Google OAuth) -->
       <section class="studio-card">
-        <h2>Role / access</h2>
-        <dl>
-          <div>
-            <dt>Role</dt>
-            <dd id="role"></dd>
-          </div>
-        </dl>
-        <p>The backend remains the authority for all permissions.</p>
-      </section>
-
-      <section class="studio-card">
-        <h2>Connected accounts</h2>
-        <p style="color:var(--slate-600);font-size:0.875rem;margin-bottom:1rem;">Link external identities to sign in with one click.</p>
+        <h2>Connected Accounts</h2>
+        <p style="color:var(--slate-600);font-size:0.875rem;margin-bottom:1rem;">Link external Google identity for quick sign-in.</p>
         <div id="googleConnection"></div>
         <p id="connectionStatus" role="status" style="margin-top:0.75rem;font-size:0.875rem;"></p>
       </section>
 
+      <!-- Password Security -->
       <section class="studio-card">
-        <h2>Security</h2>
+        <h2>Password Security</h2>
         <form id="password">
           <label class="v2-field">Current password
             <input class="v2-input" name="current_password" type="password" autocomplete="current-password" required>
           </label>
-          <label class="v2-field">New password
+          <label class="v2-field">New password (8+ characters)
             <input class="v2-input" name="new_password" type="password" minlength="8" autocomplete="new-password" required>
           </label>
-          <p id="passwordStatus" role="status"></p>
+          <p id="passwordStatus" role="status" style="font-size: 0.875rem;"></p>
           <button class="v2-button">Change password</button>
         </form>
       </section>
 
+      <!-- Session Security & Logout -->
       <section class="studio-card">
-        <h2>Research prototype</h2>
-        <p>This account provides access to research and educational workflows. It does not enable clinical diagnosis.</p>
-        <button id="logout" class="v2-button secondary" type="button">Sign out</button>
+        <h2>Session &amp; Device Security</h2>
+        <p style="font-size: 0.875rem; color: var(--slate-600); margin-bottom: 1.25rem;">
+          Manage your active research sessions across browsers and workstations.
+        </p>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button id="logoutThisDeviceBtn" class="v2-button secondary" type="button">
+            Sign out (this device)
+          </button>
+          <button id="logoutAllDevicesBtn" class="v2-button secondary" type="button" style="color: #b91c1c; border-color: #fecaca; background: #fef2f2;">
+            Sign out all devices...
+          </button>
+        </div>
       </section>
     `;
 
     // Populate Account form
-    const account = document.querySelector('#account');
-    account.full_name.value = user.full_name || '';
-    account.querySelector('input[type=email]').value = user.email || '';
-    document.querySelector('#role').textContent = user.role || 'user';
-
-    account.addEventListener('submit', async (event) => {
+    const accountForm = document.querySelector('#account');
+    accountForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       const status = document.querySelector('#accountStatus');
       try {
-        const updated = await authService.updateProfile({ full_name: account.full_name.value });
+        const updated = await authService.updateProfile({ full_name: accountForm.full_name.value });
         auth.save({ access_token: auth.token(), user: updated });
-        status.textContent = 'Profile name updated.';
+        status.style.color = '#15803d';
+        status.textContent = 'Profile name updated successfully.';
+        toast('Profile name updated.', 'success');
       } catch (error) {
+        status.style.color = '#b91c1c';
         status.textContent = error.message;
       }
     });
 
     // Populate Password form
-    const password = document.querySelector('#password');
-    password.addEventListener('submit', async (event) => {
+    const passwordForm = document.querySelector('#password');
+    passwordForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       const status = document.querySelector('#passwordStatus');
       try {
-        const result = await authService.changePassword(Object.fromEntries(new FormData(password)));
+        const result = await authService.changePassword(Object.fromEntries(new FormData(passwordForm)));
+        status.style.color = '#15803d';
         status.textContent = result.message;
-        password.reset();
+        toast(result.message, 'success');
+        passwordForm.reset();
       } catch (error) {
+        status.style.color = '#b91c1c';
         status.textContent = error.message;
       }
     });
@@ -123,11 +177,73 @@ async function initProfile() {
     // Render Connected Accounts
     renderGoogleConnection(user, googleConfig);
 
-    // Logout
-    document.querySelector('#logout').addEventListener('click', async () => {
+    // Logout this device
+    document.querySelector('#logoutThisDeviceBtn')?.addEventListener('click', async () => {
       await authService.logout();
       location.assign('../login.html?v=auth-v3');
     });
+
+    // Logout all devices
+    document.querySelector('#logoutAllDevicesBtn')?.addEventListener('click', () => {
+      openLogoutAllModal();
+    });
+
+    function openLogoutAllModal() {
+      modalHost.innerHTML = `
+        <div class="workspace-modal-overlay" id="logoutAllModalOverlay" role="dialog" aria-modal="true" aria-labelledby="logoutAllTitle">
+          <div class="workspace-modal">
+            <div class="workspace-modal-header" style="border-bottom-color: #fee2e2;">
+              <h2 class="workspace-modal-title" id="logoutAllTitle" style="color: #b91c1c;">Sign out all devices?</h2>
+              <button type="button" class="workspace-modal-close" id="closeLogoutAllBtn" aria-label="Close dialog">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+            <div class="workspace-modal-body">
+              <p style="font-size: 0.9375rem; color: var(--slate-700); line-height: 1.5; margin: 0 0 1rem 0;">
+                This will immediately invalidate all active access sessions and refresh tokens across all browsers, tablets, and devices.
+              </p>
+              <p style="font-size: 0.8125rem; color: var(--slate-500); margin: 0;">
+                You will be required to re-authenticate with your credentials on every device.
+              </p>
+            </div>
+            <div class="workspace-modal-footer">
+              <button type="button" class="studio-btn studio-btn-outline" id="cancelLogoutAllBtn">Cancel</button>
+              <button type="button" class="studio-btn studio-btn-danger" id="confirmLogoutAllBtn" style="background:#dc2626;color:#ffffff;border:none;padding:0.625rem 1.125rem;border-radius:8px;font-weight:600;cursor:pointer;">Sign out everywhere</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const closeBtn = document.querySelector('#closeLogoutAllBtn');
+      const cancelBtn = document.querySelector('#cancelLogoutAllBtn');
+      const confirmBtn = document.querySelector('#confirmLogoutAllBtn');
+      const overlay = document.querySelector('#logoutAllModalOverlay');
+
+      const close = () => {
+        modalHost.innerHTML = '';
+      };
+
+      closeBtn?.addEventListener('click', close);
+      cancelBtn?.addEventListener('click', close);
+      overlay?.addEventListener('click', (e) => {
+        if (e.target === overlay) close();
+      });
+
+      confirmBtn?.addEventListener('click', async () => {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Signing out...';
+        try {
+          await authService.logoutAll();
+          location.assign('../login.html?v=auth-v3');
+        } catch (err) {
+          toast(err.message || 'Failed to sign out of all devices.', 'error');
+          close();
+        }
+      });
+    }
   } catch (error) {
     root.innerHTML = `<section class="studio-card"><h2>Profile unavailable</h2><p>${esc(error.message)}</p></section>`;
   }
@@ -178,7 +294,6 @@ function renderGoogleConnection(user, config) {
       };
     }
   } else {
-    // Not connected
     container.innerHTML = `
       <div style="padding:0.875rem 1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
         <div style="margin-bottom:0.75rem;">
@@ -221,9 +336,7 @@ function renderGoogleConnection(user, config) {
           text: 'continue_with',
           shape: 'rectangular',
         });
-      } catch (e) {
-        // Fallback to manual notice
-      }
+      } catch (e) {}
     } else if (connectBtn) {
       connectBtn.onclick = () => {
         statusEl.textContent = config?.client_id

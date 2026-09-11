@@ -448,6 +448,105 @@
   padding-top: 0.5rem;
 }
 
+/* Account Type Selection */
+.account-type-group {
+  margin-bottom: var(--space-2);
+}
+
+.account-type-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.account-type-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.account-type-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 0.875rem;
+  border: 2px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  background: #ffffff;
+  transition: var(--transition-all, all 0.2s ease);
+}
+
+.account-type-card:hover {
+  border-color: var(--teal-400, #2dd4bf);
+}
+
+.account-type-card.selected {
+  border-color: var(--teal-600, #0d9488);
+  background: rgba(13, 148, 136, 0.04);
+  box-shadow: 0 0 0 1px var(--teal-600, #0d9488);
+}
+
+.account-type-card input[type="radio"] {
+  position: absolute;
+  top: 0.875rem;
+  right: 0.875rem;
+  margin: 0;
+  accent-color: var(--teal-600, #0d9488);
+  cursor: pointer;
+}
+
+.account-type-badge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--teal-700, #0f766e);
+  margin-bottom: 0.25rem;
+}
+
+.account-type-badge.doctor {
+  color: #2563eb;
+}
+
+.account-type-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--slate-900, #0f172a);
+  margin-bottom: 0.25rem;
+  padding-right: 1.25rem;
+}
+
+.account-type-desc {
+  font-size: 0.75rem;
+  color: var(--slate-600, #475569);
+  line-height: 1.35;
+  margin: 0;
+}
+
+.doctor-invite-block {
+  margin-top: var(--space-2);
+  padding: 0.875rem;
+  background: #f8fafc;
+  border: 1px dashed var(--teal-500, #14b8a6);
+  border-radius: var(--radius-md, 8px);
+}
+
+.doctor-invite-hint {
+  font-size: 0.75rem;
+  color: var(--slate-500, #64748b);
+  margin-top: 0.25rem;
+}
+
+.google-doctor-note {
+  font-size: 0.75rem;
+  color: var(--slate-500, #64748b);
+  margin-top: 0.375rem;
+  text-align: center;
+  line-height: 1.35;
+}
+
 .auth-footer-links {
   margin-top: var(--space-6);
   padding-top: var(--space-6);

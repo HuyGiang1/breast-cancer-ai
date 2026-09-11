@@ -9,17 +9,18 @@ Last updated: 2026-09-07
 - Current branch: `feat/product-experience-v4`
 - Baseline commits: `5b6c72c` (legacy rich functional baseline) and `8eba137` (committed V3 baseline)
 - Parity matrix: `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged, sum reconciled: 52)
-- Current work: **Batch D (Experimental Fusion Restoration & Scientific Contract Alignment) COMPLETED (PASS)**
-  - Corrected multimodal probability bug: fusion formula strictly uses $0.4 \times p_{\text{ml,raw}} + 0.6 \times p_{\text{dl,raw}}$, strictly eliminating Platt-calibrated DL display probability from the weighted combination formula.
-  - Rebuilt `/pages/multimodal.html` into a dual-branch workstation: full Structured ML branch (30 features, development references, presets, CSV, OCR, outlier safeguards) and Mammography DL branch (dropzone, presets, metadata, Grad-CAM viewer).
-  - Converging execution hub with mathematical formula visualizer and unvalidated 0.50 software decision midpoint disclaimer.
-  - Prominent **Branch Disagreement** panel rendered *before* the combined score whenever model classifications conflict, with explicit educational explanation of unpaired dataset limitations (WDBC vs CBIS-DDSM).
-  - Transparent Branch Agreement banner when independent classifications match.
-  - Enabled Grad-CAM runtime in multimodal flow (`include_explanation=true`) with fail-safe fallback if Grad-CAM fails.
-  - SQLite bloat safeguard: stripped `explanation_image` base64 data URLs before `db.save_prediction()`.
-  - Restored unified doctor patient linkage context, authenticated printable report link, and contextual AI Guide handoff (`analysis_type: 'fusion'`).
-  - All regression suites (Batches B, C, D, link crawler, pytest 61/61) passed with 0 defects (12 screenshots captured).
-- Next step: Batch E (Doctor Workspace, Patient Registry, Patient Detail, History, Reports, Account-Type Registration) — await explicit user prompt. Do NOT start Batch E prematurely.
+- Current work: **Batch E (Doctor Workspace, Patient Registry, Patient Detail, Activity, Reports & Account Separation) COMPLETED (PASS)**
+  - Implemented server-side role gating & invite code verification (`DOCTOR_REGISTRATION_MODE=invite`, `DOCTOR_INVITE_CODE`) with constant-time check (`hmac.compare_digest`), ignoring client-submitted roles.
+  - Rebuilt `register.html` with Personal vs Doctor account cards and revealable doctor invite code field.
+  - Rebuilt Doctor Workspace (`/pages/patients.html`) with summary metrics strip (Total Patients, Analyses Logged, ML, DL, Fusion), search/sort toolbar, accessible Add/Edit modal, and safety-explicit Delete Confirmation modal (preserving historical prediction records).
+  - Implemented single-patient endpoint `GET /patients/{id}/` with doctor role and ownership isolation.
+  - Rebuilt Patient Detail (`/pages/patient-detail.html`) with 3-modality quick launch buttons (`ml-analysis.html`, `dl-analysis.html`, `multimodal.html`), clinical research notes, and chronological patient analysis timeline.
+  - Protected Doctor pages with Access Restricted notices when opened by Personal accounts.
+  - Rebuilt Activity (`/pages/history.html`): "My Activity" (Personal) vs "Analysis Activity" (Doctor with patient selector).
+  - Rebuilt Reports (`/pages/reports.html`): modality/patient filters, View Full Report, and browser-native Print / Save PDF.
+  - Profile (`/pages/profile.html`): Account type breakdown, non-licensure disclaimer, and "Sign out all devices" confirmation modal calling `POST /auth/logout-all/`.
+  - All automated test suites (backend security 11/11, frontend contract 11/11, static verification, broken link crawler 0 defects, Batch B/C/D regressions 100%) passed with 17 new screenshots captured.
+- Next step: Batch F — await explicit user prompt. Do NOT start Batch F prematurely.
 
 ## Completed major milestones
 

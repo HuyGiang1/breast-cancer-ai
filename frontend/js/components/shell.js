@@ -6,33 +6,30 @@ const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
 
 // Canonical targets array parsed by test validators
 const navGroups = [
-  ['Overview', [
-    ['dashboard.html', 'Dashboard']
-  ]],
   ['Analyze', [
-    ['ml-analysis.html', 'Structured ML'],
+    ['ml-analysis.html', 'Structured Feature ML'],
     ['dl-analysis.html', 'Mammography AI'],
-    ['multimodal.html', 'Experimental Fusion']
+    ['multimodal.html', 'Experimental Fusion'],
   ]],
   ['Research', [
     ['research.html', 'Research Center'],
     ['model-comparison.html', 'Model Comparison'],
     ['datasets.html', 'Datasets'],
     ['explainability.html', 'Explainability'],
-    ['calibration.html', 'Calibration']
+    ['calibration.html', 'Calibration'],
   ]],
   ['Workspace', [
-    ['patients.html', 'Patient Registry'],
-    ['history.html', 'Prediction History'],
-    ['reports.html', 'Reports']
-  ]],
-  ['Assistant', [
-    ['advisor.html', 'AI Information Assistant']
+    ['patients.html', 'Doctor Workspace'],
+    ['patient-detail.html', 'Patient Detail'],
+    ['history.html', 'Activity'],
+    ['reports.html', 'Analysis Reports'],
   ]],
   ['System', [
+    ['advisor.html', 'AI Guide'],
     ['model-status.html', 'Model Status'],
-    ['profile.html', 'Profile']
-  ]]
+    ['profile.html', 'Profile'],
+    ['dashboard.html', 'Dashboard Redirect'],
+  ]],
 ];
 
 export function mountShell(pageTitle) {
@@ -176,8 +173,8 @@ export function mountShell(pageTitle) {
           <div class="mobile-nav-group-title">Workspace</div>
           <div class="mobile-nav-links">
             ${isDoctor ? '<a href="patients.html">Doctor Workspace (Patient Registry)</a>' : ''}
-            <a href="history.html">Prediction History</a>
-            <a href="reports.html">Prediction Reports</a>
+            <a href="history.html">${isDoctor ? 'Analysis Activity' : 'My Activity'}</a>
+            <a href="reports.html">Analysis Reports</a>
           </div>
         </div>
         <div class="mobile-nav-group">
@@ -236,6 +233,41 @@ export function mountShell(pageTitle) {
       setTimeout(() => URL.revokeObjectURL(url), 60000);
     } catch (error) {
       link.textContent = error.message;
+    }
+  });
+
+  // Global handler for print report buttons
+  document.addEventListener('click', async (event) => {
+    const btn = event.target.closest('.btn-print-report');
+    if (!btn) return;
+    event.preventDefault();
+    const reportUrl = btn.getAttribute('data-report-url');
+    if (!reportUrl) return;
+
+    const originalHtml = btn.innerHTML;
+    try {
+      btn.disabled = true;
+      btn.innerHTML = '<span>Loading...</span>';
+      const response = await fetch(reportUrl, {
+        headers: { Authorization: `Bearer ${auth.token()}` }
+      });
+      if (!response.ok) throw new Error('Unable to fetch report');
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const printWin = window.open(blobUrl, '_blank');
+      if (printWin) {
+        printWin.onload = () => {
+          try {
+            printWin.print();
+          } catch (e) {}
+        };
+      }
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+    } catch (err) {
+      console.error('Print report error:', err);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalHtml;
     }
   });
 

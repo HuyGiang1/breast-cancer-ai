@@ -61,6 +61,37 @@ function initRegisterPage() {
     alertBox.textContent = '';
   }
 
+  // Account type switcher
+  const cardPersonal = document.getElementById('cardTypePersonal');
+  const cardDoctor = document.getElementById('cardTypeDoctor');
+  const radioPersonal = document.getElementById('typePersonalRadio');
+  const radioDoctor = document.getElementById('typeDoctorRadio');
+  const doctorInviteBlock = document.getElementById('doctorInviteBlock');
+  const googleDoctorNote = document.getElementById('googleDoctorNote');
+  const inviteCodeInput = document.getElementById('regDoctorInviteCode');
+
+  function updateAccountTypeSelection(type) {
+    if (type === 'doctor') {
+      if (radioDoctor) radioDoctor.checked = true;
+      cardDoctor?.classList.add('selected');
+      cardPersonal?.classList.remove('selected');
+      if (doctorInviteBlock) doctorInviteBlock.style.display = 'block';
+      if (googleDoctorNote) googleDoctorNote.style.display = 'block';
+      inviteCodeInput?.focus();
+    } else {
+      if (radioPersonal) radioPersonal.checked = true;
+      cardPersonal?.classList.add('selected');
+      cardDoctor?.classList.remove('selected');
+      if (doctorInviteBlock) doctorInviteBlock.style.display = 'none';
+      if (googleDoctorNote) googleDoctorNote.style.display = 'none';
+    }
+  }
+
+  cardPersonal?.addEventListener('click', () => updateAccountTypeSelection('personal'));
+  cardDoctor?.addEventListener('click', () => updateAccountTypeSelection('doctor'));
+  radioPersonal?.addEventListener('change', () => updateAccountTypeSelection('personal'));
+  radioDoctor?.addEventListener('change', () => updateAccountTypeSelection('doctor'));
+
   // Password visibility toggle
   if (togglePassBtn && passInput) {
     togglePassBtn.addEventListener('click', () => {
@@ -83,6 +114,8 @@ function initRegisterPage() {
       const email = form.email.value.trim();
       const password = form.password.value;
       const confirm = form.confirm.value;
+      const accountType = form.account_type?.value || 'personal';
+      const doctorInviteCode = form.doctor_invite_code?.value.trim() || '';
 
       if (!fullName) {
         showAlert('Please enter your full name.');
@@ -101,6 +134,12 @@ function initRegisterPage() {
         return;
       }
 
+      if (accountType === 'doctor' && !doctorInviteCode) {
+        showAlert('Please enter a valid Doctor Workspace Invite Code.');
+        inviteCodeInput?.focus();
+        return;
+      }
+
       if (password.length < 8) {
         showAlert('Password must be at least 8 characters long.');
         return;
@@ -115,12 +154,17 @@ function initRegisterPage() {
       submitBtn.textContent = 'Creating account...';
 
       try {
-        // Public registration always assigns role='user' on server
-        await authService.register({
+        const payload = {
           full_name: fullName,
           email: email,
           password: password,
-        });
+          account_type: accountType,
+        };
+        if (accountType === 'doctor') {
+          payload.doctor_invite_code = doctorInviteCode;
+        }
+
+        await authService.register(payload);
 
         // Auto-login session saved in authService.register; redirect to overview
         window.location.assign('index.html');

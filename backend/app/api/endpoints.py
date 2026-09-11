@@ -48,6 +48,7 @@ from app.core.security import (
     get_optional_current_user,
 )
 import base64
+import hmac
 import json
 import mimetypes
 import os
@@ -460,10 +461,24 @@ def _build_prediction_report_html(row: dict, current_user: dict) -> str:
     .note {{ background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 12px; }}
     .block {{ white-space: pre-wrap; background: #f8fffc; border: 1px solid #d6eee6; border-radius: 8px; padding: 12px; }}
     .heatmap {{ max-width: 100%; border: 1px solid #d6eee6; border-radius: 8px; margin-top: 10px; }}
-    @media print {{ body {{ margin: 18mm; }} }}
+    .btn-print {{ padding: 10px 18px; background: #0d9488; color: #fff; border: none; border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer; }}
+    .btn-print:hover {{ background: #0f766e; }}
+    @media print {{
+      body {{ margin: 12mm; }}
+      .report-actions {{ display: none !important; }}
+      .badge {{ border: 1px solid #0d9488; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
+      table, th, td {{ border: 1px solid #cbd5e1; }}
+      th {{ background: #f8fafc !important; color: #0f172a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
+    }}
   </style>
 </head>
 <body>
+  <div class="report-actions" style="margin-bottom:24px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:#f0fdfa;border:1px solid #ccfbf1;padding:12px 16px;border-radius:8px;">
+    <button type="button" onclick="window.print()" class="btn-print" id="btnPrintReport">
+      🖨️ In báo cáo / Lưu PDF (Print / Save as PDF)
+    </button>
+    <span style="font-size:0.85rem;color:#0f766e;">Chọn "Save as PDF" trong hộp thoại in của trình duyệt để lưu bản in điện tử chuẩn A4/Letter.</span>
+  </div>
   <h1>{escape(title)}</h1>
   <div class="meta">Báo cáo hỗ trợ nghiên cứu và sàng lọc, tạo từ dữ liệu dự đoán đã lưu.</div>
   <p><span class="badge">{escape(diagnosis)}</span></p>
@@ -630,8 +645,26 @@ def register(request: RegisterRequest):
     if existing is not None:
         raise HTTPException(status_code=409, detail="Email already registered")
 
-    # PUBLIC REGISTRATION MUST ALWAYS CREATE: role = "user"
-    assigned_role = "user"
+    account_type = (request.account_type or "personal").strip().lower()
+    if account_type == "doctor":
+        mode = os.getenv("DOCTOR_REGISTRATION_MODE", "disabled").strip().lower()
+        invite_code = os.getenv("DOCTOR_INVITE_CODE", "").strip()
+        if mode != "invite" or not invite_code:
+            raise HTTPException(
+                status_code=400,
+                detail="Doctor registration is unavailable or the invite code is invalid.",
+            )
+        submitted_code = (request.doctor_invite_code or "").strip()
+        if not submitted_code or not hmac.compare_digest(submitted_code.encode("utf-8"), invite_code.encode("utf-8")):
+            raise HTTPException(
+                status_code=400,
+                detail="Doctor registration is unavailable or the invite code is invalid.",
+            )
+        assigned_role = "doctor"
+    else:
+        # Default / personal registration always creates role="user"
+        assigned_role = "user"
+
     now = utc_now_iso()
     user_id = db.execute(
         """
@@ -1043,6 +1076,13 @@ def create_patient(request: PatientCreateRequest, current_user: dict = Depends(g
     return PatientResponse(**_serialize_row(row))
 
 
+@router.get("/patients/{patient_id}/", response_model=PatientResponse)
+def get_patient(patient_id: int, current_user: dict = Depends(get_current_user)):
+    _require_doctor(current_user)
+    row = _require_patient_ownership(current_user["id"], patient_id)
+    return PatientResponse(**_serialize_row(row))
+
+
 @router.put("/patients/{patient_id}/", response_model=PatientResponse)
 def update_patient(
     patient_id: int,
@@ -1388,7 +1428,7 @@ async def predict_multimodal(
     current_user: Optional[dict] = Depends(get_optional_current_user),
 ):
     """
-    Combined diagnosis using both Clinical Data (ML) and X-ray Image (DL).
+    Combined diagnosis using both Clinical Data (ML) and Mammography image (DL).
     """
     try:
         # 1. Process Clinical Data
