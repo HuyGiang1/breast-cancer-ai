@@ -27,41 +27,78 @@ if (requireAuth('../login.html')) {
   ];
 
   if (contextData) {
+    const isFusion = contextData.analysis_type === 'fusion';
     const isDl = contextData.analysis_type === 'dl';
     const pId = contextData.prediction_id ? `#${contextData.prediction_id}` : 'Recent Session';
-    const probStr = (Number(contextData.raw_probability) * 100).toFixed(1);
-    const contextTitle = isDl ? `Mammography Analysis ${pId}` : `Structured Analysis ${pId}`;
-    contextBannerHtml = `
-      <div style="background:#f0fdfa;border:1.5px solid #99f6e4;border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-        <div>
-          <span style="background:#0f766e;color:#fff;font-size:0.75rem;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;margin-right:8px;">
-            Active Context
-          </span>
-          <strong style="color:#0f766e;">Discussing ${contextTitle}</strong>:
-          ${contextData.classification} (${probStr}% raw probability vs threshold ${contextData.threshold})
-        </div>
-        <button id="clearContextBtn" class="v2-button secondary btn-xs" type="button" style="padding:4px 8px;font-size:0.75rem;">
-          Clear Context
-        </button>
-      </div>
-    `;
 
-    if (isDl) {
+    if (isFusion) {
+      const mlProbStr = (Number(contextData.ml_raw_probability ?? 0) * 100).toFixed(1);
+      const dlProbStr = (Number(contextData.dl_raw_probability ?? 0) * 100).toFixed(1);
+      const combinedScoreStr = (Number(contextData.combined_malignant_score ?? 0) * 100).toFixed(1);
+      const agreeText = contextData.branch_agreement ? 'Branches Agree' : 'Branches Disagree';
+      const agreeColor = contextData.branch_agreement ? '#0f766e' : '#b45309';
+
+      contextBannerHtml = `
+        <div style="background:#f0fdfa;border:1.5px solid #99f6e4;border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div>
+            <span style="background:#0f766e;color:#fff;font-size:0.75rem;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;margin-right:8px;">
+              Active Context
+            </span>
+            <strong style="color:#0f766e;">Discussing Experimental Fusion ${pId}</strong>:
+            ML: ${contextData.ml_classification} (${mlProbStr}%), DL: ${contextData.dl_classification} (${dlProbStr}%), Combined: ${combinedScoreStr}%
+            <span style="display:inline-block;margin-left:8px;font-size:0.75rem;font-weight:700;color:${agreeColor};">
+              (${agreeText})
+            </span>
+          </div>
+          <button id="clearContextBtn" class="v2-button secondary btn-xs" type="button" style="padding:4px 8px;font-size:0.75rem;">
+            Clear Context
+          </button>
+        </div>
+      `;
+
       dynamicSuggestions = [
-        `Explain why the model predicted ${contextData.classification}`,
-        `What does the raw probability of ${probStr}% mean relative to threshold ${contextData.threshold}?`,
-        'How should the Grad-CAM model-attention heatmap be interpreted?',
-        'Why does Grad-CAM not establish tumor localization or boundaries?',
-        'What does Platt calibration mean for this mammogram?',
-        ...dynamicSuggestions.slice(0, 3),
+        'Why can the ML and DL branches produce disagreeing outputs?',
+        'Explain how the 40/60 weighted combination was calculated.',
+        'Why are WDBC and CBIS-DDSM unpaired datasets?',
+        'How should I interpret the 0.50 software decision midpoint?',
+        'Explain the Grad-CAM heatmap from the DL branch.',
+        'Why can this software combination NOT be used as a clinical diagnosis?',
       ];
     } else {
-      dynamicSuggestions = [
-        `Explain why the model predicted ${contextData.classification}`,
-        'Which nuclear morphology features contributed most to this result?',
-        `What does the raw probability of ${probStr}% mean relative to threshold ${contextData.threshold}?`,
-        ...dynamicSuggestions.slice(0, 5),
-      ];
+      const probStr = (Number(contextData.raw_probability) * 100).toFixed(1);
+      const contextTitle = isDl ? `Mammography Analysis ${pId}` : `Structured Analysis ${pId}`;
+      contextBannerHtml = `
+        <div style="background:#f0fdfa;border:1.5px solid #99f6e4;border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div>
+            <span style="background:#0f766e;color:#fff;font-size:0.75rem;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;margin-right:8px;">
+              Active Context
+            </span>
+            <strong style="color:#0f766e;">Discussing ${contextTitle}</strong>:
+            ${contextData.classification} (${probStr}% raw probability vs threshold ${contextData.threshold})
+          </div>
+          <button id="clearContextBtn" class="v2-button secondary btn-xs" type="button" style="padding:4px 8px;font-size:0.75rem;">
+            Clear Context
+          </button>
+        </div>
+      `;
+
+      if (isDl) {
+        dynamicSuggestions = [
+          `Explain why the model predicted ${contextData.classification}`,
+          `What does the raw probability of ${probStr}% mean relative to threshold ${contextData.threshold}?`,
+          'How should the Grad-CAM model-attention heatmap be interpreted?',
+          'Why does Grad-CAM not establish tumor localization or boundaries?',
+          'What does Platt calibration mean for this mammogram?',
+          ...dynamicSuggestions.slice(0, 3),
+        ];
+      } else {
+        dynamicSuggestions = [
+          `Explain why the model predicted ${contextData.classification}`,
+          'Which nuclear morphology features contributed most to this result?',
+          `What does the raw probability of ${probStr}% mean relative to threshold ${contextData.threshold}?`,
+          ...dynamicSuggestions.slice(0, 5),
+        ];
+      }
     }
   }
 
