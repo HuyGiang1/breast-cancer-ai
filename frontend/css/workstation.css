@@ -1607,3 +1607,996 @@
     max-height: 300px;
   }
 }
+
+/* ==========================================================================
+   Experimental Research Fusion Workstation Styling (Batch D)
+   Theme: Medical Data-Lab / Converging Dual-Branch Research
+   ========================================================================== */
+
+.fusion-workstation {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 16px 48px;
+}
+
+/* Hero & Architecture Banner */
+.fusion-hero {
+  background: linear-gradient(135deg, #0a192f 0%, #172a45 55%, #1e3a5f 100%);
+  color: #fff;
+  border-radius: 12px;
+  padding: 28px 32px;
+  box-shadow: 0 4px 20px rgba(10, 25, 47, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.fusion-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #38bdf8;
+  margin-bottom: 8px;
+}
+
+.fusion-hero h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+  color: #ffffff;
+}
+
+.fusion-hero-desc {
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  max-width: 860px;
+  line-height: 1.55;
+  margin: 0 0 16px;
+}
+
+.fusion-hero-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.fusion-spec-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.fusion-spec-pill strong {
+  color: #38bdf8;
+}
+
+/* Unpaired Dataset Persistent Notice */
+.fusion-unpaired-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #fefce8;
+  border: 1.5px solid #fde047;
+  border-radius: 10px;
+  padding: 16px 20px;
+  color: #713f12;
+}
+
+.fusion-unpaired-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.fusion-unpaired-body h3 {
+  font-size: 0.92rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: #854d0e;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.fusion-unpaired-body p {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 0;
+  color: #713f12;
+}
+
+/* Dual-Branch Layout (Split Two Branches Converging) */
+.fusion-dual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.fusion-branch-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.fusion-branch-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 14px;
+}
+
+.fusion-branch-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fusion-branch-step {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+.fusion-branch-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.fusion-weight-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.fusion-weight-badge.weight-40 {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.fusion-weight-badge.weight-60 {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+/* Structured Branch Sub-Controls in Fusion */
+.fusion-branch-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: #64748b;
+  background: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #f1f5f9;
+}
+
+.fusion-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.fusion-toolbar-left,
+.fusion-toolbar-right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Progress & Quality Pill */
+.fusion-quality-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.fusion-quality-pill.complete {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* 30 Features Compact Grid for Fusion Branch */
+.fusion-features-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.fusion-group-box {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #fafafa;
+}
+
+.fusion-group-heading {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #334155;
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fusion-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.fusion-field-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fusion-field-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #475569;
+  display: flex;
+  justify-content: space-between;
+}
+
+.fusion-field-input {
+  font-size: 0.82rem;
+  padding: 6px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #0f172a;
+  transition: border-color 0.15s ease;
+}
+
+.fusion-field-input:focus {
+  outline: none;
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+}
+
+.fusion-field-status {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+/* Mammography Branch Dropzone in Fusion */
+.fusion-dropzone-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 24px;
+  text-align: center;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fusion-dropzone-box:hover,
+.fusion-dropzone-box.dragover {
+  border-color: #0284c7;
+  background: #f0f9ff;
+}
+
+.fusion-dropzone-icon {
+  font-size: 2.2rem;
+  color: #0284c7;
+  margin-bottom: 8px;
+}
+
+.fusion-dropzone-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 4px;
+}
+
+.fusion-dropzone-sub {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0 0 12px;
+}
+
+/* Image Preview in Fusion Branch */
+.fusion-image-preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #0f172a;
+  border-radius: 10px;
+  padding: 14px;
+  color: #ffffff;
+}
+
+.fusion-preview-canvas-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 280px;
+  overflow: hidden;
+  background: #020617;
+  border-radius: 8px;
+}
+
+.fusion-preview-canvas-wrap img {
+  max-height: 280px;
+  width: auto;
+  object-fit: contain;
+}
+
+.fusion-preview-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.fusion-preview-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Converging Connector Graphic & Run Hub */
+.fusion-hub-card {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.fusion-hub-header {
+  text-align: center;
+  max-width: 680px;
+}
+
+.fusion-hub-header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 6px;
+}
+
+.fusion-hub-header p {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.fusion-precheck-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+}
+
+.fusion-precheck-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.fusion-precheck-item.valid {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+}
+
+.fusion-precheck-item.invalid {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.fusion-run-button {
+  min-width: 280px;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Execution Stages Card */
+.fusion-stages-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.fusion-stages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.fusion-stage-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  font-size: 0.88rem;
+  color: #475569;
+}
+
+.fusion-stage-row.active {
+  background: #f0f9ff;
+  border-color: #bae6fd;
+  color: #0369a1;
+  font-weight: 600;
+}
+
+.fusion-stage-row.completed {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #15803d;
+}
+
+.fusion-stage-row.error {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+/* RESULTS WORKSPACE */
+.fusion-results-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Branch Disagreement Panel (PROMINENT BEFORE COMBINED NUMBER) */
+.fusion-disagreement-card {
+  background: #fff7ed;
+  border: 2px solid #ea580c;
+  border-radius: 12px;
+  padding: 22px 26px;
+  box-shadow: 0 4px 18px rgba(234, 88, 12, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fusion-disagreement-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #c2410c;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.fusion-disagreement-card h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #9a3412;
+  margin: 0;
+}
+
+.fusion-disagreement-card p {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #7c2d12;
+  margin: 0;
+}
+
+.fusion-disagreement-reasons {
+  background: #ffedd5;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  color: #9a3412;
+}
+
+/* Branch Agreement Banner */
+.fusion-agreement-card {
+  background: #f0fdfa;
+  border: 1.5px solid #2dd4bf;
+  border-radius: 12px;
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fusion-agreement-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0f766e;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.fusion-agreement-card h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #115e59;
+  margin: 0;
+}
+
+.fusion-agreement-card p {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #134e4a;
+  margin: 0;
+}
+
+/* Formula & Calculation Visualizer */
+.fusion-formula-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.fusion-formula-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #334155;
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fusion-formula-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1.2fr;
+  align-items: center;
+  gap: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.fusion-formula-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+}
+
+.fusion-formula-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.fusion-formula-math {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  font-family: monospace;
+}
+
+.fusion-formula-result {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0369a1;
+}
+
+.fusion-formula-operator {
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fusion-formula-final {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.fusion-formula-disclaimer {
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin-top: 14px;
+  font-style: italic;
+}
+
+/* Combined Score Hero Card */
+.fusion-combined-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+}
+
+.fusion-combined-eyebrow {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+.fusion-combined-score-num {
+  font-size: 3.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: #0f172a;
+}
+
+.fusion-combined-indication {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.fusion-combined-indication.malignant-side {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1.5px solid #fecaca;
+}
+
+.fusion-combined-indication.benign-side {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1.5px solid #bbf7d0;
+}
+
+.fusion-midpoint-disclaimer {
+  max-width: 600px;
+  font-size: 0.85rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+  padding: 8px 14px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #f1f5f9;
+}
+
+/* Dual Independent Branch Results Grid */
+.fusion-branches-deepdive {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.fusion-deepdive-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fusion-deepdive-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 12px;
+}
+
+.fusion-deepdive-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.fusion-deepdive-meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.fusion-deepdive-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px dashed #f1f5f9;
+}
+
+.fusion-deepdive-meta-row span:first-child {
+  color: #64748b;
+}
+
+.fusion-deepdive-meta-row span:last-child {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* Top features list in Fusion ML */
+.fusion-top-features {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fusion-feature-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #f8fafc;
+}
+
+/* Grad-CAM viewer in Fusion DL */
+.fusion-gradcam-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fusion-gradcam-switcher {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.fusion-gradcam-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #020617;
+  border-radius: 8px;
+  overflow: hidden;
+  max-height: 280px;
+}
+
+.fusion-gradcam-display img {
+  max-height: 280px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Expandable "Why can results differ?" */
+.fusion-differ-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px 20px;
+}
+
+.fusion-differ-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #1e293b;
+  user-select: none;
+}
+
+.fusion-differ-content {
+  margin-top: 12px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: #475569;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 12px;
+}
+
+.fusion-differ-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.fusion-differ-col {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.fusion-differ-col h4 {
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.fusion-differ-col p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+/* AI Guidance in Fusion */
+.fusion-ai-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.fusion-ai-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.fusion-ai-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fusion-ai-body {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #334155;
+  white-space: pre-line;
+}
+
+/* Action Bar */
+.fusion-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 20px;
+}
+
+/* Responsive Overrides for Fusion Workstation */
+@media (max-width: 1100px) {
+  .fusion-dual-grid {
+    grid-template-columns: 1fr;
+  }
+  .fusion-formula-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .fusion-formula-operator {
+    transform: rotate(90deg);
+  }
+  .fusion-branches-deepdive {
+    grid-template-columns: 1fr;
+  }
+  .fusion-differ-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .fusion-workstation {
+    padding: 0 8px 32px;
+  }
+  .fusion-hero {
+    padding: 20px 16px;
+  }
+  .fusion-branch-card,
+  .fusion-hub-card,
+  .fusion-formula-card,
+  .fusion-combined-card,
+  .fusion-deepdive-card,
+  .fusion-ai-card {
+    padding: 16px;
+  }
+  .fusion-combined-score-num {
+    font-size: 2.5rem;
+  }
+  .fusion-action-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .fusion-action-bar button,
+  .fusion-action-bar a {
+    width: 100%;
+    text-align: center;
+  }
+  .fusion-fields-grid {
+    grid-template-columns: 1fr;
+  }
+}
