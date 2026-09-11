@@ -9,20 +9,17 @@ Last updated: 2026-09-07
 - Current branch: `feat/product-experience-v4`
 - Baseline commits: `5b6c72c` (legacy rich functional baseline) and `8eba137` (committed V3 baseline)
 - Parity matrix: `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged, sum reconciled: 52)
-- Current work: **Batch C (Mammography DL Parity & Grad-CAM Workstation) COMPLETED (PASS)**
-  - Fully rebuilt `/pages/dl-analysis.html` into a professional medical-imaging workstation.
-  - Runtime Grad-CAM implemented targeting `top_conv` on frozen EfficientNet-B0 (`cbis-efficientnetb0-full-v1`) with zero-dependency `JET_LUT` colormap.
-  - Multi-view visual comparison canvas: Side-by-Side (default), Original Mammogram, Grad-CAM Overlay.
-  - Restored canonical Benign (0.425 raw) and Malignant (0.614 raw) research examples with immediate canvas preview.
-  - Decoupled primary raw decision cutoff ($\tau \ge 51.5\%$) from Platt display calibration.
-  - Restored visible educational AI advice card with provider/model attribution and medical disclaimer.
-  - Restored authenticated printable report link (`/pages/reports.html?id=...`).
-  - Restored contextual AI advisor handoff via `sessionStorage` with specialized mammography dynamic prompts.
-  - Restored doctor-only patient linkage selector with strict RBAC.
-  - Fail-safe fallback: Grad-CAM failure does not abort inference and returns `explanation_status="unavailable"`.
-  - Database bloat safeguard: base64 overlays stripped before SQLite persistence.
-  - All automated tests, crawlers, and browser E2E suites passing with 0 defects (12 screenshots captured).
-- Next step: Batch D (Multimodal Fusion Restoration) — await explicit user prompt. Do NOT start Batch D prematurely.
+- Current work: **Batch D (Experimental Fusion Restoration & Scientific Contract Alignment) COMPLETED (PASS)**
+  - Corrected multimodal probability bug: fusion formula strictly uses $0.4 \times p_{\text{ml,raw}} + 0.6 \times p_{\text{dl,raw}}$, strictly eliminating Platt-calibrated DL display probability from the weighted combination formula.
+  - Rebuilt `/pages/multimodal.html` into a dual-branch workstation: full Structured ML branch (30 features, development references, presets, CSV, OCR, outlier safeguards) and Mammography DL branch (dropzone, presets, metadata, Grad-CAM viewer).
+  - Converging execution hub with mathematical formula visualizer and unvalidated 0.50 software decision midpoint disclaimer.
+  - Prominent **Branch Disagreement** panel rendered *before* the combined score whenever model classifications conflict, with explicit educational explanation of unpaired dataset limitations (WDBC vs CBIS-DDSM).
+  - Transparent Branch Agreement banner when independent classifications match.
+  - Enabled Grad-CAM runtime in multimodal flow (`include_explanation=true`) with fail-safe fallback if Grad-CAM fails.
+  - SQLite bloat safeguard: stripped `explanation_image` base64 data URLs before `db.save_prediction()`.
+  - Restored unified doctor patient linkage context, authenticated printable report link, and contextual AI Guide handoff (`analysis_type: 'fusion'`).
+  - All regression suites (Batches B, C, D, link crawler, pytest 61/61) passed with 0 defects (12 screenshots captured).
+- Next step: Batch E (Doctor Workspace, Patient Registry, Patient Detail, History, Reports, Account-Type Registration) — await explicit user prompt. Do NOT start Batch E prematurely.
 
 ## Completed major milestones
 
