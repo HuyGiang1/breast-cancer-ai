@@ -13,25 +13,84 @@ from app.core.database import db
 UTC = timezone.utc
 
 
-def hash_password(password: str, salt: Optional[str] = None) -> str:
+DEFAULT_PBKDF2_ITERATIONS = 600_000
+LEGACY_PBKDF2_ITERATIONS = 120_000
+
+
+def hash_password(
+    password: str,
+    salt: Optional[str] = None,
+    iterations: int = DEFAULT_PBKDF2_ITERATIONS,
+) -> str:
     salt_value = salt or secrets.token_hex(16)
     digest = hashlib.pbkdf2_hmac(
         "sha256",
         password.encode("utf-8"),
         salt_value.encode("utf-8"),
-        120_000,
+        iterations,
     )
     encoded = base64.b64encode(digest).decode("ascii")
-    return f"{salt_value}${encoded}"
+    return f"pbkdf2_sha256${iterations}${salt_value}${encoded}"
 
 
 def verify_password(password: str, password_hash: str) -> bool:
-    try:
-        salt, stored = password_hash.split("$", 1)
-    except ValueError:
+    if not password or not password_hash:
         return False
-    computed = hash_password(password, salt=salt).split("$", 1)[1]
-    return hmac.compare_digest(stored, computed)
+    if password_hash.startswith("oauth:"):
+        return False
+
+    try:
+        if password_hash.startswith("pbkdf2_sha256$"):
+            parts = password_hash.split("$")
+            if len(parts) != 4:
+                return False
+            _, iter_str, salt, stored = parts
+            iterations = int(iter_str)
+            digest = hashlib.pbkdf2_hmac(
+                "sha256",
+                password.encode("utf-8"),
+                salt.encode("utf-8"),
+                iterations,
+            )
+            computed = base64.b64encode(digest).decode("ascii")
+            return hmac.compare_digest(stored, computed)
+
+        # Legacy 2-part format: <salt>$<digest> (120,000 iterations)
+        if "$" in password_hash:
+            parts = password_hash.split("$", 1)
+            if len(parts) != 2:
+                return False
+            salt, stored = parts
+            digest = hashlib.pbkdf2_hmac(
+                "sha256",
+                password.encode("utf-8"),
+                salt.encode("utf-8"),
+                LEGACY_PBKDF2_ITERATIONS,
+            )
+            computed = base64.b64encode(digest).decode("ascii")
+            return hmac.compare_digest(stored, computed)
+    except Exception:
+        return False
+
+    return False
+
+
+def needs_rehash(
+    password_hash: str,
+    target_iterations: int = DEFAULT_PBKDF2_ITERATIONS,
+) -> bool:
+    if not password_hash or password_hash.startswith("oauth:"):
+        return False
+    if not password_hash.startswith("pbkdf2_sha256$"):
+        return True
+    try:
+        parts = password_hash.split("$")
+        if len(parts) != 4:
+            return True
+        iterations = int(parts[1])
+        return iterations < target_iterations
+    except Exception:
+        return True
 
 
 def create_session_token() -> str:

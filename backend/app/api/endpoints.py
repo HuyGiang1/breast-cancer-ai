@@ -34,6 +34,8 @@ from app.api.schemas import (
     SavedChatMessage,
     ClinicalExtractionResponse,
 )
+import base64
+import logging
 from app.services.final_ml_runtime import FinalModelUnavailableError, final_ml_runtime_service
 from app.services.final_dl_runtime import FinalDLUnavailableError, InvalidFinalDLImageError, final_dl_runtime_service
 from app.services.ai_advisor import ai_advisor_service
@@ -42,12 +44,14 @@ from app.core.mailer import send_password_reset_email, send_welcome_email
 from app.core.security import (
     hash_password,
     verify_password,
+    needs_rehash,
     create_session_token,
     create_password_reset_token,
     get_current_user,
     get_optional_current_user,
 )
-import base64
+
+logger = logging.getLogger(__name__)
 import hmac
 import json
 import mimetypes
@@ -712,6 +716,14 @@ def login(request: LoginRequest):
     if row is None or not verify_password(request.password, row["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
+    if needs_rehash(row["password_hash"]):
+        new_hash = hash_password(request.password)
+        db.execute(
+            "UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?",
+            (new_hash, utc_now_iso(), int(row["id"])),
+        )
+        row = db.fetch_one("SELECT * FROM users WHERE id = ?", (int(row["id"]),))
+
     token = create_session_token()
     db.execute(
         """
@@ -752,9 +764,11 @@ def google_auth(request: GoogleAuthRequest):
             client_id,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=401, detail=f"Invalid Google ID token signature or expired credential: {exc}")
+        logger.warning("Google ID token validation failed: %s", exc)
+        raise HTTPException(status_code=401, detail="Invalid or expired Google credential.")
     except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"Failed to communicate with Google authentication services: {exc}")
+        logger.error("Failed to communicate with Google authentication services: %s", exc)
+        raise HTTPException(status_code=502, detail="Google authentication could not be completed.")
 
     if id_info.get("aud") != client_id:
         raise HTTPException(status_code=401, detail="Google token audience mismatch")
@@ -839,9 +853,11 @@ def link_google(request: GoogleAuthRequest, current_user: dict = Depends(get_cur
             client_id,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=401, detail=f"Invalid Google ID token: {exc}")
+        logger.warning("Google ID token validation failed: %s", exc)
+        raise HTTPException(status_code=401, detail="Invalid or expired Google credential.")
     except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"Failed to communicate with Google authentication services: {exc}")
+        logger.error("Failed to communicate with Google authentication services: %s", exc)
+        raise HTTPException(status_code=502, detail="Google authentication could not be completed.")
 
     if id_info.get("aud") != client_id:
         raise HTTPException(status_code=401, detail="Google token audience mismatch")
@@ -1008,10 +1024,14 @@ def forgot_password(request: ForgotPasswordRequest):
             expires_at=expires_at,
         )
     except Exception as exc:
-        print(f"Password reset mail delivery error: {exc}")
+        logger.error("Password reset mail delivery error: %s", exc)
+    expose_token = (
+        os.getenv("APP_MAIL_MODE", "file").strip().lower() == "file"
+        and os.getenv("APP_ENV", "development").strip().lower() != "production"
+    )
     return ForgotPasswordResponse(
         message="If an account exists for this email, a password reset link has been sent.",
-        reset_token=token if os.getenv("APP_MAIL_MODE", "file").strip().lower() == "file" else None,
+        reset_token=token if expose_token else None,
         expires_at=expires_at,
     )
 
