@@ -31,6 +31,7 @@ ENV/
 .env
 .env.*
 !.env.example
+!.env.production.example
 secret.txt
 credentials.json
 
@@ -43,6 +44,7 @@ runtime_models/
 backend/data/app.db
 backend/data/*.db
 backend/data/outbox/
+backend/backups/
 frontend/results/
 logs/
 *.log
