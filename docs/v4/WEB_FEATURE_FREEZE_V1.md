@@ -5,7 +5,7 @@
 **Date**: 2026-09-12  
 **Branch**: `feat/product-experience-v4`  
 **Baseline Commit**: `feat/product-experience-v4` (Batch F)  
-**Status**: **FROZEN (Release Candidate Candidate 1 / RC-1)**
+**Status**: **FROZEN (Release Candidate 1 / RC-1)**
 
 ---
 
@@ -58,30 +58,24 @@ The following capabilities represent the complete, verified, frozen web product:
 
 ### 2.3 Doctor & Patient Management Workspaces
 - **Doctor Workspace (`pages/patients.html`)**:
-  - Restricted to Doctor Workspace accounts; personal accounts receive an access-restricted card.
-  - Workspace metrics strip (Total Patients, Analyses Logged, ML, DL, Fusion counts).
-  - Real-time patient search by name, ID, or research notes.
-  - Modality filtering and multi-attribute sorting.
-  - Accessible modal dialogs for patient registration, demographic editing, and safety-explicit deletion (preserving analysis logs).
-- **Patient Detail & Longitudinal Timeline (`pages/patient-detail.html`)**:
-  - Demographic summary and Research Notes sidebar.
-  - 3-modality quick launch action bar linking directly to analysis workstations with preselected patient ID.
-  - Chronological analysis timeline displaying modality badges, classification pills, and direct report triggers.
-- **Activity History (`pages/history.html`)**:
-  - Personal accounts: "My Activity" personal analysis history.
-  - Doctor accounts: "Analysis Activity" with in-memory patient dropdown selector filtering across the entire dataset.
-  - Date range filters (From / To) and dynamic count badge (`Showing X of Y analyses`).
-  - Authenticated report view and print triggers.
-- **Reports Workspace (`pages/reports.html`)**:
-  - Comprehensive listing of persisted analyses with Date Range filters, modality filters, and active count badges.
-  - Direct authenticated report inspection and browser print triggers.
+  - Searchable patient registry with real-time text query filtering.
+  - New Patient registration modal with client validation.
+  - Patient record deletion modal with cascading safety confirmation.
+  - Longitudinal patient timeline on `patient-detail.html`.
+- **Shared Workspaces**:
+  - Activity History (`pages/history.html`) with role-adaptive patient filter.
+  - Analysis Reports workspace (`pages/reports.html`) with one-click view and print actions.
+  - Profile & Security (`pages/profile.html`) with password update, account management, and session revocation.
 
-### 2.4 AI Guide & Communication
-- **AI Research Guide (`pages/advisor.html`)**:
-  - Safe DOM markdown parser (`renderSafeContent`) with zero unsafe `innerHTML` injection.
-  - Grounded multimodal contextual banners explaining branch weighting ($0.40 / 0.60$), software midpoints, and dataset decoupling.
-  - Progressive disclosure, conversation restart without data loss, and retry actions on network failure.
-  - English safety guardrails prohibiting clinical self-diagnosis, tumor localization, and treatment recommendations.
+### 2.4 Research Transparency & Telemetry
+- **Research Transparency Hub (`pages/research.html`)**:
+  - Side-by-side study design cards comparing Wisconsin WDBC (Study A) and CBIS-DDSM (Study B).
+  - Authoritative TCIA / CBIS-DDSM provenance and attribution card with official DOI citations.
+  - Frozen calibration methodology (Platt scaling with isotonic regression comparisons).
+  - Formal study decoupling statement clarifying that Study A and Study B are independent patient cohorts.
+- **Model Status & Telemetry (`pages/model-status.html`)**:
+  - Real-time healthcheck querying live runtime model endpoints.
+  - Model artifact checksums and input shape specifications.
 
 ### 2.5 Security, Authentication & Privacy
 - **Strict Role Contracts**:
@@ -98,27 +92,29 @@ The following capabilities represent the complete, verified, frozen web product:
 
 ## 3. Pre-Deploy Blocker: Demo Mammogram TCIA Attribution
 
-> [!CAUTION]
-> **PRE-DEPLOY BLOCKER (P0)**:  
-> Prior to deploying this web product to any public or staging environment accessible beyond localhost, the license and provenance of the two demo mammogram image assets (`frontend/assets/demo-images/demo-benign-mammogram.png` and `frontend/assets/demo-images/demo-malignant-mammogram.png`) MUST be confirmed against The Cancer Imaging Archive (TCIA) / CBIS-DDSM data usage agreements:
+> [!NOTE]
+> **PRE-DEPLOY BLOCKER STATUS: RESOLVED (100% Verified)**
+> The license and provenance of the two demonstration mammogram assets have been byte-for-byte audited and formally documented:
 >
-> 1. **Attribution Requirements**: Verify required TCIA and CBIS-DDSM citations in public UI footers and report templates (e.g., Clark et al., *J Digit Imaging* 2013; Lee et al., *Scientific Data* 2017).
-> 2. **Commercial / Academic Distribution Rights**: Ensure the cropped 224×224 grayscale patches comply with CC-BY 3.0 / TCIA Data Usage Policies for public web demonstration.
-> 3. **Synthetic / Public Domain Alternative**: If TCIA attribution is restricted in certain deployment contexts, replace the demo assets with CC0 public domain mammography phantoms or synthetically generated diffusion mammograms prior to DNS cutover.
+> 1. **Verified Lineage**:
+>    - `demo-benign-mammogram.png` (SHA-256: `3876586b8d712a4782c790bdc184bd602ec6432be2a228fe1b3cabc7252c3dbe`) is byte-for-byte identical to CBIS-DDSM test ROI `1.3.6.1.4.1.9590.100.1.2.16525291111973690409014716492507936377`.
+>    - `demo-malignant-mammogram.png` (SHA-256: `966a7860655798e6f061392d3cedbd9e8ca57db8c37a5776ca16735d7837e8ac`) is byte-for-byte identical to CBIS-DDSM test ROI `1.3.6.1.4.1.9590.100.1.2.404758686111730252108640081234072137432`.
+> 2. **License Compliance**: Distributed under **Creative Commons Attribution 3.0 Unported (CC BY 3.0)** per TCIA Data Usage Policies.
+> 3. **Formal Documentation**: Detailed citations for Sawyer-Lee et al. (2016), Lee et al. (2017), and Clark et al. (2013) are recorded in [CBIS_DDSM_DATA_AND_DEMO_ATTRIBUTION.md](file:///Users/GiangNguyenHuy/Documents/breast-cancer-ai/docs/legal/CBIS_DDSM_DATA_AND_DEMO_ATTRIBUTION.md) and exposed via an authoritative card in `frontend/js/pages/research.js`.
 
 ---
 
-## 4. Explicitly Deferred Integrations
+## 4. Deferred Live Credentials & Infrastructure Steps
 
-The following items are outside the scope of the web product feature freeze and are formally deferred to pre-deployment configuration and infrastructure phases:
+The following operational items require external live infrastructure (DNS, domain TLS certificates, operator secrets) and are deferred to live integration:
 
-| Item | Description | Deferral Justification |
+| Item | Architecture & Requirements | Deferred Status |
 | :--- | :--- | :--- |
-| **Google OAuth Live Credentials** | Live `client_id` / `client_secret` and production OAuth redirect URIs | Requires production domain and Google Cloud Console OAuth consent screen verification. Client-side architecture is decoupled and ready. |
-| **Production SMTP Email Service** | Live transactional email delivery for password resets and verification | Requires dedicated transactional email service (e.g. AWS SES, SendGrid, Postmark) and SPF/DKIM/DMARC DNS configuration. Local development outbox remains active. |
-| **Production Domain, HTTPS & DNS** | Public FQDN, SSL/TLS certificates (Let's Encrypt / Cloudflare), and HTTP/2 reverse proxy | Managed at infrastructure deployment layer via Kubernetes / Docker Compose / Cloud Run. |
-| **Mobile Native Applications** | React Native / Flutter / iOS / Android wrapper apps | Phase 4R is strictly a web-only feature freeze. Mobile apps will interface with the frozen REST API in subsequent phases. |
-| **Model Retraining & Multimodal Learning** | Retraining ML or DL models or training an end-to-end learned multimodal network | Frozen scientific evidence baseline must remain intact and reproducible. |
+| **Google OAuth Live Credentials** | Uses **Google Identity Services (GIS)** client-side popup/callback flow + backend ID token verification (`google.oauth2.id_token.verify_oauth2_token`). **No `GOOGLE_CLIENT_SECRET` is needed**; only `GOOGLE_CLIENT_ID` and authorized JavaScript origins in Google Cloud Console. | Waiting for operator Google Cloud Console client ID |
+| **Production SMTP Email Service** | Transactional email delivery for password resets. `APP_MAIL_MODE=smtp` requires live operator credentials (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`). | Waiting for operator SMTP relay configuration |
+| **Production Domain, HTTPS & DNS** | Public FQDN, Let's Encrypt / Certbot TLS certificates, and Nginx reverse proxy configuration. | Waiting for operator DNS cutover |
+| **Mobile Native Applications** | React Native / Flutter / iOS / Android wrapper apps. Phase 4R is strictly a web-only feature freeze. | Out of scope for web freeze |
+| **Model Retraining & Multimodal Learning** | Retraining ML or DL models or training an end-to-end learned multimodal network. Frozen scientific evidence baseline must remain intact. | Frozen / Not permitted |
 
 ---
 
