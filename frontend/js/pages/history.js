@@ -22,31 +22,31 @@ async function initHistoryPage() {
   app.innerHTML = `
     <section class="research-main">
       <header class="research-hero">
-        <span class="eyebrow">${isDoctor ? 'Clinician Records' : 'Personal Records'}</span>
+        <span class="eyebrow">${isDoctor ? 'Doctor Workspace' : 'Personal Records'}</span>
         <h1>${isDoctor ? 'Analysis Activity' : 'My Activity'}</h1>
         <p>${
           isDoctor
-            ? 'Review and filter diagnostic evaluations across your clinical patient registry and standalone analyses.'
-            : 'Review your personal self-assessment logs, model confidence scores, and dual-engine research telemetry.'
+            ? 'Review and filter saved research analyses, model classifications, and patient-linked records.'
+            : 'Review your personal analysis records, model classifications, and research reports.'
         }</p>
       </header>
 
       <!-- Toolbar -->
-      <div class="workspace-toolbar">
-        <div class="workspace-toolbar-left">
+      <div class="workspace-toolbar" style="flex-wrap: wrap; gap: 0.75rem; align-items: center;">
+        <div class="workspace-toolbar-left" style="flex-wrap: wrap; gap: 0.75rem; align-items: center;">
           <div class="workspace-search-wrap">
             <svg class="workspace-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <input type="search" id="historySearchInput" class="workspace-search-input" placeholder="Search by model, diagnosis, or keyword...">
+            <input type="search" id="historySearchInput" class="workspace-search-input" placeholder="Search by model, result, or keyword...">
           </div>
 
           <select id="historyModalitySelect" class="workspace-select" aria-label="Filter by analysis modality">
             <option value="">All Modalities</option>
             <option value="ml">Wisconsin Structured ML</option>
             <option value="dl">Mammography Deep Learning</option>
-            <option value="multimodal">Multimodal Fusion</option>
+            <option value="multimodal">Experimental Fusion</option>
           </select>
 
           ${
@@ -59,6 +59,23 @@ async function initHistoryPage() {
           `
               : ''
           }
+
+          <div class="workspace-date-filter-group" style="display: flex; align-items: center; gap: 0.5rem;">
+            <label for="historyDateFrom" style="font-size: 0.8125rem; font-weight: 500; color: var(--slate-600);">From:</label>
+            <input type="date" id="historyDateFrom" class="form-input" style="padding: 0.375rem 0.5rem; font-size: 0.8125rem; width: auto;" aria-label="Filter from date">
+            <label for="historyDateTo" style="font-size: 0.8125rem; font-weight: 500; color: var(--slate-600);">To:</label>
+            <input type="date" id="historyDateTo" class="form-input" style="padding: 0.375rem 0.5rem; font-size: 0.8125rem; width: auto;" aria-label="Filter to date">
+          </div>
+
+          <button type="button" id="historyClearFiltersBtn" class="studio-btn studio-btn-outline studio-btn-sm" style="height: 38px;">
+            Clear Filters
+          </button>
+        </div>
+
+        <div class="workspace-toolbar-right" style="margin-left: auto;">
+          <span id="historyCountBadge" class="patient-modality-pill has-analyses" style="font-size: 0.8125rem;">
+            Loading records...
+          </span>
         </div>
       </div>
 
@@ -75,13 +92,18 @@ async function initHistoryPage() {
   const searchInput = document.querySelector('#historySearchInput');
   const modalitySelect = document.querySelector('#historyModalitySelect');
   const patientSelect = document.querySelector('#historyPatientSelect');
+  const dateFromInput = document.querySelector('#historyDateFrom');
+  const dateToInput = document.querySelector('#historyDateTo');
+  const clearFiltersBtn = document.querySelector('#historyClearFiltersBtn');
+  const countBadge = document.querySelector('#historyCountBadge');
 
   let rows = [];
   let patientMap = new Map(); // id -> name
 
   async function loadData() {
     try {
-      const promises = [predictionService.history(initialPatientId || undefined)];
+      // Fix A: Load full history once so doctor can filter across all patients locally
+      const promises = [predictionService.history()];
       if (isDoctor) {
         promises.push(patientService.list().catch(() => []));
       }
@@ -112,6 +134,18 @@ async function initHistoryPage() {
           <strong>Failed to load activity logs:</strong> ${esc(err.message || 'Server error')}
         </div>
       `;
+      if (countBadge) countBadge.textContent = 'Error loading records';
+    }
+  }
+
+  function getISODateOnly(dateStr) {
+    if (!dateStr) return '';
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return '';
+      return d.toISOString().slice(0, 10);
+    } catch (_) {
+      return '';
     }
   }
 
@@ -119,6 +153,15 @@ async function initHistoryPage() {
     const query = (searchInput?.value || '').trim().toLowerCase();
     const modality = modalitySelect?.value || '';
     const selectedPatient = patientSelect?.value || '';
+    let fromDate = dateFromInput?.value || '';
+    let toDate = dateToInput?.value || '';
+
+    // Enforce From <= To rule
+    if (fromDate && toDate && fromDate > toDate) {
+      // Swap or adjust if user set inverted dates
+      dateToInput.value = fromDate;
+      toDate = fromDate;
+    }
 
     const filtered = rows.filter((r) => {
       // Modality filter
@@ -131,6 +174,13 @@ async function initHistoryPage() {
         } else {
           if (String(r.patient_id) !== String(selectedPatient)) return false;
         }
+      }
+
+      // Date Range filters
+      if (fromDate || toDate) {
+        const rowDate = getISODateOnly(r.created_at);
+        if (fromDate && rowDate < fromDate) return false;
+        if (toDate && rowDate > toDate) return false;
       }
 
       // Query search
@@ -155,6 +205,10 @@ async function initHistoryPage() {
       return true;
     });
 
+    if (countBadge) {
+      countBadge.textContent = `Showing ${filtered.length} of ${rows.length} ${rows.length === 1 ? 'analysis' : 'analyses'}`;
+    }
+
     if (filtered.length === 0) {
       listEl.innerHTML = `
         <div class="studio-card" style="text-align: center; padding: 3rem 1.5rem;">
@@ -162,17 +216,17 @@ async function initHistoryPage() {
           <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--slate-800); margin-bottom: 0.25rem;">
             No Activity Records Found
           </h3>
-          <p style="font-size: 0.875rem; color: var(--slate-500); max-width: 400px; margin: 0 auto 1.5rem;">
+          <p style="font-size: 0.875rem; color: var(--slate-500); max-width: 420px; margin: 0 auto 1.5rem;">
             ${
-              query || modality || selectedPatient
-                ? 'No analysis runs match the current search criteria or modality filters.'
-                : 'No analyses have been logged yet. Launch Wisconsin ML, Mammography DL, or Multimodal Fusion to start logging evaluations.'
+              query || modality || selectedPatient || fromDate || toDate
+                ? 'No analysis runs match the current search criteria, date range, or modality filters.'
+                : 'No analyses have been logged yet. Launch Structured ML, Mammography DL, or Experimental Fusion to start logging evaluations.'
             }
           </p>
           <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
-            <a href="ml-analysis.html" class="studio-btn studio-btn-primary studio-btn-sm">Run Wisconsin ML</a>
+            <a href="ml-analysis.html" class="studio-btn studio-btn-primary studio-btn-sm">Run Structured ML</a>
             <a href="dl-analysis.html" class="studio-btn studio-btn-outline studio-btn-sm">Run Mammography DL</a>
-            <a href="multimodal.html" class="studio-btn studio-btn-outline studio-btn-sm">Run Multimodal Fusion</a>
+            <a href="multimodal.html" class="studio-btn studio-btn-outline studio-btn-sm">Run Experimental Fusion</a>
           </div>
         </div>
       `;
@@ -193,27 +247,42 @@ async function initHistoryPage() {
       </div>
     `;
 
-    // Print report delegation
+    // Authenticated View Report delegation
+    listEl.querySelectorAll('.btn-view-report').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const pid = btn.getAttribute('data-prediction-id');
+        if (pid) {
+          reportService.open(pid);
+        }
+      });
+    });
+
+    // Authenticated Print Report delegation
     listEl.querySelectorAll('.btn-print-report').forEach((btn) => {
       btn.addEventListener('click', () => {
-        const url = btn.getAttribute('data-report-url');
-        if (url) {
-          const printWin = window.open(url, '_blank');
-          if (printWin) {
-            printWin.onload = () => {
-              try {
-                printWin.print();
-              } catch (e) {}
-            };
-          }
+        const pid = btn.getAttribute('data-prediction-id');
+        if (pid) {
+          reportService.print(pid);
         }
       });
     });
   }
 
+  function clearFilters() {
+    if (searchInput) searchInput.value = '';
+    if (modalitySelect) modalitySelect.value = '';
+    if (patientSelect) patientSelect.value = '';
+    if (dateFromInput) dateFromInput.value = '';
+    if (dateToInput) dateToInput.value = '';
+    renderList();
+  }
+
   searchInput?.addEventListener('input', renderList);
   modalitySelect?.addEventListener('change', renderList);
   patientSelect?.addEventListener('change', renderList);
+  dateFromInput?.addEventListener('change', renderList);
+  dateToInput?.addEventListener('change', renderList);
+  clearFiltersBtn?.addEventListener('click', clearFilters);
 
   loadData();
 }

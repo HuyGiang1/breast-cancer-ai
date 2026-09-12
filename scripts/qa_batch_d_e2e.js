@@ -395,27 +395,35 @@ print(json.dumps({
     await sleep(300);
 
     // Load Malignant ML preset + Benign DL preset (Guaranteed disagreement!)
-    await cdp.eval(`document.querySelector('#loadMlMalignantBtn').click()`);
-    await sleep(300);
-    await cdp.eval(`document.querySelector('#loadDlBenignBtn').click()`);
-    await sleep(300);
+    await cdp.eval(`
+      document.querySelector('#loadMlMalignantBtn')?.click();
+      document.querySelector('#loadDlBenignBtn')?.click();
+    `);
+    await sleep(1500);
 
     console.log('  Executing disagreement combination (ML Malignant + DL Benign)...');
-    await cdp.eval(`document.querySelector('#runFusionBtn').click()`);
-    await sleep(300);
+    await cdp.eval(`document.querySelector('#runFusionBtn')?.click();`);
+    await sleep(500);
     await cdp.eval(`
       const confirmBtn = document.querySelector('#confirmOutlierBtn');
       if (confirmBtn) confirmBtn.click();
     `);
-    for (let i = 0; i < 30; i++) {
+    let hasDisagreementCard = false;
+    for (let i = 0; i < 40; i++) {
       await sleep(500);
-      const isAnalyzing = await cdp.eval(`document.querySelector('#runFusionBtn')?.disabled`);
-      const hasDisagreement = await cdp.eval(`Boolean(document.querySelector('.fusion-disagreement-card'))`);
-      if (hasDisagreement && !isAnalyzing) break;
+      await cdp.eval(`{
+        const cBtn = document.querySelector('#confirmOutlierBtn');
+        if (cBtn) cBtn.click();
+      }`);
+      const isAnalyzing = await cdp.eval(`Boolean(document.querySelector('.fusion-stages-card'))`);
+      hasDisagreementCard = await cdp.eval(`Boolean(document.querySelector('.fusion-disagreement-card'))`);
+      if (hasDisagreementCard && !isAnalyzing) break;
     }
 
-    const hasDisagreementCard = await cdp.eval(`Boolean(document.querySelector('.fusion-disagreement-card'))`);
-    if (!hasDisagreementCard) throw new Error('Expected prominent Branch Disagreement card');
+    if (!hasDisagreementCard) {
+      const bText = await cdp.eval(`document.body.innerText`);
+      throw new Error(`Expected prominent Branch Disagreement card! Page text: ${bText.slice(0, 400)}`);
+    }
     console.log('  ✓ Prominent Branch Disagreement panel rendered BEFORE combined score!');
 
     const disagreementHeader = await cdp.eval(`document.querySelector('.fusion-disagreement-card h2').textContent`);
@@ -484,4 +492,9 @@ print(json.dumps({
   }
 }
 
-main();
+main().then(() => {
+  process.exit(process.exitCode || 0);
+}).catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

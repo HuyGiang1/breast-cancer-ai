@@ -1,6 +1,7 @@
 import { mountShell } from '../components/shell.js';
 import { predictionService } from '../services/prediction.service.js';
 import { patientService } from '../services/patient.service.js';
+import { reportService } from '../services/report.service.js';
 import { auth } from '../core/auth.js';
 
 mountShell('Mammography Research Analysis');
@@ -749,9 +750,8 @@ function renderResultWorkspace() {
           <a
             href="/pages/reports.html?id=${encodeURIComponent(r.id || r.prediction_id)}"
             class="v2-button"
-            target="_blank"
-            rel="noopener noreferrer"
             id="btnViewReport"
+            data-prediction-id="${encodeURIComponent(r.id || r.prediction_id)}"
           >
             View Analysis Report
           </a>
@@ -849,6 +849,14 @@ function bindEvents() {
   }
   if (btnAskAi) {
     btnAskAi.onclick = handleAskAiGuide;
+  }
+  const btnReport = document.querySelector('#btnViewReport');
+  if (btnReport) {
+    btnReport.onclick = (e) => {
+      e.preventDefault();
+      const pid = btnReport.getAttribute('data-prediction-id');
+      if (pid) reportService.open(pid);
+    };
   }
 }
 

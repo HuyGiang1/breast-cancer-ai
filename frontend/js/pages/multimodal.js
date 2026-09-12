@@ -1,6 +1,8 @@
 import { mountShell } from '../components/shell.js';
 import { predictionService } from '../services/prediction.service.js';
 import { patientService } from '../services/patient.service.js';
+import { reportService } from '../services/report.service.js';
+import { bindModalAccessibility } from '../components/workspace.js';
 import { auth } from '../core/auth.js';
 import {
   ML_GROUPS,
@@ -992,7 +994,7 @@ function renderResults() {
       <div class="fusion-action-bar">
         ${
           res.id
-            ? `<a href="/api/v1/predictions/${res.id}/report/" target="_blank" rel="noopener" class="v2-button secondary">View Analysis Report</a>`
+            ? `<a href="/predictions/${res.id}/report/" target="_blank" class="v2-button secondary" id="btnViewReport" data-prediction-id="${res.id}">View Analysis Report</a>`
             : ''
         }
         <button type="button" class="v2-button secondary" id="askAdvisorBtn">Ask AI Guide About This Fusion Result</button>
@@ -1266,20 +1268,37 @@ function bindEvents() {
   const askAdvisorBtn = document.querySelector('#askAdvisorBtn');
   if (askAdvisorBtn) askAdvisorBtn.onclick = () => handoffToAdvisor();
 
+  // Authenticated View Report
+  const btnReport = document.querySelector('#btnViewReport');
+  if (btnReport) {
+    btnReport.onclick = (e) => {
+      e.preventDefault();
+      const pid = btnReport.getAttribute('data-prediction-id');
+      if (pid) reportService.open(pid);
+    };
+  }
+
   // Reset Fusion Action
   const resetBtn = document.querySelector('#resetFusionBtn');
   if (resetBtn) resetBtn.onclick = () => resetFusionWorkstation();
 
-  // Modal actions
+  // Modal actions & Accessibility
   const cancelModalBtn = document.querySelector('#cancelModalBtn');
   const modalBackdrop = document.querySelector('#modalBackdrop');
-  const closeModal = () => { state.modal = null; state.modalData = null; render(); };
-  if (cancelModalBtn) cancelModalBtn.onclick = closeModal;
+  let modalCleanup = null;
+  const closeModal = () => {
+    if (modalCleanup) { modalCleanup(); modalCleanup = null; }
+    state.modal = null;
+    state.modalData = null;
+    render();
+  };
   if (modalBackdrop) {
+    modalCleanup = bindModalAccessibility(modalBackdrop, closeModal);
     modalBackdrop.onclick = (e) => {
       if (e.target === modalBackdrop) closeModal();
     };
   }
+  if (cancelModalBtn) cancelModalBtn.onclick = closeModal;
 
   const confirmOutlierBtn = document.querySelector('#confirmOutlierBtn');
   if (confirmOutlierBtn) {

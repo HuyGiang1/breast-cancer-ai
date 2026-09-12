@@ -150,8 +150,8 @@
   - Safe compatibility redirect from `/pages/dashboard.html` to `../index.html` with query/hash preservation.
   - 60-second visual research narrative in `#research` with validation-first selection, exact frozen metrics (Study A LR ROC-AUC 0.9954, Study B EfficientNet-B0 ROC-AUC 0.7229), and links to secondary deep-dive routes.
   - Substantial educational hub in `#learn`: anatomy schematic, source-backed screening table (ACS/USPSTF), 6 warning signs cards with non-alarmist framing, AICR New American Plate nutrition, recovery guidance, 4 myth/fact pairs, verified lazy-loaded video library, and accessible native FAQ accordions.
-- **Batch B — Structured ML Parity**: Restore presets (Benign/Malignant), Clear button, CSV import & template, OCR extraction modal, LR feature contributions ($z_i$), reference percentiles, patient selector, report button, AI handoff.
-- **Batch C — Mammography DL Parity & Frozen Grad-CAM**: Implement Grad-CAM on `top_conv` of frozen EfficientNet-B0 in `final_dl_runtime_service.py`; restore demo mammograms, side-by-side comparison, patient selector, report button, AI handoff.
+- **Batch B — Structured ML Parity**: **COMPLETED (PASS)**. Restored presets (Benign/Malignant), Clear button, CSV import & template, OCR extraction modal, LR feature contributions ($z_i$), reference percentiles, patient selector, report button, AI handoff.
+- **Batch C — Mammography DL Parity & Frozen Grad-CAM**: **COMPLETED (PASS)**. Implemented Grad-CAM on `top_conv` of frozen EfficientNet-B0; restored demo mammograms, side-by-side comparison, patient selector, report button, AI handoff.
 - **Batch D — Multimodal Fusion Parity**: **COMPLETED (PASS)**.
   - Scientific probability bug fixed: formula strictly uses $0.4 \times \text{ML\_RAW} + 0.6 \times \text{DL\_RAW}$; Platt calibrated DL is excluded from formula.
   - Rebuilt `/pages/multimodal.html` as a dual-branch medical research workstation with converging execution hub.
@@ -160,5 +160,16 @@
   - Re-enabled Grad-CAM explainability with `include_explanation=true`, side-by-side interactive comparison canvas.
   - Prevented database bloat by stripping base64 explanation images before SQLite persistence.
   - Restored shared doctor patient context, printable analysis report, and contextual AI Guide handoff.
-- **Batch E — Doctor, Patient, History & Reports UX**: Enhance Patient search/create/edit/delete UX, add patient row analysis actions, restore doctor patient filter on History, refine Reports browsing.
-- **Batch F — AI Contextual Integration, Logout All & Regression**: Implement contextual result transfer into AI Advisor, floating chat FAB, "Sign out all devices" action, and full test regression suite.
+- **Batch E — Doctor, Patient, History & Reports UX**: **COMPLETED (PASS)**.
+  - Enhanced Patient search/create/edit/delete UX, added patient row analysis actions, restored doctor patient filter on History, refined Reports browsing, added Date Range filters and dynamic result count badges.
+- **Batch F — AI Contextual Integration, Final Polish & Web Feature Freeze**: **COMPLETED (PASS)**.
+  - Strict account type contract enforced on registration (`Literal["personal", "doctor"]`, rejects `admin` or invalid values with HTTP 422).
+  - Transient context privacy guaranteed (`auth.clearTransientContext()`) clearing `bcai_advisor_context`, `bcai_active_analysis`, and `bcai_patient_context` across logout and login.
+  - Centralized authenticated report open/print service (`reportService.fetchBlob`, `open`, `print`) across all pages.
+  - Canonical prediction semantics enforced across Structured ML, Mammography DL, and Fusion.
+  - AI Guide rebuilt with safe DOM markdown rendering (`renderSafeContent` with zero unsafe `innerHTML`), multimodal context grounding (40/60 weighting, 0.5 midpoint, unpaired disclaimer), progressive disclosure, and English safety guardrails.
+  - Sourced screening schedules visibly separating ACS (Oeffinger et al.) vs USPSTF (2024 update) guidelines with authoritative citations.
+  - Accessible modals with Tab focus trap, Escape key listener, return focus to trigger, and body scroll locking (`bindModalAccessibility`).
+  - Corrected Batch E false-pass items (doctor patient filtering across full history, Date Range filters, active count badges).
+  - Full regression suite passing 100% across all batches (A–F, 73 Pytest, 0 broken links, 24 representative screenshots).
+  - Parity census: 52/52 legacy features accounted for (50 operational in product, 2 deferred to live staging, 0 lost).

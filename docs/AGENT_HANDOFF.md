@@ -8,12 +8,14 @@
 - Functional baseline commit: `5b6c72c` (legacy monolithic rich frontend)
 - Research: **FROZEN**
 - Runtime: **FROZEN**
-- Frontend: **PHASE 4R BATCH E COMPLETED (PASS)**
-- Parity matrix: `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged, sum reconciled: 52)
-- QA reports: `docs/v4/BATCH_A_HOME_RESEARCH_LEARN_QA.md`, `docs/v4/BATCH_B_STRUCTURED_ML_QA.md`, `docs/v4/BATCH_C_MAMMOGRAPHY_DL_QA.md`, `docs/v4/BATCH_D_FUSION_QA.md`, `docs/v4/BATCH_E_DOCTOR_PERSONAL_WORKSPACE_QA.md`
-- Next phase: Batch F — await explicit user instruction. Do NOT start Batch F prematurely.
+- Frontend: **PHASE 4R BATCH F COMPLETED — WEB FEATURE FREEZE (RC-1)**
+- Parity matrix: `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged, sum reconciled: 52/52)
+- QA reports: `docs/v4/BATCH_A_HOME_RESEARCH_LEARN_QA.md`, `docs/v4/BATCH_B_STRUCTURED_ML_QA.md`, `docs/v4/BATCH_C_MAMMOGRAPHY_DL_QA.md`, `docs/v4/BATCH_D_FUSION_QA.md`, `docs/v4/BATCH_E_DOCTOR_PERSONAL_WORKSPACE_QA.md`, `docs/v4/BATCH_F_FINAL_WEB_UAT.md`
+- Feature freeze document: `docs/v4/WEB_FEATURE_FREEZE_V1.md`
+- Pre-deploy blocker: Confirm TCIA / CBIS-DDSM data usage agreements and attribution citations for the two cropped demo mammograms prior to public DNS deployment.
+- Next phase: External infrastructure, production server deployment, Google OAuth credentials configuration, production SMTP setup, and domain/HTTPS provisioning.
 
-Do not retrain, change datasets/splits, tune on test, change thresholds/calibration/model selection, redesign the frontend, validate multimodal fusion, claim clinical use, merge main, tag, or create a release without explicit instruction.
+Do not retrain models, change datasets/splits, tune on test, change thresholds/calibration/model selection, redesign the frozen web frontend, claim clinical use, or merge main without explicit instruction.
 
 ## Final documentation evidence
 

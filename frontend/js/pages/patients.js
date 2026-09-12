@@ -9,6 +9,7 @@ import {
   deleteConfirmModalHtml,
   patientCardHtml,
   accessRestrictedHtml,
+  bindModalAccessibility,
   esc,
 } from '../components/workspace.js';
 
@@ -25,13 +26,13 @@ async function initPatientsPage() {
     app.innerHTML = `
       <section class="research-main">
         <header class="research-hero">
-          <span class="eyebrow">Clinician Access</span>
+          <span class="eyebrow">Doctor Workspace</span>
           <h1>Doctor Workspace</h1>
-          <p>Multi-patient clinical management and institutional research registries.</p>
+          <p>Multi-patient research workspace and patient-linked analysis registry.</p>
         </header>
         ${accessRestrictedHtml({
           title: 'Doctor Workspace Access Restricted',
-          message: 'The Patient Registry and multi-patient management tools are exclusive to verified Doctor / Clinician accounts. Personal accounts are designed for independent self-analysis and direct model exploration.',
+          message: 'The Patient Registry and multi-patient management tools are exclusive to Doctor / Clinician Workspace accounts. Personal accounts are designed for independent self-analysis and direct model exploration.',
           returnUrl: 'history.html',
           returnLabel: 'Go to My Activity',
         })}
@@ -46,9 +47,9 @@ async function initPatientsPage() {
       <header class="research-hero">
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
           <div>
-            <span class="eyebrow">Clinician Workspace</span>
+            <span class="eyebrow">Doctor Workspace · Research Registry</span>
             <h1>Patient Registry</h1>
-            <p>Institutional patient records, multi-modality diagnostic history, and research cohort tracking.</p>
+            <p>Research patient records, multi-modality analysis history, and cohort tracking. <span style="font-size: 0.8125rem; color: var(--slate-500); display: block; margin-top: 0.25rem;">Prototype Doctor Workspace access does not independently verify professional licensure.</span></p>
           </div>
           <button type="button" class="studio-btn studio-btn-primary" id="openAddPatientBtn" style="display: inline-flex; align-items: center; gap: 0.5rem;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -300,7 +301,18 @@ async function initPatientsPage() {
     });
   }
 
+  let activeModalCleanup = null;
+
+  function closeModal() {
+    if (activeModalCleanup) {
+      activeModalCleanup();
+      activeModalCleanup = null;
+    }
+    modalHost.innerHTML = '';
+  }
+
   function openPatientModal(patient = null) {
+    closeModal();
     modalHost.innerHTML = patientModalHtml(patient);
 
     const form = document.querySelector('#patientForm');
@@ -309,6 +321,8 @@ async function initPatientsPage() {
     const overlay = document.querySelector('#patientModalOverlay');
     const errorEl = document.querySelector('#patientFormError');
     const submitBtn = document.querySelector('#savePatientSubmitBtn');
+
+    activeModalCleanup = bindModalAccessibility(overlay, closeModal);
 
     closeBtn?.addEventListener('click', closeModal);
     cancelBtn?.addEventListener('click', closeModal);
@@ -367,17 +381,18 @@ async function initPatientsPage() {
         submitBtn.textContent = id ? 'Save Changes' : 'Create Patient';
       }
     });
-
-    form?.full_name?.focus();
   }
 
   function openDeleteModal(patient) {
+    closeModal();
     modalHost.innerHTML = deleteConfirmModalHtml(patient);
 
     const closeBtn = document.querySelector('#closeDeleteModalBtn');
     const cancelBtn = document.querySelector('#cancelDeleteModalBtn');
     const confirmBtn = document.querySelector('#confirmDeleteModalBtn');
     const overlay = document.querySelector('#deleteModalOverlay');
+
+    activeModalCleanup = bindModalAccessibility(overlay, closeModal);
 
     closeBtn?.addEventListener('click', closeModal);
     cancelBtn?.addEventListener('click', closeModal);
@@ -390,7 +405,7 @@ async function initPatientsPage() {
       confirmBtn.textContent = 'Deleting...';
       try {
         await patientService.remove(patient.id);
-        toast(`Patient record ${patient.full_name} deleted. Historical analysis telemetry preserved.`, 'info');
+        toast(`Patient record ${patient.full_name} deleted. Saved analysis records preserved.`, 'info');
         closeModal();
         await loadData();
       } catch (err) {
@@ -399,10 +414,6 @@ async function initPatientsPage() {
         confirmBtn.textContent = 'Delete Patient Record';
       }
     });
-  }
-
-  function closeModal() {
-    modalHost.innerHTML = '';
   }
 
   // Bind input events

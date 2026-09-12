@@ -3,6 +3,7 @@ import { mountShell } from '../components/shell.js';
 import { authService } from '../services/auth.service.js';
 import { auth } from '../core/auth.js';
 import { toast } from '../components/toast.js';
+import { bindModalAccessibility } from '../components/workspace.js';
 
 const esc = (s) =>
   String(s || '').replace(/[&<>"']/g, (c) => ({
@@ -147,7 +148,7 @@ async function initProfile() {
       const status = document.querySelector('#accountStatus');
       try {
         const updated = await authService.updateProfile({ full_name: accountForm.full_name.value });
-        auth.save({ access_token: auth.token(), user: updated });
+        auth.save({ access_token: auth.token(), user: updated }, true);
         status.style.color = '#15803d';
         status.textContent = 'Profile name updated successfully.';
         toast('Profile name updated.', 'success');
@@ -203,7 +204,7 @@ async function initProfile() {
             </div>
             <div class="workspace-modal-body">
               <p style="font-size: 0.9375rem; color: var(--slate-700); line-height: 1.5; margin: 0 0 1rem 0;">
-                This will immediately invalidate all active access sessions and refresh tokens across all browsers, tablets, and devices.
+                This revokes all active Breast Health Studio sessions for this account.
               </p>
               <p style="font-size: 0.8125rem; color: var(--slate-500); margin: 0;">
                 You will be required to re-authenticate with your credentials on every device.
@@ -222,9 +223,15 @@ async function initProfile() {
       const confirmBtn = document.querySelector('#confirmLogoutAllBtn');
       const overlay = document.querySelector('#logoutAllModalOverlay');
 
+      let modalCleanup = null;
       const close = () => {
+        if (modalCleanup) { modalCleanup(); modalCleanup = null; }
         modalHost.innerHTML = '';
       };
+
+      if (overlay) {
+        modalCleanup = bindModalAccessibility(overlay, close);
+      }
 
       closeBtn?.addEventListener('click', close);
       cancelBtn?.addEventListener('click', close);

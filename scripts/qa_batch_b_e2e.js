@@ -430,10 +430,19 @@ print(json.dumps({'normal_id': uid, 'doctor_id': doc_id, 'patient_id': pid}))
     await cdp.eval(`document.querySelector('#btnAskAdvisor').click();`);
     await sleep(1000);
 
-    const advisorUrl = await cdp.eval(`window.location.href`);
-    const advisorBanner = await cdp.eval(`document.body.innerText.includes('Active Context') || document.body.innerText.includes('Discussing Structured Analysis')`);
+    let advisorBanner = false;
+    let advisorUrl = '';
+    for (let i = 0; i < 20; i++) {
+      advisorUrl = await cdp.eval(`window.location.href`);
+      advisorBanner = await cdp.eval(`document.querySelector('.advisor-context-banner') !== null || document.body.innerText.toLowerCase().includes('active context')`);
+      if (advisorBanner) break;
+      await sleep(300);
+    }
     if (!advisorUrl.includes('advisor.html')) throw new Error(`Expected URL to include advisor.html, got: ${advisorUrl}`);
-    if (!advisorBanner) throw new Error('Advisor page did not display active contextual analysis banner!');
+    if (!advisorBanner) {
+      const bodyText = await cdp.eval(`document.body.innerText`);
+      throw new Error(`Advisor page did not display active contextual analysis banner! Current body text: ${bodyText}`);
+    }
     console.log('✓ Verified: Contextual handoff to advisor.html with active context banner.');
 
     // ================================================================

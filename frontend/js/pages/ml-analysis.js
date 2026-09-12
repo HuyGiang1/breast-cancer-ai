@@ -1075,7 +1075,7 @@ function attachEventListeners() {
   document.querySelector('#btnViewReport')?.addEventListener('click', (e) => {
     const pid = e.currentTarget.dataset.predictionId;
     if (pid) {
-      window.open(reportService.url(pid), '_blank');
+      reportService.open(pid);
     }
   });
 

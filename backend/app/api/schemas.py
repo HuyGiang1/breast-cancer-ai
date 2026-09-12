@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional, Annotated
+from typing import List, Dict, Any, Optional, Annotated, Literal
 
 NonNegativeFloat = Annotated[float, Field(ge=0)]
 
@@ -127,9 +127,8 @@ class RegisterRequest(BaseModel):
     email: str
     full_name: str
     password: str = Field(..., min_length=8)
-    account_type: Optional[str] = "personal"  # "personal" | "doctor"
+    account_type: Literal["personal", "doctor"] = "personal"
     doctor_invite_code: Optional[str] = None
-    role: Optional[str] = None  # Deprecated/Ignored: client-sent role is never trusted
 
 
 class LoginRequest(BaseModel):

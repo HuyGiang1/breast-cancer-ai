@@ -8,19 +8,19 @@ Last updated: 2026-09-07
 
 - Current branch: `feat/product-experience-v4`
 - Baseline commits: `5b6c72c` (legacy rich functional baseline) and `8eba137` (committed V3 baseline)
-- Parity matrix: `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged, sum reconciled: 52)
-- Current work: **Batch E (Doctor Workspace, Patient Registry, Patient Detail, Activity, Reports & Account Separation) COMPLETED (PASS)**
-  - Implemented server-side role gating & invite code verification (`DOCTOR_REGISTRATION_MODE=invite`, `DOCTOR_INVITE_CODE`) with constant-time check (`hmac.compare_digest`), ignoring client-submitted roles.
-  - Rebuilt `register.html` with Personal vs Doctor account cards and revealable doctor invite code field.
-  - Rebuilt Doctor Workspace (`/pages/patients.html`) with summary metrics strip (Total Patients, Analyses Logged, ML, DL, Fusion), search/sort toolbar, accessible Add/Edit modal, and safety-explicit Delete Confirmation modal (preserving historical prediction records).
-  - Implemented single-patient endpoint `GET /patients/{id}/` with doctor role and ownership isolation.
-  - Rebuilt Patient Detail (`/pages/patient-detail.html`) with 3-modality quick launch buttons (`ml-analysis.html`, `dl-analysis.html`, `multimodal.html`), clinical research notes, and chronological patient analysis timeline.
-  - Protected Doctor pages with Access Restricted notices when opened by Personal accounts.
-  - Rebuilt Activity (`/pages/history.html`): "My Activity" (Personal) vs "Analysis Activity" (Doctor with patient selector).
-  - Rebuilt Reports (`/pages/reports.html`): modality/patient filters, View Full Report, and browser-native Print / Save PDF.
-  - Profile (`/pages/profile.html`): Account type breakdown, non-licensure disclaimer, and "Sign out all devices" confirmation modal calling `POST /auth/logout-all/`.
-  - All automated test suites (backend security 11/11, frontend contract 11/11, static verification, broken link crawler 0 defects, Batch B/C/D regressions 100%) passed with 17 new screenshots captured.
-- Next step: Batch F — await explicit user prompt. Do NOT start Batch F prematurely.
+- Parity matrix: `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged, sum reconciled: 52/52)
+- Current work: **Batch F (Final Web Product Polish, AI Guide, Scientific Copy & Feature Freeze) COMPLETED (PASS)**
+  - Strict account type contract enforced on registration (`Literal["personal", "doctor"]`, rejects `admin` or invalid values with HTTP 422).
+  - Transient context privacy guaranteed (`auth.clearTransientContext()`) clearing `bcai_advisor_context`, `bcai_active_analysis`, and `bcai_patient_context` across logout and login.
+  - Centralized authenticated report open/print service (`reportService.fetchBlob`, `open`, `print`) across all pages.
+  - Canonical prediction semantics enforced across Structured ML, Mammography DL, and Fusion.
+  - AI Guide rebuilt with safe DOM markdown rendering (`renderSafeContent` with zero unsafe `innerHTML`), multimodal context grounding (40/60 weighting, 0.5 midpoint, unpaired disclaimer), progressive disclosure, and English safety guardrails.
+  - Sourced screening schedules visibly separating ACS (Oeffinger et al.) vs USPSTF (2024 update) guidelines with authoritative citations.
+  - Accessible modals with Tab focus trap, Escape key listener, return focus to trigger, and body scroll locking (`bindModalAccessibility`).
+  - Corrected Batch E false-pass items (doctor patient filtering across full history, Date Range filters, active count badges).
+  - Web feature freeze declared in `docs/v4/WEB_FEATURE_FREEZE_V1.md` with documented Pre-Deploy Blocker regarding demo mammogram TCIA attribution.
+  - Full regression suite passing 100% across all batches (A–F, 73 Pytest, 0 broken links, 24 representative screenshots).
+- Next step: Pre-deployment staging configuration and external infrastructure setup. Do NOT modify frozen web application code without explicit unfreeze approval.
 
 ## Completed major milestones
 

@@ -1,14 +1,20 @@
 import { auth } from '../core/auth.js';
+import { reportService } from '../services/report.service.js';
 
-const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
-  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-}[char]));
+const esc = (value) =>
+  String(value ?? '').replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  }[char]));
 
 // Canonical targets array parsed by test validators
 const navGroups = [
   ['Analyze', [
-    ['ml-analysis.html', 'Structured Feature ML'],
-    ['dl-analysis.html', 'Mammography AI'],
+    ['ml-analysis.html', 'Structured Feature Analysis'],
+    ['dl-analysis.html', 'Mammography Research Analysis'],
     ['multimodal.html', 'Experimental Fusion'],
   ]],
   ['Research', [
@@ -73,17 +79,17 @@ export function mountShell(pageTitle) {
                   <div class="mega-card-icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                   </div>
-                  <strong>Structured Feature ML</strong>
-                  <p>30 cytological measurements from FNA digitized images.</p>
-                  <span class="mega-badge mega-badge-teal">Threshold 0.36 raw</span>
+                  <strong>Structured Feature Analysis</strong>
+                  <p>30 cytological measurements from digitized aspirates (WDBC).</p>
+                  <span class="mega-badge mega-badge-teal">Threshold 0.360 raw</span>
                 </a>
 
                 <a class="mega-card" href="dl-analysis.html">
                   <div class="mega-card-icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                   </div>
-                  <strong>Mammography AI</strong>
-                  <p>Full processed image screening with EfficientNet-B0.</p>
+                  <strong>Mammography Research Analysis</strong>
+                  <p>Full processed image analysis with EfficientNet-B0 (CBIS-DDSM).</p>
                   <span class="mega-badge mega-badge-teal">Threshold 0.515 raw</span>
                 </a>
 
@@ -92,8 +98,8 @@ export function mountShell(pageTitle) {
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                   </div>
                   <strong>Experimental Fusion</strong>
-                  <p>Unpaired demonstration of 40% ML + 60% DL weighting.</p>
-                  <span class="mega-badge mega-badge-amber">Software Heuristic</span>
+                  <p>Unpaired exploration combining 40% ML + 60% DL scores.</p>
+                  <span class="mega-badge mega-badge-amber">Software Exploration</span>
                 </a>
               </div>
             </li>
@@ -114,15 +120,19 @@ export function mountShell(pageTitle) {
 
             <!-- Workspace Contextual Link (Role-Aware) -->
             <li class="studio-nav-item">
-              ${isDoctor ? `
+              ${
+                isDoctor
+                  ? `
                 <a class="studio-nav-link ${activePage === 'patients.html' || activePage === 'patient-detail.html' ? 'active' : ''}" href="patients.html">
                   Doctor Workspace
                 </a>
-              ` : `
+              `
+                  : `
                 <a class="studio-nav-link ${activePage === 'history.html' || activePage === 'reports.html' ? 'active' : ''}" href="history.html">
                   My Activity
                 </a>
-              `}
+              `
+              }
             </li>
 
             <!-- AI Guide Link -->
@@ -164,9 +174,9 @@ export function mountShell(pageTitle) {
         <div class="mobile-nav-group">
           <div class="mobile-nav-group-title">Analyze</div>
           <div class="mobile-nav-links">
-            <a href="ml-analysis.html">Structured Feature ML (WDBC)</a>
-            <a href="dl-analysis.html">Mammography AI (CBIS-DDSM)</a>
-            <a href="multimodal.html">Experimental Multimodal Fusion</a>
+            <a href="ml-analysis.html">Structured Feature Analysis (WDBC)</a>
+            <a href="dl-analysis.html">Mammography Research Analysis (CBIS-DDSM)</a>
+            <a href="multimodal.html">Experimental Fusion</a>
           </div>
         </div>
         <div class="mobile-nav-group">
@@ -178,16 +188,14 @@ export function mountShell(pageTitle) {
           </div>
         </div>
         <div class="mobile-nav-group">
-          <div class="mobile-nav-group-title">System</div>
+          <div class="mobile-nav-group-title">Account &amp; System</div>
           <div class="mobile-nav-links">
-            <a href="advisor.html">AI Information Assistant</a>
-            <a href="model-status.html">Model Telemetry &amp; Status</a>
-            <a href="profile.html">Profile &amp; Security</a>
+            <a href="model-status.html">Model Status</a>
+            <a href="profile.html">Account &amp; Security</a>
           </div>
         </div>
       </div>
     </div>
-
   `;
 
   document.body.insertAdjacentHTML('afterbegin', topbarHtml);
@@ -218,56 +226,43 @@ export function mountShell(pageTitle) {
     }
   });
 
-  // Intercept report link downloads
-  document.addEventListener('click', async (event) => {
-    const link = event.target.closest('a[href*="/predictions/"][href$="/report/"]');
-    if (!link) return;
-    event.preventDefault();
-    try {
-      const response = await fetch(link.href, {
-        headers: { Authorization: `Bearer ${auth.token()}` }
-      });
-      if (!response.ok) throw new Error('Unable to open report.');
-      const url = URL.createObjectURL(await response.blob());
-      window.open(url, '_blank', 'noopener');
-      setTimeout(() => URL.revokeObjectURL(url), 60000);
-    } catch (error) {
-      link.textContent = error.message;
-    }
-  });
-
-  // Global handler for print report buttons
-  document.addEventListener('click', async (event) => {
-    const btn = event.target.closest('.btn-print-report');
-    if (!btn) return;
-    event.preventDefault();
-    const reportUrl = btn.getAttribute('data-report-url');
-    if (!reportUrl) return;
-
-    const originalHtml = btn.innerHTML;
-    try {
-      btn.disabled = true;
-      btn.innerHTML = '<span>Loading...</span>';
-      const response = await fetch(reportUrl, {
-        headers: { Authorization: `Bearer ${auth.token()}` }
-      });
-      if (!response.ok) throw new Error('Unable to fetch report');
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const printWin = window.open(blobUrl, '_blank');
-      if (printWin) {
-        printWin.onload = () => {
-          try {
-            printWin.print();
-          } catch (e) {}
-        };
+  // Global handler for unified authenticated report view and print triggers
+  document.addEventListener('click', (event) => {
+    const viewBtn = event.target.closest('.btn-view-report');
+    if (viewBtn) {
+      event.preventDefault();
+      const pid = viewBtn.getAttribute('data-prediction-id');
+      if (pid) {
+        reportService.open(pid).catch((err) => console.error('View report error:', err));
       }
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
-    } catch (err) {
-      console.error('Print report error:', err);
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = originalHtml;
+      return;
+    }
+
+    const printBtn = event.target.closest('.btn-print-report');
+    if (printBtn) {
+      event.preventDefault();
+      const pid = printBtn.getAttribute('data-prediction-id');
+      if (pid) {
+        reportService.print(pid).catch((err) => console.error('Print report error:', err));
+      } else {
+        const url = printBtn.getAttribute('data-report-url');
+        if (url) {
+          const match = url.match(/\/predictions\/([^/]+)\/report/);
+          if (match && match[1]) {
+            reportService.print(match[1]).catch((err) => console.error('Print report error:', err));
+          }
+        }
+      }
+      return;
+    }
+
+    const link = event.target.closest('a[href*="/predictions/"][href$="/report/"]');
+    if (link) {
+      event.preventDefault();
+      const match = link.href.match(/\/predictions\/([^/]+)\/report/);
+      if (match && match[1]) {
+        reportService.open(match[1]).catch((err) => console.error('Open report link error:', err));
+      }
     }
   });
 

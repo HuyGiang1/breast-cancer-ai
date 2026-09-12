@@ -146,7 +146,7 @@ function initAuthSession() {
       quickStartGreeting.textContent = `Welcome back, ${displayName}`;
     }
     if (quickStartRoleBadge) {
-      quickStartRoleBadge.textContent = isDoctor ? '👨‍⚕️ Physician / Doctor' : '🔬 Researcher';
+      quickStartRoleBadge.textContent = isDoctor ? '👨‍⚕️ Doctor Workspace' : '👤 Personal Account';
     }
     if (quickStartDoctorCard) {
       quickStartDoctorCard.style.display = isDoctor ? 'flex' : 'none';
@@ -158,7 +158,7 @@ function initAuthSession() {
         <span style="font-size: 0.8125rem; font-weight: 600; color: var(--slate-700); margin-right: 0.25rem;">
           Welcome, ${esc(displayName)}
         </span>
-        <a class="studio-btn studio-btn-outline studio-btn-sm" href="pages/profile.html">Profile</a>
+        <a class="studio-btn studio-btn-outline studio-btn-sm" href="pages/profile.html">Account</a>
         <button class="studio-btn studio-btn-ghost studio-btn-sm" id="topbarSignOutBtn" type="button">Sign Out</button>
       `;
       document.getElementById('topbarSignOutBtn')?.addEventListener('click', () => {
@@ -178,11 +178,11 @@ function initAuthSession() {
     if (mobileWorkspaceSlot) {
       mobileWorkspaceSlot.innerHTML = `
         <div class="mobile-nav-group">
-          <div class="mobile-nav-group-title">${isDoctor ? 'Clinical Workspace' : 'My Activity'}</div>
+          <div class="mobile-nav-group-title">${isDoctor ? 'Doctor Workspace' : 'My Activity'}</div>
           <div class="mobile-nav-links">
             ${isDoctor ? '<a href="pages/patients.html">Doctor Workspace (Patient Registry)</a>' : ''}
-            <a href="pages/history.html">Prediction History</a>
-            <a href="pages/reports.html">Prediction Reports</a>
+            <a href="pages/history.html">${isDoctor ? 'Analysis Activity' : 'My Activity'}</a>
+            <a href="pages/reports.html">Analysis Reports</a>
           </div>
         </div>
       `;
@@ -193,7 +193,7 @@ function initAuthSession() {
         <div class="mobile-nav-group">
           <div class="mobile-nav-group-title">Account (${esc(displayName)})</div>
           <div class="mobile-nav-links">
-            <a href="pages/profile.html">Profile &amp; Settings</a>
+            <a href="pages/profile.html">Account &amp; Security</a>
             <a href="javascript:void(0)" id="mobileSignOutLink" style="color: var(--danger, #ef4444);">Sign Out</a>
           </div>
         </div>
@@ -206,7 +206,7 @@ function initAuthSession() {
 
     // Hero secondary CTA
     if (heroSecondaryCta) {
-      heroSecondaryCta.textContent = isDoctor ? 'Doctor Workspace →' : 'Start Analysis →';
+      heroSecondaryCta.textContent = isDoctor ? 'Doctor Workspace →' : 'Continue Analysis →';
       heroSecondaryCta.href = isDoctor ? 'pages/patients.html' : 'pages/ml-analysis.html';
     }
 

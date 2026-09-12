@@ -38,21 +38,21 @@
           <div class="studio-mega-menu mega-menu-analyze" role="menu">
             <a href="pages/ml-analysis.html" class="mega-card" role="menuitem">
               <span class="mega-card-icon">🔬</span>
-              <strong>FNA Cytology Analysis</strong>
+              <strong>Structured Feature Analysis</strong>
               <p>Predict malignancy from 30 fine needle aspirate nuclear features using frozen Logistic Regression.</p>
-              <span class="mega-badge mega-badge-teal">Study A · Cutoff ≥ 0.360</span>
+              <span class="mega-badge mega-badge-teal">WDBC · Cutoff ≥ 0.360</span>
             </a>
             <a href="pages/dl-analysis.html" class="mega-card" role="menuitem">
               <span class="mega-card-icon">🩻</span>
-              <strong>Mammography Analysis</strong>
+              <strong>Mammography Research Analysis</strong>
               <p>Evaluate digital mammography with frozen EfficientNet-B0 (full processed image) and coarse Grad-CAM visual attention.</p>
-              <span class="mega-badge mega-badge-blue">Study B · Cutoff ≥ 0.515</span>
+              <span class="mega-badge mega-badge-blue">CBIS-DDSM · Cutoff ≥ 0.515</span>
             </a>
             <a href="pages/multimodal.html" class="mega-card" role="menuitem">
               <span class="mega-card-icon">⚡</span>
-              <strong>Multimodal Experiment</strong>
+              <strong>Experimental Fusion</strong>
               <p>Explore software-level 40/60 weighted combination across unpaired cytology and imaging modalities.</p>
-              <span class="mega-badge mega-badge-amber">Research Heuristic Only</span>
+              <span class="mega-badge mega-badge-amber">Research Exploration Only</span>
             </a>
           </div>
         </div>
@@ -115,18 +115,18 @@
         <div class="mobile-nav-group-title">Navigation</div>
         <div class="mobile-nav-links">
           <a href="index.html">Overview</a>
-          <a href="#research">Research Story</a>
-          <a href="#learn">Learn Breast Health</a>
-          <a href="pages/advisor.html">AI Information Assistant</a>
+          <a href="#research">Research</a>
+          <a href="#learn">Learn</a>
+          <a href="pages/advisor.html">AI Guide</a>
         </div>
       </div>
 
       <div class="mobile-nav-group">
-        <div class="mobile-nav-group-title">AI Analysis Labs</div>
+        <div class="mobile-nav-group-title">Analyze</div>
         <div class="mobile-nav-links">
-          <a href="pages/ml-analysis.html">FNA Cytology Analysis (Study A)</a>
-          <a href="pages/dl-analysis.html">Mammography Analysis (Study B)</a>
-          <a href="pages/multimodal.html">Multimodal Software Experiment</a>
+          <a href="pages/ml-analysis.html">Structured Feature Analysis (WDBC)</a>
+          <a href="pages/dl-analysis.html">Mammography Research Analysis (CBIS-DDSM)</a>
+          <a href="pages/multimodal.html">Experimental Fusion</a>
         </div>
       </div>
 
@@ -980,74 +980,117 @@
             </div>
           </div>
 
-          <!-- Restored Age-Stratified Screening Guidance Table -->
+          <!-- Sourced Screening Schedules: ACS and USPSTF Separately -->
           <div style="margin-top: var(--space-8);">
-            <h4 style="font-size: 1.125rem; font-weight: 700; color: var(--slate-900); margin-bottom: 0.5rem;">
-              Evidence-Based Screening Schedule by Age &amp; Risk Profile
-            </h4>
-            <p style="font-size: 0.875rem; color: var(--slate-600); margin-bottom: 1rem;">
-              Guidelines synthesized from the American Cancer Society (ACS) and U.S. Preventive Services Task Force (USPSTF). Individual schedules should always be confirmed with your healthcare provider.
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <h4 style="font-size: 1.125rem; font-weight: 700; color: var(--slate-900); margin: 0;">
+                Evidence-Based Screening Schedules by Organization
+              </h4>
+              <span class="studio-badge badge-neutral" style="font-size: 0.75rem;">Separated Evidence Sources</span>
+            </div>
+            <p style="font-size: 0.875rem; color: var(--slate-600); margin-bottom: 1.5rem;">
+              The American Cancer Society (ACS) and U.S. Preventive Services Task Force (USPSTF) publish distinct, evidence-based recommendations. They are presented separately below to maintain methodological rigor without conflating recommendations.
             </p>
 
-            <div class="screening-table-wrap">
-              <table class="screening-table" aria-label="Breast cancer screening recommendations by age group">
-                <thead>
-                  <tr>
-                    <th scope="col">Age / Risk Group</th>
-                    <th scope="col">Clinical Recommendation</th>
-                    <th scope="col">Primary Modality</th>
-                    <th scope="col">Interval</th>
-                    <th scope="col">Authoritative Source</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><strong>Ages 20 – 39</strong><br><small class="text-muted">Average Risk</small></td>
-                    <td>Breast self-awareness and clinical breast examination during periodic health assessments. Formal mammography is not routinely indicated for average risk.</td>
-                    <td>Clinical Breast Exam (CBE)</td>
-                    <td>Periodic</td>
-                    <td>ACS / NCI Clinical Consensus</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Ages 40 – 44</strong><br><small class="text-muted">Average Risk</small></td>
-                    <td>Women have the choice to begin annual screening mammography based on individual values, preferences, and clinical shared decision-making.</td>
-                    <td>2D / 3D Screening Mammography</td>
-                    <td>Annual (Elective)</td>
-                    <td>ACS Screening Guideline (JAMA 2015)</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Ages 45 – 54</strong><br><small class="text-muted">Average Risk</small></td>
-                    <td>Women should undergo regular screening mammography every year. This age window represents the peak benefit for annual detection.</td>
-                    <td>Digital Mammography / DBT</td>
-                    <td>Every Year</td>
-                    <td>ACS Guideline / USPSTF Reference</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Ages 55 and Older</strong><br><small class="text-muted">Average Risk</small></td>
-                    <td>Women can transition to biennial (every 2 years) mammography or choose to continue annual screening. Screening should continue as long as overall health is good and life expectancy is 10+ years.</td>
-                    <td>Digital Mammography / DBT</td>
-                    <td>Every 1 to 2 Years</td>
-                    <td>ACS Guidelines / USPSTF Update</td>
-                  </tr>
-                  <tr>
-                    <td><strong>High-Risk Individuals</strong><br><small class="text-muted">BRCA1/2, &gt;20% Lifetime Risk</small></td>
-                    <td>Annual screening with both breast MRI and digital mammogram starting typically at age 30, coordinated under specialized genetic and oncology management.</td>
-                    <td>Contrast Breast MRI + Mammography</td>
-                    <td>Annual (Alternating)</td>
-                    <td>American College of Radiology (ACR) / ACS</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Dense Breast Tissue</strong><br><small class="text-muted">BI-RADS C or D</small></td>
-                    <td>Parenchymal masking reduces standard mammography sensitivity. Supplemental screening with automated breast ultrasound (ABUS) or MRI is recommended upon clinical assessment.</td>
-                    <td>Mammogram + Supplemental Ultrasound/MRI</td>
-                    <td>Per Clinical Protocol</td>
-                    <td>ACR BI-RADS Atlas / FDA Dense Tissue Rule</td>
-                  </tr>
-                </tbody>
-              </table>
+            <!-- 1. American Cancer Society (ACS) Guidance -->
+            <div class="studio-card" style="margin-bottom: 1.5rem; border: 1px solid var(--border-subtle); padding: 1.25rem;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                <div>
+                  <span class="studio-badge badge-teal" style="margin-right: 0.5rem;">ACS Guidance</span>
+                  <strong style="color: var(--slate-900); font-size: 1rem;">American Cancer Society Recommendations (Average Risk)</strong>
+                </div>
+                <small style="color: var(--slate-500);">Source: <a href="https://www.cancer.org/cancer/types/breast-cancer/screening-tests-and-early-detection/american-cancer-society-recommendations-for-the-early-detection-of-breast-cancer.html" target="_blank" rel="noopener noreferrer" style="color: var(--teal-700); text-decoration: underline;">Oeffinger et al., JAMA 2015;314(15):1599-1614 (ACS Guidelines)</a></small>
+              </div>
+              <div class="screening-table-wrap">
+                <table class="screening-table" aria-label="American Cancer Society screening recommendations">
+                  <thead>
+                    <tr>
+                      <th scope="col">Age Group</th>
+                      <th scope="col">ACS Recommendation</th>
+                      <th scope="col">Frequency</th>
+                      <th scope="col">Clinical Shared Decision</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Ages 40 – 44</strong></td>
+                      <td>Women have the choice to begin annual screening mammography based on individual preference and discussion with their clinician.</td>
+                      <td>Annual (Elective)</td>
+                      <td>Optional early initiation</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Ages 45 – 54</strong></td>
+                      <td>Women should undergo regular screening mammography. Peak evidence-backed benefit for annual detection.</td>
+                      <td>Every Year</td>
+                      <td>Recommended routine screening</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Ages 55 and Older</strong></td>
+                      <td>Women can transition to biennial (every 2 years) screening or continue annual screening, continuing as long as overall health is good and life expectancy is 10+ years.</td>
+                      <td>Every 1 to 2 Years</td>
+                      <td>Continue while in good health</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div style="font-size: 0.75rem; color: var(--slate-500); margin-top: 0.5rem; line-height: 1.4;">
-              Source Registry Citation: Sourced from peer-reviewed American Cancer Society guidelines (Oeffinger et al., JAMA 2015;314(15):1599-1614) and ACR BI-RADS Atlas 5th Edition.
+
+            <!-- 2. USPSTF Guidance (2024 Update) -->
+            <div class="studio-card" style="margin-bottom: 1.5rem; border: 1px solid var(--border-subtle); padding: 1.25rem;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                <div>
+                  <span class="studio-badge badge-blue" style="margin-right: 0.5rem;">USPSTF Guidance</span>
+                  <strong style="color: var(--slate-900); font-size: 1rem;">U.S. Preventive Services Task Force (2024 Final Recommendation)</strong>
+                </div>
+                <small style="color: var(--slate-500);">Source: <a href="https://www.uspreventiveservicestaskforce.org/uspstf/recommendation/breast-cancer-screening" target="_blank" rel="noopener noreferrer" style="color: var(--blue-700); text-decoration: underline;">USPSTF Recommendation Statement (JAMA 2024)</a></small>
+              </div>
+              <div class="screening-table-wrap">
+                <table class="screening-table" aria-label="USPSTF screening recommendations">
+                  <thead>
+                    <tr>
+                      <th scope="col">Population</th>
+                      <th scope="col">USPSTF Recommendation</th>
+                      <th scope="col">Interval</th>
+                      <th scope="col">Evidence Grade</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Women Aged 40 – 74</strong><br><small class="text-muted">Average Risk</small></td>
+                      <td>Biennial screening mammography is recommended for all average-risk women starting at age 40 to balance early mortality reduction against overdiagnosis.</td>
+                      <td>Every 2 Years (Biennial)</td>
+                      <td>Grade B (Moderate Net Benefit)</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Women Aged 75 and Older</strong></td>
+                      <td>Current published evidence is insufficient to assess the balance of benefits and harms of screening mammography.</td>
+                      <td>Individualized</td>
+                      <td>Grade I (Insufficient Evidence)</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Dense Breasts (BI-RADS C/D)</strong></td>
+                      <td>Current evidence is insufficient to assess the balance of benefits and harms of supplemental screening (ultrasound or MRI) beyond standard mammography.</td>
+                      <td>Per Physician Assessment</td>
+                      <td>Grade I (Insufficient Evidence)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- 3. High-Risk Populations (ACR / ACS) -->
+            <div class="studio-card" style="border: 1px solid var(--border-subtle); padding: 1.25rem; background: var(--surface-subtle);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                <strong style="color: var(--slate-900); font-size: 0.9375rem;">High-Risk Protocol Consideration (ACR / ACS / NCCN)</strong>
+                <span class="studio-badge badge-neutral">Genetics &amp; Radiation History</span>
+              </div>
+              <p style="font-size: 0.8125rem; color: var(--slate-600); margin: 0; line-height: 1.55;">
+                Women with a known BRCA1/BRCA2 mutation, a first-degree relative with a mutation, a calculated lifetime breast cancer risk ≥ 20%, or prior mantle chest radiation therapy between ages 10 and 30 are recommended to begin annual contrast-enhanced breast MRI and screening mammography starting at age 30 under specialist clinical oversight.
+              </p>
+            </div>
+
+            <div style="font-size: 0.75rem; color: var(--slate-500); margin-top: 0.75rem; line-height: 1.4;">
+              Source Registry Citations: American Cancer Society (Oeffinger et al., JAMA 2015;314(15):1599-1614); U.S. Preventive Services Task Force (JAMA 2024;331(22):1918-1930); American College of Radiology Appropriateness Criteria (2023).
             </div>
           </div>
         </div>
@@ -1414,6 +1457,9 @@
             </li>
             <li>
               <span><strong>Unpaired Multimodal Heuristic:</strong> The multimodal demo employs an unvalidated 40/60 weighted software heuristic; no clinically matched patient cohorts were evaluated simultaneously.</span>
+            </li>
+            <li>
+              <span><strong>Demo Mammogram Provenance &amp; Attribution:</strong> Demo mammograms are derived from the Curated Breast Imaging Subset of DDSM (CBIS-DDSM) hosted on The Cancer Imaging Archive (TCIA). Production distribution licensing remains a documented PRE-DEPLOY BLOCKER.</span>
             </li>
           </ul>
         </div>

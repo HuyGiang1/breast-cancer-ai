@@ -430,3 +430,62 @@ def test_reset_password_expired_token():
     )
     assert resp.status_code == 400
     assert "Reset token expired" in resp.json()["detail"]
+
+
+def test_registration_strict_account_type_validation():
+    """Verify that invalid account_type values are strictly rejected with HTTP 422."""
+    db.init()
+    # 1. account_type='admin' must be rejected with 422
+    resp_admin = client.post(
+        "/api/v1/auth/register/",
+        json={
+            "email": "admin_attempt@example.com",
+            "full_name": "Admin Attempt",
+            "password": "ValidPassword123!",
+            "account_type": "admin"
+        }
+    )
+    assert resp_admin.status_code == 422
+
+    # 2. account_type='banana' must be rejected with 422
+    resp_banana = client.post(
+        "/api/v1/auth/register/",
+        json={
+            "email": "banana_attempt@example.com",
+            "full_name": "Banana Attempt",
+            "password": "ValidPassword123!",
+            "account_type": "banana"
+        }
+    )
+    assert resp_banana.status_code == 422
+
+    # 3. account_type='personal' succeeds as role='user'
+    email_pers = "strict_personal@example.com"
+    db.execute("DELETE FROM users WHERE email = ?", (email_pers,))
+    resp_pers = client.post(
+        "/api/v1/auth/register/",
+        json={
+            "email": email_pers,
+            "full_name": "Personal User",
+            "password": "ValidPassword123!",
+            "account_type": "personal"
+        }
+    )
+    assert resp_pers.status_code == 200
+    assert resp_pers.json()["user"]["role"] == "user"
+
+    # 4. Attempting to inject role='doctor' or role='admin' with personal account cannot elevate
+    email_inj = "injection_attempt@example.com"
+    db.execute("DELETE FROM users WHERE email = ?", (email_inj,))
+    resp_inj = client.post(
+        "/api/v1/auth/register/",
+        json={
+            "email": email_inj,
+            "full_name": "Injection Attempt",
+            "password": "ValidPassword123!",
+            "account_type": "personal",
+            "role": "doctor"
+        }
+    )
+    assert resp_inj.status_code == 200
+    assert resp_inj.json()["user"]["role"] == "user"

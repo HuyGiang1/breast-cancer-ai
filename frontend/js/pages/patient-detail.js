@@ -8,6 +8,7 @@ import {
   patientModalHtml,
   timelineEntryHtml,
   accessRestrictedHtml,
+  bindModalAccessibility,
   formatDate,
   calculateAge,
   getInitials,
@@ -27,13 +28,13 @@ async function initPatientDetailPage() {
     app.innerHTML = `
       <section class="research-main">
         <header class="research-hero">
-          <span class="eyebrow">Clinician Access</span>
+          <span class="eyebrow">Doctor Workspace</span>
           <h1>Patient Record</h1>
-          <p>Institutional patient longitudinal timelines and multi-modality research logs.</p>
+          <p>Research patient longitudinal analysis timelines and multi-modality evaluation history.</p>
         </header>
         ${accessRestrictedHtml({
           title: 'Patient Record Access Restricted',
-          message: 'Individual patient detail records and clinical timelines are accessible only to authenticated Doctor / Clinician accounts.',
+          message: 'Individual patient detail records and analysis timelines are accessible only to authenticated Doctor / Clinician Workspace accounts.',
           returnUrl: 'history.html',
           returnLabel: 'Go to My Activity',
         })}
@@ -222,12 +223,12 @@ async function initPatientDetailPage() {
           }
         </section>
 
-        <!-- Right: Clinical Notes & Cohort Summary -->
+        <!-- Right: Research Notes & Cohort Summary -->
         <aside>
           <div class="studio-card" style="margin-bottom: 1rem;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-              <h3 style="font-size: 1rem; font-weight: 700; color: var(--slate-900); margin: 0;">Clinical Notes</h3>
-              <button type="button" class="btn-icon-action" id="editNotesBtn" title="Edit Clinical Notes">
+              <h3 style="font-size: 1rem; font-weight: 700; color: var(--slate-900); margin: 0;">Research Notes</h3>
+              <button type="button" class="btn-icon-action" id="editNotesBtn" title="Edit Research Notes">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -235,7 +236,7 @@ async function initPatientDetailPage() {
               </button>
             </div>
             <p style="font-size: 0.875rem; color: var(--slate-600); line-height: 1.5; white-space: pre-wrap; margin: 0;">
-              ${esc(p.notes || 'No clinical notes recorded for this patient.')}
+              ${esc(p.notes || 'No research notes recorded for this patient.')}
             </p>
           </div>
 
@@ -257,7 +258,7 @@ async function initPatientDetailPage() {
                 <strong style="color: #7e22ce;">${fusionCount}</strong>
               </div>
               <div style="display: flex; justify-content: space-between; padding-top: 0.25rem;">
-                <span style="color: var(--slate-800); font-weight: 700;">Total Evaluated:</span>
+                <span style="color: var(--slate-800); font-weight: 700;">Total Analyses:</span>
                 <strong style="color: var(--slate-900);">${totalAnalyses}</strong>
               </div>
             </div>
@@ -269,27 +270,35 @@ async function initPatientDetailPage() {
     document.querySelector('#editDemographicsBtn')?.addEventListener('click', openEditModal);
     document.querySelector('#editNotesBtn')?.addEventListener('click', openEditModal);
 
-    // Print report delegation
+    // Authenticated View report delegation
+    contentEl.querySelectorAll('.btn-view-report').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const pid = btn.getAttribute('data-prediction-id');
+        if (pid) reportService.open(pid);
+      });
+    });
+
+    // Authenticated Print report delegation
     contentEl.querySelectorAll('.btn-print-report').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        const url = btn.getAttribute('data-report-url');
-        if (url) printReport(url);
+      btn.addEventListener('click', () => {
+        const pid = btn.getAttribute('data-prediction-id');
+        if (pid) reportService.print(pid);
       });
     });
   }
 
-  function printReport(url) {
-    const printWindow = window.open(url, '_blank');
-    if (printWindow) {
-      printWindow.onload = () => {
-        try {
-          printWindow.print();
-        } catch (err) {}
-      };
+  let activeModalCleanup = null;
+
+  function closeModal() {
+    if (activeModalCleanup) {
+      activeModalCleanup();
+      activeModalCleanup = null;
     }
+    modalHost.innerHTML = '';
   }
 
   function openEditModal() {
+    closeModal();
     modalHost.innerHTML = patientModalHtml(currentPatient);
 
     const form = document.querySelector('#patientForm');
@@ -298,6 +307,8 @@ async function initPatientDetailPage() {
     const overlay = document.querySelector('#patientModalOverlay');
     const errorEl = document.querySelector('#patientFormError');
     const submitBtn = document.querySelector('#savePatientSubmitBtn');
+
+    activeModalCleanup = bindModalAccessibility(overlay, closeModal);
 
     closeBtn?.addEventListener('click', closeModal);
     cancelBtn?.addEventListener('click', closeModal);
@@ -350,12 +361,6 @@ async function initPatientDetailPage() {
         submitBtn.textContent = 'Save Changes';
       }
     });
-
-    form?.full_name?.focus();
-  }
-
-  function closeModal() {
-    modalHost.innerHTML = '';
   }
 
   // Initial load

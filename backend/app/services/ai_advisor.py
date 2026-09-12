@@ -816,6 +816,42 @@ class AIAdvisorService:
 
     def _local_chat(self, message: str) -> str:
         text = message.lower()
+
+        # Safety Guardrail: Self-diagnosis requests
+        if any(p in text for p in ["do i have cancer", "have cancer", "am i sick", "diagnose me", "is it malignant"]):
+            return (
+                "I cannot diagnose cancer or determine whether you have cancer. Breast Health Studio is a software research "
+                "and education platform, not a clinical diagnostic service. A medical diagnosis requires formal clinical examination, "
+                "diagnostic imaging, and pathological tissue biopsy interpreted by licensed medical specialists. "
+                "If you are experiencing symptoms or have questions about test results, please consult a healthcare professional."
+            )
+
+        # Safety Guardrail: Tumor localization
+        if any(p in text for p in ["where is my tumor", "locate my tumor", "tumor location", "where is the lesion"]):
+            return (
+                "I cannot identify or localize a tumor. This platform does not perform anatomical lesion localization. "
+                "Research visual explanations like Grad-CAM highlight model layer activations, which do not represent definitive "
+                "pathological margins or physical tumor boundaries. Official localization requires radiologist review."
+            )
+
+        # Safety Guardrail: Treatment prescription
+        if any(p in text for p in ["what treatment should i start", "prescribe", "what medicine", "start treatment", "what therapy"]):
+            return (
+                "I cannot prescribe or recommend medical treatments, medications, or surgical interventions. "
+                "Cancer management depends on tumor staging, receptor expression (ER/PR/HER2), and individualized clinical factors "
+                "evaluated by a certified oncology care team. Please discuss all care decisions directly with your doctor."
+            )
+
+        # Safety Guardrail: Model disagreement arbitration
+        if ("trust" in text and "disagree" in text) or ("which model" in text and "disagree" in text) or ("overrule" in text):
+            return (
+                "Neither model should be considered to overrule the other in a clinical sense. "
+                "The Structured ML model (trained on WDBC cytology features) and Mammography DL model (trained on CBIS-DDSM scans) "
+                "operate on completely unpaired data types with distinct mathematical representations and error profiles. "
+                "The 40/60 combined score is an experimental exploration heuristic, not a validated clinical arbitration rule. "
+                "In clinical workflows, divergent findings indicate the necessity of further diagnostic testing and physician evaluation."
+            )
+
         if any(keyword in text for keyword in ["triệu chứng", "dấu hiệu", "đau", "khối", "tiết dịch"]):
             return (
                 "Các dấu hiệu nên đi khám sớm gồm: sờ thấy khối cứng ở vú hoặc nách, thay đổi da kiểu lõm hoặc sần, "
@@ -831,9 +867,10 @@ class AIAdvisorService:
                 "Lưu ý: đây là thông tin hỗ trợ, không thay thế tư vấn điều trị."
             )
         return (
-            "Tôi có thể hỗ trợ về dấu hiệu nghi ngờ ung thư vú, sàng lọc, nhũ ảnh, dinh dưỡng, phục hồi sau điều trị và cách chuẩn bị đi khám. "
-            "Bạn có thể hỏi cụ thể hơn, ví dụ: 'Dấu hiệu nào cần đi khám sớm?' hoặc 'Người nghi ung thư vú nên ăn gì?'. "
-            "Lưu ý: tôi không thay thế bác sĩ và không đưa ra chẩn đoán xác định."
+            "I can provide educational explanations regarding breast cancer screening guidelines, Wisconsin ML cytology features, "
+            "Mammography deep learning evaluations, calibration concepts, and research study limitations. "
+            "Please ask a specific methodology or research question. "
+            "Note: This assistant is for research exploration and cannot provide clinical diagnoses or medical advice."
         )
 
 

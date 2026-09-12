@@ -75,8 +75,8 @@ assert.ok(
   'workspace.js must export deleteConfirmModalHtml'
 );
 assert.ok(
-  wsCompCode.includes('preserved in system logs'),
-  'deleteConfirmModalHtml must explicitly state that predictions are preserved'
+  wsCompCode.includes('preserves existing saved analysis records') || wsCompCode.includes('preserved in system logs'),
+  'deleteConfirmModalHtml must explicitly state that analysis records are preserved'
 );
 assert.ok(
   wsCompCode.includes('accessRestrictedHtml'),
