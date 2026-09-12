@@ -60,14 +60,27 @@ def main() -> int:
     dockerfile = ROOT / "backend" / "Dockerfile"
     compose = ROOT / "docker-compose.yml"
     require(dockerfile.is_file() and compose.is_file(), "Docker packaging files are missing.")
+    if dockerfile.is_file():
+        df_text = dockerfile.read_text(encoding="utf-8")
+        require("USER appuser" in df_text, "Dockerfile does not specify non-root USER appuser.")
+        require("10001" in df_text, "Dockerfile does not assign non-root UID 10001.")
     if compose.is_file():
         compose_text = compose.read_text(encoding="utf-8")
         require("healthcheck:" in compose_text and "runtime_models:/app/runtime_models:ro" in compose_text, "Compose healthcheck or read-only runtime model mount is missing.")
     compose_check = subprocess.run(["docker", "compose", "config"], cwd=ROOT, capture_output=True, text=True)
     compose_prod = ROOT / "docker-compose.production.yml"
     nginx_tmpl = ROOT / "deploy" / "nginx.production.conf.template"
+    nginx_boot_tmpl = ROOT / "deploy" / "nginx.bootstrap.conf.template"
+    render_script = ROOT / "scripts" / "render_nginx_config.py"
     require(compose_prod.is_file(), "docker-compose.production.yml is missing.")
     require(nginx_tmpl.is_file(), "deploy/nginx.production.conf.template is missing.")
+    require(nginx_boot_tmpl.is_file(), "deploy/nginx.bootstrap.conf.template is missing.")
+    require(render_script.is_file(), "scripts/render_nginx_config.py is missing.")
+
+    # Verify rendered Nginx config is gitignored
+    nginx_ign = subprocess.run(["git", "check-ignore", "deploy/nginx.production.conf"], cwd=ROOT, capture_output=True, text=True)
+    require(nginx_ign.returncode == 0, "deploy/nginx.production.conf is not ignored by Git.")
+
     if compose_prod.is_file():
         compose_prod_check = subprocess.run(
             ["docker", "compose", "-f", "docker-compose.production.yml", "config"],

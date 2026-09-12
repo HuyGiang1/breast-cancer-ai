@@ -21,11 +21,10 @@ APP_ENABLE_API_DOCS = os.getenv(
 ).strip().lower() == "true"
 
 app = FastAPI(
-    title="Breast Cancer AI Multimodal Diagnostic Prototype API",
+    title="Breast Health Studio Research API",
     description=(
-        "Investigational multimodal AI research and clinical decision support prototype "
-        "for breast cancer risk assessment. Strictly for investigational and research "
-        "purposes; not for independent diagnostic use."
+        "Research and educational API for frozen breast-health ML/DL experiments. "
+        "Not a medical device and not for autonomous clinical diagnosis."
     ),
     version="1.0.0",
     docs_url="/docs" if APP_ENABLE_API_DOCS else None,
@@ -149,7 +148,7 @@ def readyz(response: Response):
 def read_root():
     docs_msg = " Visit /docs for interactive API documentation." if APP_ENABLE_API_DOCS else ""
     return {
-        "message": f"Breast Cancer AI Multimodal Diagnostic Prototype API.{docs_msg}",
+        "message": f"Breast Health Studio Research API.{docs_msg}",
         "status": "running",
         "environment": APP_ENV,
     }

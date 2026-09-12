@@ -1,0 +1,34 @@
+# ==============================================================================
+# Breast Health Studio — TLS Bootstrap Nginx Configuration Template
+# Used for initial Let's Encrypt ACME HTTP-01 challenge before TLS certs exist.
+# Placeholders:
+#   ${SERVER_NAME} -> Staging / Production domain (e.g. staging.example.com)
+# ==============================================================================
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${SERVER_NAME};
+
+    # Hide Nginx version tokens
+    server_tokens off;
+
+    # Let's Encrypt ACME HTTP-01 challenge webroot
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+        try_files $uri =404;
+    }
+
+    # Container liveness probe for Docker / orchestrator
+    location = /healthz {
+        access_log off;
+        default_type application/json;
+        return 200 '{"status":"bootstrap_ready"}';
+    }
+
+    # All application requests return 503 while TLS certificate is bootstrapping
+    location / {
+        default_type application/json;
+        return 503 '{"status":"tls_bootstrapping","message":"Initial TLS certificate provisioning in progress. Please retry shortly."}';
+    }
+}

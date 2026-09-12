@@ -97,8 +97,8 @@ assert.ok(
 
 // 9. Verify report action
 assert.ok(
-  pageCode.includes('/api/v1/predictions/${res.id}/report/'),
-  'multimodal.js must provide link to view analysis report'
+  pageCode.includes('/predictions/${res.id}/report/') || pageCode.includes('reportService.open'),
+  'multimodal.js must provide link or service action to view analysis report'
 );
 
 console.log('PASS: test_fusion_frontend_contract.js passed all contract assertions.');

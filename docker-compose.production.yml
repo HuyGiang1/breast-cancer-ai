@@ -61,6 +61,8 @@ services:
       - ./deploy/nginx.production.conf:/etc/nginx/conf.d/default.conf:ro
       # TLS Certificates directory mounted from host (Read-Only)
       - /etc/letsencrypt:/etc/letsencrypt:ro
+      # Certbot ACME webroot challenge directory mounted from host (Read-Only)
+      - ./certbot/www:/var/www/certbot:ro
     restart: unless-stopped
     logging:
       driver: "json-file"

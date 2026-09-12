@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import smtplib
+import ssl
 import urllib.parse
 from email.message import EmailMessage
 from pathlib import Path
@@ -20,6 +21,7 @@ SMTP_USERNAME = os.getenv("SMTP_USERNAME", "").strip()
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "").strip()
 SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL", SMTP_USERNAME).strip()
 SMTP_FROM_NAME = os.getenv("SMTP_FROM_NAME", "Breast Health Studio").strip()
+SMTP_SECURITY = os.getenv("SMTP_SECURITY", "ssl" if SMTP_PORT == 465 else "starttls").strip().lower()
 FRONTEND_URL = os.getenv("APP_FRONTEND_URL", "http://localhost").rstrip("/")
 
 
@@ -36,10 +38,16 @@ def _send_via_smtp(*, to_email: str, subject: str, text_body: str, html_body: st
         msg.add_alternative(html_body, subtype="html")
 
     try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=30) as server:
-            server.starttls()
-            server.login(SMTP_USERNAME, SMTP_PASSWORD)
-            server.send_message(msg)
+        context = ssl.create_default_context()
+        if SMTP_SECURITY in {"ssl", "tls"} or SMTP_PORT == 465:
+            with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT, context=context, timeout=30) as server:
+                server.login(SMTP_USERNAME, SMTP_PASSWORD)
+                server.send_message(msg)
+        else:
+            with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=30) as server:
+                server.starttls(context=context)
+                server.login(SMTP_USERNAME, SMTP_PASSWORD)
+                server.send_message(msg)
     except Exception as exc:
         # Log controlled server-side error without exposing passwords or sensitive tokens
         logger.error("SMTP delivery failed for recipient '%s' via %s:%s: %s", to_email, SMTP_HOST, SMTP_PORT, exc)

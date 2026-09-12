@@ -30,9 +30,12 @@ def test_smtp(recipient_email: str | None = None) -> bool:
     from_email = os.getenv("SMTP_FROM_EMAIL", username).strip()
     from_name = os.getenv("SMTP_FROM_NAME", "Breast Health Studio").strip()
 
+    security = os.getenv("SMTP_SECURITY", "ssl" if port == 465 else "starttls").strip().lower()
+
     print("[*] Testing SMTP connectivity with configured settings:")
     print(f"    Host: {host}")
     print(f"    Port: {port}")
+    print(f"    Security: {security}")
     print(f"    Username: {username if username else '(none)'}")
     print(f"    Password: {'*' * 8 if password else '(none)'}")
     print(f"    From: {from_name} <{from_email}>")
@@ -44,7 +47,7 @@ def test_smtp(recipient_email: str | None = None) -> bool:
     context = ssl.create_default_context()
 
     try:
-        if port == 465:
+        if security in {"ssl", "tls"} or port == 465:
             print(f"[*] Establishing SSL connection to {host}:{port}...")
             server = smtplib.SMTP_SSL(host, port, context=context, timeout=15)
         else:

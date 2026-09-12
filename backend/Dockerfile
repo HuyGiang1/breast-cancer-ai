@@ -17,10 +17,20 @@ COPY requirements-runtime.txt /app/requirements-runtime.txt
 
 RUN pip install --upgrade pip && pip install -r /app/requirements-runtime.txt
 
+# Create unprivileged application user and group (non-root UID/GID 10001)
+RUN groupadd -g 10001 appgroup && \
+    useradd -u 10001 -g appgroup -s /bin/bash -m appuser
+
 COPY backend /app/backend
 COPY frontend /app/frontend
 COPY models/model_registry.example.json /app/models/model_registry.example.json
 COPY models/calibration/efficientnet_b0_platt_final_seed42.json /app/models/calibration/efficientnet_b0_platt_final_seed42.json
+
+# Pre-create runtime directories and assign ownership to unprivileged user
+RUN mkdir -p /app/backend/data /app/backend/backups /app/frontend/results /app/runtime_models && \
+    chown -R appuser:appgroup /app/backend/data /app/backend/backups /app/frontend/results /app/runtime_models
+
+USER appuser
 
 WORKDIR /app/backend
 
