@@ -10,7 +10,7 @@ ROUTES = {
     **{f"pages/{name}.html": f"js/pages/{name}.js" for name in (
         "dashboard", "ml-analysis", "dl-analysis", "multimodal", "research", "model-comparison",
         "datasets", "explainability", "calibration", "patients", "patient-detail", "history",
-        "reports", "advisor", "model-status", "profile")},
+        "reports", "advisor", "model-status", "profile", "privacy")},
 }
 LEGACY = ("app.js", "styles.css", "premium.css")
 

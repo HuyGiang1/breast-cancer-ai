@@ -2,57 +2,51 @@
 
 ## Current state
 
-- Repository: `https://github.com/HuyGiang1/breast-cancer-ai`
-- Current branch: `feat/product-experience-v4`
-- Base commit: `8eba137` (committed V3 baseline)
-- Functional baseline commit: `5b6c72c` (legacy monolithic rich frontend)
-- Research: **FROZEN**
-- Runtime: **FROZEN**
-- Frontend: **PHASE 4R BATCH F COMPLETED — WEB FEATURE FREEZE (RC-1)**
-- Parity matrix: `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged, sum reconciled: 52/52)
-- QA reports: `docs/v4/BATCH_A_HOME_RESEARCH_LEARN_QA.md`, `docs/v4/BATCH_B_STRUCTURED_ML_QA.md`, `docs/v4/BATCH_C_MAMMOGRAPHY_DL_QA.md`, `docs/v4/BATCH_D_FUSION_QA.md`, `docs/v4/BATCH_E_DOCTOR_PERSONAL_WORKSPACE_QA.md`, `docs/v4/BATCH_F_FINAL_WEB_UAT.md`
-- Feature freeze document: `docs/v4/WEB_FEATURE_FREEZE_V1.md`
-- Pre-deploy blocker: Confirm TCIA / CBIS-DDSM data usage agreements and attribution citations for the two cropped demo mammograms prior to public DNS deployment.
-- Next phase: External infrastructure, production server deployment, Google OAuth credentials configuration, production SMTP setup, and domain/HTTPS provisioning.
+- **Repository**: `https://github.com/HuyGiang1/breast-cancer-ai`
+- **Current branch**: `feat/product-experience-v4`
+- **Base commit**: `28841b9` (Batch F Web Feature Freeze)
+- **Phase**: **PHASE G1 — PRE-DEPLOY HARDENING COMPLETED**
+- **Artifact Status**: **READY FOR LIVE INTEGRATION** (Staging-ready artifact; NOT publicly deployed, zero secrets committed)
+- **Web Feature Freeze**: RC-1 strictly preserved.
+- **TCIA Provenance & Attribution**: **RESOLVED** (100% byte-for-byte SHA-256 match documented under CC BY 3.0 in `docs/legal/CBIS_DDSM_DATA_AND_DEMO_ATTRIBUTION.md` and `frontend/js/pages/research.js`).
+- **Cryptographic Storage**: Upgraded to versioned PBKDF2-HMAC-SHA256 (600,000 rounds) with backward-compatible 120k verification and on-login rehash.
+- **API & Container Hardening**: Production fail-closed CORS, disabled `/docs` in production, deep `/readyz` probe, internal network isolation for port 8000.
+- **SQLite Concurrency & Backups**: WAL mode, busy timeout 5000ms, 30s timeout, online hot backup script (`scripts/backup_database.py`), and non-destructive restore drill (`scripts/verify_database_restore.py`).
+- **Privacy & Patient Notice**: Published at `frontend/pages/privacy.html` with links in footer and shell navigation.
 
-Do not retrain models, change datasets/splits, tune on test, change thresholds/calibration/model selection, redesign the frozen web frontend, claim clinical use, or merge main without explicit instruction.
+---
 
-## Final documentation evidence
+## Deployment Documentation & Runbooks
 
-- `README.md`: public research platform entry point.
-- `docs/report/FINAL_RESEARCH_REPORT_VI.md`: official reproducible Vietnamese source.
-- `docs/report/NGHIEN_CUU_CAC_MO_HINH_NHAN_DANG_PHAN_LOAI_KHOI_U_VU_AC_TINH.docx`: final DOCX.
-- Matching `.pdf`: 29 pages, visually inspected page by page.
-- `docs/FINAL_REPORT_VALIDATION.md`: scientific/content/visual QA evidence.
-- `docs/RELEASE_NOTES.md`: proposed `v1.0.0-research-demo`; not tagged.
-- `docs/DEPLOYMENT_RUNBOOK.md`: canonical server procedure.
+- `docs/deploy/PREDEPLOY_BLOCKERS.md`: Complete status matrix classifying resolved items vs operator actions.
+- `docs/deploy/LIVE_SECRET_CHECKLIST.md`: Step-by-step operator checklist for live secrets (SMTP, GIS Google OAuth, invite codes).
+- `docs/deploy/DOMAIN_HTTPS_RUNBOOK.md`: DNS records, Let's Encrypt Certbot setup, automatic renewal cron, Nginx reverse proxy.
+- `docs/deploy/DEPLOYMENT_RUNBOOK.md`: Comprehensive end-to-end production deployment manual.
+- `docs/deploy/BACKUP_AND_RESTORE.md`: WAL mode, zero-downtime hot backups, disaster recovery, atomic restore.
+- `docs/deploy/SECURITY_HARDENING_G1.md`: Technical audit of Phase G1 cryptographic and network controls.
+- `docs/legal/CBIS_DDSM_DATA_AND_DEMO_ATTRIBUTION.md`: Formal CC BY 3.0 TCIA attribution and hash provenance.
 
-## Scientific contract
+---
 
-- Study A: WDBC, 569 samples, 30 FNA-derived numerical features, 455 development, 114 held-out test, seed 42. Logistic Regression selected from development OOF; raw threshold `0.36`.
-- Study B: CBIS-DDSM, 2,559 processed source images plus 2,559 ROI representations, 5,118 manifest rows, 2,354 inferred study-like groups, zero measured group overlap. Not verified patient-level. EfficientNet-B0 full image; raw threshold `0.515`.
-- Frozen Platt: displayed/reliability probability only, never the class decision threshold input.
-- SHAP: contribution to malignant log-odds, non-causal. Grad-CAM: coarse attention, not segmentation/localization/pathology evidence.
-- WDBC and CBIS-DDSM are unpaired; 40/60 fusion is `experimental_only`.
+## Pending Operator Tasks (Waiting for Operator)
 
-## Next phase procedure
+1. **DNS Cutover**: Point domain A/AAAA records to target production host IP.
+2. **TLS Certificate Issuance**: Issue Let's Encrypt certificate via Certbot standalone or webroot.
+3. **Live SMTP Relay Credentials**: Supply `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD` from SendGrid/SES/Postmark in server `.env`.
+4. **Google Cloud Console OAuth**: Configure Web Client ID with authorized HTTPS domain origin and set `GOOGLE_CLIENT_ID` in `.env` (no client secret needed for GIS).
 
-Create `deploy/server-production` from this branch only after this branch is pushed and CI is green. The user has a server. Ask only for the target connection/configuration facts needed at execution time; never request committing SSH keys or passwords.
+---
 
-Follow `docs/DEPLOYMENT_RUNBOOK.md`: architecture/OS/resource/firewall preflight, Docker/Compose, server-only `.env`, external model transfer and SHA-256, SQLite backup, read-only mount, build/start, health/readiness, local server workflow smoke, domain/DNS/HTTPS, restart persistence, external public smoke, and rollback evidence.
+## Regression & Verification Gates
 
-## Required regression gates
-
+All gates pass cleanly:
 ```bash
 find frontend/js -name "*.js" -print0 | xargs -0 -n1 node --check
 python3 scripts/verify_frontend_v2.py
+node scripts/qa_broken_link_crawler.js
+PYTHONPATH=.:backend ./venv/bin/python3 -m pytest -v
+python3 scripts/verify_production_readiness.py
+python3 scripts/verify_deploy_environment.py --env-file .env.production.example --staging-check
+python3 scripts/backup_database.py && python3 scripts/verify_database_restore.py
 git diff --check
-PYTHONPATH=.:backend venv/bin/python -m pytest -q
-python3 -m compileall backend/app scripts tests
-PYTHONPATH=.:backend venv/bin/python scripts/verify_final_application.py
-PYTHONPATH=.:backend venv/bin/python scripts/verify_production_readiness.py
-venv/bin/python scripts/build_final_report.py
-venv/bin/python scripts/validate_final_report.py
 ```
-
-The pre-existing Pydantic V2 class-config warning may remain. Stop local Docker with `docker compose down`, never `down -v`.

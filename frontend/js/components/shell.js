@@ -192,6 +192,7 @@ export function mountShell(pageTitle) {
           <div class="mobile-nav-links">
             <a href="model-status.html">Model Status</a>
             <a href="profile.html">Account &amp; Security</a>
+            <a href="privacy.html">Privacy &amp; Data Notice</a>
           </div>
         </div>
       </div>

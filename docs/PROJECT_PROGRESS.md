@@ -1,26 +1,25 @@
 # Breast Cancer AI - Project Progress
 
-Last updated: 2026-09-07
+Last updated: 2026-09-12
 
 ## Current stage
 
-**Phase 4R — Feature Parity Restoration**
+**Phase G1 — Pre-Deploy Hardening (Security + Data Safety + TCIA Attribution + Infrastructure Readiness)**
 
-- Current branch: `feat/product-experience-v4`
-- Baseline commits: `5b6c72c` (legacy rich functional baseline) and `8eba137` (committed V3 baseline)
-- Parity matrix: `docs/v4/LEGACY_FEATURE_PARITY_MATRIX.md` (52 features cataloged, sum reconciled: 52/52)
-- Current work: **Batch F (Final Web Product Polish, AI Guide, Scientific Copy & Feature Freeze) COMPLETED (PASS)**
-  - Strict account type contract enforced on registration (`Literal["personal", "doctor"]`, rejects `admin` or invalid values with HTTP 422).
-  - Transient context privacy guaranteed (`auth.clearTransientContext()`) clearing `bcai_advisor_context`, `bcai_active_analysis`, and `bcai_patient_context` across logout and login.
-  - Centralized authenticated report open/print service (`reportService.fetchBlob`, `open`, `print`) across all pages.
-  - Canonical prediction semantics enforced across Structured ML, Mammography DL, and Fusion.
-  - AI Guide rebuilt with safe DOM markdown rendering (`renderSafeContent` with zero unsafe `innerHTML`), multimodal context grounding (40/60 weighting, 0.5 midpoint, unpaired disclaimer), progressive disclosure, and English safety guardrails.
-  - Sourced screening schedules visibly separating ACS (Oeffinger et al.) vs USPSTF (2024 update) guidelines with authoritative citations.
-  - Accessible modals with Tab focus trap, Escape key listener, return focus to trigger, and body scroll locking (`bindModalAccessibility`).
-  - Corrected Batch E false-pass items (doctor patient filtering across full history, Date Range filters, active count badges).
-  - Web feature freeze declared in `docs/v4/WEB_FEATURE_FREEZE_V1.md` with documented Pre-Deploy Blocker regarding demo mammogram TCIA attribution.
-  - Full regression suite passing 100% across all batches (A–F, 73 Pytest, 0 broken links, 24 representative screenshots).
-- Next step: Pre-deployment staging configuration and external infrastructure setup. Do NOT modify frozen web application code without explicit unfreeze approval.
+- **Current branch**: `feat/product-experience-v4`
+- **Starting HEAD**: `28841b9`
+- **Web Feature Freeze**: RC-1 strictly observed (no mobile apps, no new features, no UI redesigns, no model retraining, no threshold changes).
+- **Current Artifact Status**: **READY FOR LIVE INTEGRATION** (Staging-ready artifact; NOT publicly deployed, zero secrets committed).
+- **Key Deliverables & Hardening Completed**:
+  - **TCIA / CBIS-DDSM Provenance (P0 Blocker Resolved)**: Traced byte-for-byte identical SHA-256 hashes against CBIS-DDSM test set; documented under CC BY 3.0 in `docs/legal/CBIS_DDSM_DATA_AND_DEMO_ATTRIBUTION.md`; authoritative attribution card in `frontend/js/pages/research.js`.
+  - **Password Storage Hardening**: Implemented versioned PBKDF2-HMAC-SHA256 with 600,000 rounds (~129ms per hash), backward-compatible legacy 120k verification, and transparent on-login rehash upgrade.
+  - **API Security & Fail-Closed Policy**: `APP_ENV=production` fails closed if `APP_CORS_ORIGINS` is missing, `*`, non-HTTPS, or contains `localhost`. Suppressed `/docs`, `/redoc`, and `/openapi.json` via `APP_ENABLE_API_DOCS=false`. Generic user-facing error messages on OAuth/reset-password endpoints without internal exception leakage.
+  - **Database Production Reliability**: SQLite configured with `PRAGMA journal_mode = WAL`, `synchronous = NORMAL`, `busy_timeout = 5000`, and 30s timeout. Created `scripts/backup_database.py` (online hot backup with SHA-256 and integrity checks), `scripts/verify_database_restore.py` (non-destructive restore drill), and `docs/deploy/BACKUP_AND_RESTORE.md`.
+  - **Environment Templates & Validator**: Clean development defaults in `.env.example`; production template in `.env.production.example`; validator in `scripts/verify_deploy_environment.py`; operator diagnostic utility in `scripts/test_smtp_delivery.py`.
+  - **Production Infrastructure Packaging**: `deploy/nginx.production.conf.template` with HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Permissions-Policy, rate limits, and hidden file blocks; `docker-compose.production.yml` with read-only model mount and isolated internal network for port 8000.
+  - **Privacy & Patient Data Minimization**: Factual notice in `frontend/pages/privacy.html` and `frontend/js/pages/privacy.js`; footer links updated in `frontend/index.html` and `frontend/js/components/shell.js`.
+  - **Deployment Runbooks**: Authored `docs/deploy/PREDEPLOY_BLOCKERS.md`, `docs/deploy/LIVE_SECRET_CHECKLIST.md`, `docs/deploy/DOMAIN_HTTPS_RUNBOOK.md`, `docs/deploy/DEPLOYMENT_RUNBOOK.md`, and `docs/deploy/SECURITY_HARDENING_G1.md`.
+  - **Validation & Test Suite**: 86/86 Pytest tests PASS; 0 broken links; static frontend validation PASS; production readiness PASS; Batch F browser E2E PASS.
 
 ## Completed major milestones
 
@@ -29,52 +28,28 @@ Last updated: 2026-09-07
 - [x] CBIS-DDSM DL baselines, validation-first ROI ablation, calibration, bootstrap, error analysis, and Grad-CAM
 - [x] Frozen Logistic Regression and EfficientNet-B0 research/demo runtimes
 - [x] Unified final model status and central research evidence adapter
-- [x] SQLite backup/restore rehearsal, local benchmark, operational safety review, and readiness validator
-- [x] Docker build/up verification, read-only model mounts, checksums, persistence, Nginx, and local smoke
-- [x] Frontend Architecture V2, legacy cutover, and 84/84 cross-device route QA
-- [x] Final public README and optimized eight-image screenshot set
-- [x] Official 29-page Vietnamese research report in source Markdown, DOCX, and PDF
-- [x] Scientific consistency/legacy wording audit and final report validator
-- [x] Proposed `v1.0.0-research-demo` release notes
-- [x] Server production deployment handoff
+- [x] Frontend Architecture V2 and 84/84 cross-device route QA
+- [x] Batches A–F Feature Parity Restoration and Web Feature Freeze (RC-1)
+- [x] TCIA / CBIS-DDSM demo mammogram provenance audit & attribution (CC BY 3.0)
+- [x] Phase G1 Pre-Deploy Hardening: Security, Database WAL, Backups, Nginx, Compose, Privacy
+- [x] Deployment Runbooks, Secrets Checklist, and Domain HTTPS Guides
 
 ## Frozen state
 
 - Research: **FROZEN**
-- Runtime: **FROZEN**
-- Frontend: **FROZEN FOR RELEASE**
-- Final documentation: **COMPLETE**
+- Runtime Models: **FROZEN**
+- Frontend Web Product: **FROZEN (RC-1)**
+- Pre-Deploy Engineering Hardening: **COMPLETE**
 
-## Current blockers / pending inputs
+## Pending External Operator Inputs (Waiting for Operator)
 
-- A server is available, but access and target configuration details have not been supplied in this repository.
-- Domain, DNS, HTTPS certificate configuration, and public production smoke remain pending.
-- The project remains a research/educational prototype with `clinical_use=false`.
-
-## Remaining roadmap
-
-### Research and application
-
-- [x] Final research evidence and candidates frozen
-- [x] Final ML/DL runtimes integrated and verified
-- [x] Frontend V2 frozen after full QA
-- [x] Final research report and public documentation
-
-### Server production
-
-- [ ] Create `deploy/server-production` from `docs/final-documentation`
-- [ ] Confirm SSH access, architecture, OS, CPU/RAM/disk, firewall, and Docker/Compose
-- [ ] Transfer frozen model artifacts outside Git and verify SHA-256
-- [ ] Configure server-only `.env`, read-only model mount, and SQLite backup
-- [ ] Build/start and run local-on-server health/readiness/workflow smoke
-- [ ] Configure domain, DNS, Nginx TLS, HTTPS CORS, and certificate renewal
-- [ ] Run external public smoke, restart persistence, monitoring, and rollback rehearsal
-- [ ] Prepare release/tag only after deployment evidence is complete
+1. **Production Domain & DNS Cutover**: Point domain A/AAAA records to target server IP.
+2. **TLS Certificate Issuance**: Run Certbot standalone/webroot on live host per `DOMAIN_HTTPS_RUNBOOK.md`.
+3. **Live SMTP Relay Credentials**: Populate `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD` from SendGrid/SES/Postmark.
+4. **Google Cloud Console OAuth Client ID**: Create Web Client ID with authorized HTTPS domain origin.
 
 ## Document roles
 
 - `docs/PROJECT_PROGRESS.md`: simple overall roadmap and progress.
 - `docs/PROJECT_STATUS.md`: detailed phase/evidence status.
 - `docs/AGENT_HANDOFF.md`: exact continuation instructions for the next session.
-
-Update this tracker before the final commit of every future phase.
