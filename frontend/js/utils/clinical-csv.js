@@ -28,12 +28,24 @@ export function generateCsvTemplate() {
 }
 
 /**
+ * Generates a downloadable WDBC research demo CSV.
+ * Contains exactly the canonical 30 WDBC features, with optional research sample ID.
+ * Diagnosis is not included as a required model input.
+ */
+export function generateWdbcResearchDemoCsv(sampleValues, sampleId = null) {
+  const headers = sampleId ? ['id', ...ML_FEATURES].join(',') : ML_FEATURES.join(',');
+  const values = sampleId
+    ? [sampleId, ...ML_FEATURES.map((feat) => sampleValues?.[feat] ?? 0)].join(',')
+    : ML_FEATURES.map((feat) => sampleValues?.[feat] ?? 0).join(',');
+  return `${headers}\n${values}\n`;
+}
+
+/**
  * Generates an example CSV with canonical benign research preset.
+ * (Legacy helper preserved for backward compatibility).
  */
 export function generateExampleCsv(sampleValues) {
-  const headers = ML_FEATURES.join(',');
-  const values = ML_FEATURES.map((feat) => sampleValues?.[feat] ?? 0).join(',');
-  return `${headers}\n${values}\n`;
+  return generateWdbcResearchDemoCsv(sampleValues);
 }
 
 /**

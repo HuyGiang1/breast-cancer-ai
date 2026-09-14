@@ -101,9 +101,9 @@ async function handleFileSelected(file, isPreset = false, presetType = null) {
     return;
   }
 
-  // 3. Oversized file check (> 15 MB)
-  if (file.size > 15 * 1024 * 1024) {
-    state.errorMessage = 'File exceeds the 15 MB limit. Please select an optimized image.';
+  // 3. Oversized file check (> 20 MB)
+  if (file.size > 20 * 1024 * 1024) {
+    state.errorMessage = 'Image upload is too large. Maximum supported file size is 20 MB.';
     render();
     return;
   }

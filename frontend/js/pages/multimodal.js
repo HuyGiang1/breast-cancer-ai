@@ -16,6 +16,7 @@ import {
   parseClinicalCsv,
   generateCsvTemplate,
   generateExampleCsv,
+  generateWdbcResearchDemoCsv,
 } from '../utils/clinical-csv.js';
 import { featureSection, resultCard, collectFeatures } from '../components/analysis.js';
 
@@ -193,6 +194,13 @@ async function handleFileSelected(file, isPreset = false, presetType = null) {
 
   if (file.size === 0) {
     state.errorMessage = 'The selected file is empty (0 bytes). Please choose a valid image.';
+    render();
+    return;
+  }
+
+  // Client-side file size limit check (20 MB)
+  if (file.size > 20 * 1024 * 1024) {
+    state.errorMessage = 'Image upload is too large. Maximum supported file size is 20 MB.';
     render();
     return;
   }
@@ -514,18 +522,27 @@ function renderStructuredBranch() {
         <span>Frozen Cutoff: <strong>Raw ≥ 0.36</strong></span>
       </div>
 
-      <div class="fusion-toolbar" style="display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
+      <div class="fusion-toolbar" style="display:flex;flex-direction:column;gap:10px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="font-size:0.82rem;font-weight:700;color:#334155;">Research Demos:</span>
+            <button type="button" class="v2-button secondary btn-xs" id="loadMlBenignBtn" title="Load Benign WDBC Sample (#8510426)">Benign WDBC Sample</button>
+            <button type="button" class="v2-button secondary btn-xs" id="loadMlMalignantBtn" title="Load Malignant WDBC Sample (#842302)">Malignant WDBC Sample</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="font-size:0.82rem;font-weight:700;color:#334155;">CSV Demos:</span>
+            <button type="button" class="v2-button ghost btn-xs" id="downloadBenignCsvBtn" title="Download Benign WDBC CSV demo">Download Benign CSV</button>
+            <button type="button" class="v2-button ghost btn-xs" id="downloadMalignantCsvBtn" title="Download Malignant WDBC CSV demo">Download Malignant CSV</button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:1px solid #edf2f7;padding-top:8px;">
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <span style="font-size:0.82rem;font-weight:700;color:#1e293b;">Input method:</span>
             <button type="button" class="v2-button ${state.branch1InputMode === 'manual' ? 'primary' : 'secondary'} btn-xs" id="branch1ManualBtn" title="Direct manual entry in 30 feature fields">Manual Entry</button>
             <button type="button" class="v2-button secondary btn-xs" id="openCsvModalBtn" title="Import 30 WDBC features from CSV">Import WDBC CSV</button>
             <button type="button" class="v2-button secondary btn-xs" id="openOcrModalBtn" title="Extract features from lab report photo">OCR Report</button>
           </div>
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-            <span style="font-size:0.78rem;font-weight:600;color:#64748b;">Presets:</span>
-            <button type="button" class="v2-button ghost btn-xs" id="loadMlBenignBtn" title="Load Benign Research #8510426">Benign #8510426</button>
-            <button type="button" class="v2-button ghost btn-xs" id="loadMlMalignantBtn" title="Load Malignant Research #842302">Malignant #842302</button>
+          <div>
             <button type="button" class="v2-button ghost btn-xs" id="clearMlBtn" title="Clear all 30 fields" style="color:#b91c1c;">Clear</button>
           </div>
         </div>
@@ -625,16 +642,18 @@ function renderMammographyBranch() {
         <span>Frozen Cutoff: <strong>Raw ≥ 0.515</strong></span>
       </div>
 
-      <div class="fusion-toolbar">
-        <div class="fusion-toolbar-left">
+      <div class="fusion-toolbar" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span style="font-size:0.82rem;font-weight:700;color:#334155;">Research Demos:</span>
-          <button type="button" class="v2-button secondary btn-xs" id="loadDlBenignBtn">Benign Mammogram</button>
-          <button type="button" class="v2-button secondary btn-xs" id="loadDlMalignantBtn">Malignant Mammogram</button>
+          <button type="button" class="v2-button secondary btn-xs" id="loadDlBenignBtn" title="Load Benign Mammogram Demo">Benign Mammogram</button>
+          <button type="button" class="v2-button secondary btn-xs" id="loadDlMalignantBtn" title="Load Malignant Mammogram Demo">Malignant Mammogram</button>
         </div>
-        <div class="fusion-toolbar-right">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span style="font-size:0.82rem;font-weight:700;color:#334155;">Your Image:</span>
+          <button type="button" class="v2-button secondary btn-xs" id="uploadMammogramToolbarBtn" title="Upload custom mammogram image">Upload Mammogram</button>
           ${
             hasImage
-              ? `<button type="button" class="v2-button ghost btn-xs" id="removeImageBtn">Remove Image</button>`
+              ? `<button type="button" class="v2-button ghost btn-xs" id="removeImageBtn" style="color:#b91c1c;">Remove Image</button>`
               : ''
           }
         </div>
@@ -646,8 +665,8 @@ function renderMammographyBranch() {
             <div class="fusion-dropzone-box" id="mammogramDropzone" tabindex="0" role="button" aria-label="Upload mammogram image">
               <div class="fusion-dropzone-icon">📷</div>
               <h3 class="fusion-dropzone-title">Drag & drop mammography image here</h3>
-              <p class="fusion-dropzone-sub">Supports JPEG and PNG formats (224×224 normalized for inference)</p>
-              <button type="button" class="v2-button secondary btn-sm" id="selectImageTriggerBtn">Select Mammogram Image</button>
+              <p class="fusion-dropzone-sub">Supports JPEG and PNG formats (224×224 normalized for inference, max 20 MB)</p>
+              <button type="button" class="v2-button secondary btn-sm" id="selectImageTriggerBtn">Upload Mammogram</button>
               <input type="file" id="mammogramFileInput" accept="image/jpeg,image/png" style="display:none;" />
             </div>
           `
@@ -1157,7 +1176,7 @@ function renderModals() {
 
           <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;margin:10px 0;font-size:0.80rem;line-height:1.5;color:#334155;">
             <div style="font-weight:700;color:#0f172a;margin-bottom:3px;">Accepted CSV Format:</div>
-            <div>• <strong>Required:</strong> 30 WDBC feature columns (mean_radius ... worst_fractal_dimension)</div>
+            <div>• <strong>Required:</strong> 30 WDBC FNA nuclear morphology features (mean_radius ... worst_fractal_dimension)</div>
             <div>• <strong>Optional:</strong> <code>id</code> column</div>
             <div>• <strong>Ignored if present:</strong> <code>diagnosis</code>, <code>target</code>, <code>label</code>, unnamed index fields</div>
           </div>
@@ -1181,9 +1200,10 @@ function renderModals() {
           </div>
 
           <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-            <div style="display:flex;gap:8px;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button type="button" class="v2-button ghost btn-xs" id="downloadBenignCsvModalBtn">Download Benign CSV</button>
+              <button type="button" class="v2-button ghost btn-xs" id="downloadMalignantCsvModalBtn">Download Malignant CSV</button>
               <button type="button" class="v2-button ghost btn-xs" id="downloadCsvTemplateBtn">Download Template</button>
-              <button type="button" class="v2-button ghost btn-xs" id="downloadExampleCsvBtn">Download Example</button>
             </div>
             <button type="button" class="v2-button ghost btn-xs" id="cancelModalBtn">Close</button>
           </div>
@@ -1216,6 +1236,18 @@ function renderModals() {
   }
 
   return '';
+}
+
+function downloadCsvBlob(csvContent, filename) {
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // ---------------------------------------------------------------------------
@@ -1285,6 +1317,21 @@ function bindEvents() {
   const clearMlBtn = document.querySelector('#clearMlBtn');
   if (clearMlBtn) clearMlBtn.onclick = () => clearStructuredInputs();
 
+  // Toolbar CSV Demos (Branch 1)
+  const dlBenignCsvBtn = document.querySelector('#downloadBenignCsvBtn');
+  if (dlBenignCsvBtn) {
+    dlBenignCsvBtn.onclick = () => {
+      downloadCsvBlob(generateWdbcResearchDemoCsv(SAMPLES.benign), 'wdbc_benign_research_demo.csv');
+    };
+  }
+
+  const dlMalignantCsvBtn = document.querySelector('#downloadMalignantCsvBtn');
+  if (dlMalignantCsvBtn) {
+    dlMalignantCsvBtn.onclick = () => {
+      downloadCsvBlob(generateWdbcResearchDemoCsv(SAMPLES.malignant), 'wdbc_malignant_research_demo.csv');
+    };
+  }
+
   // CSV & OCR Modal Triggers
   const openCsvModalBtn = document.querySelector('#openCsvModalBtn');
   if (openCsvModalBtn) {
@@ -1311,9 +1358,14 @@ function bindEvents() {
   const dropzone = document.querySelector('#mammogramDropzone');
   const fileInput = document.querySelector('#mammogramFileInput');
   const selectTrigger = document.querySelector('#selectImageTriggerBtn');
+  const uploadToolbarBtn = document.querySelector('#uploadMammogramToolbarBtn');
 
   if (selectTrigger && fileInput) {
     selectTrigger.onclick = () => fileInput.click();
+  }
+
+  if (uploadToolbarBtn && fileInput) {
+    uploadToolbarBtn.onclick = () => fileInput.click();
   }
 
   if (fileInput) {
@@ -1579,31 +1631,31 @@ function bindEvents() {
     };
   }
 
+  const dlBenignModalBtn = document.querySelector('#downloadBenignCsvModalBtn');
+  if (dlBenignModalBtn) {
+    dlBenignModalBtn.onclick = () => {
+      downloadCsvBlob(generateWdbcResearchDemoCsv(SAMPLES.benign), 'wdbc_benign_research_demo.csv');
+    };
+  }
+
+  const dlMalignantModalBtn = document.querySelector('#downloadMalignantCsvModalBtn');
+  if (dlMalignantModalBtn) {
+    dlMalignantModalBtn.onclick = () => {
+      downloadCsvBlob(generateWdbcResearchDemoCsv(SAMPLES.malignant), 'wdbc_malignant_research_demo.csv');
+    };
+  }
+
   const dlTemplateBtn = document.querySelector('#downloadCsvTemplateBtn');
   if (dlTemplateBtn) {
     dlTemplateBtn.onclick = () => {
-      const csvContent = generateCsvTemplate();
-      const blob = new Blob([csvContent], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'breast_cancer_clinical_template.csv';
-      a.click();
-      URL.revokeObjectURL(url);
+      downloadCsvBlob(generateCsvTemplate(), 'wdbc_features_template.csv');
     };
   }
 
   const dlExampleBtn = document.querySelector('#downloadExampleCsvBtn');
   if (dlExampleBtn) {
     dlExampleBtn.onclick = () => {
-      const csvContent = generateExampleCsv(SAMPLES.benign);
-      const blob = new Blob([csvContent], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'breast_cancer_clinical_example.csv';
-      a.click();
-      URL.revokeObjectURL(url);
+      downloadCsvBlob(generateWdbcResearchDemoCsv(SAMPLES.benign), 'wdbc_benign_research_demo.csv');
     };
   }
 
@@ -1631,7 +1683,7 @@ function bindEvents() {
           alert(`Extracted ${filled}/30 features from lab report photo.`);
           closeModal();
         } else {
-          alert('No numeric clinical values could be extracted.');
+          alert('No numeric WDBC features could be extracted.');
         }
       } catch (err) {
         alert(`OCR extraction failed: ${err.message}`);
