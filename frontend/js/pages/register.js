@@ -188,7 +188,7 @@ function initRegisterPage() {
   async function initGoogleAuth() {
     try {
       const config = await authService.googleConfig();
-      if (config && config.enabled && config.client_id) {
+      if (config && (config.enabled || config.client_id) && config.client_id) {
         mountGoogleGsi(config.client_id);
       } else {
         mountGoogleNotice();

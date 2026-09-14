@@ -740,7 +740,8 @@ def login(request: LoginRequest):
 
 @router.get("/auth/google/config/", response_model=GoogleConfigResponse)
 def google_config():
-    return GoogleConfigResponse(client_id=os.getenv("GOOGLE_CLIENT_ID") or None)
+    client_id = os.getenv("GOOGLE_CLIENT_ID") or None
+    return GoogleConfigResponse(client_id=client_id, enabled=bool(client_id))
 
 
 @router.post("/auth/google/", response_model=AuthResponse)

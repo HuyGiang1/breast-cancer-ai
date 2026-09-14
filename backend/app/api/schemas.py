@@ -142,6 +142,7 @@ class GoogleAuthRequest(BaseModel):
 
 class GoogleConfigResponse(BaseModel):
     client_id: Optional[str] = None
+    enabled: bool = False
 
 
 class GoogleLinkResponse(BaseModel):

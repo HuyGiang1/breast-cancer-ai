@@ -79,6 +79,13 @@ def test_google_config_endpoint():
         resp = client.get("/api/v1/auth/google/config/")
         assert resp.status_code == 200
         assert resp.json()["client_id"] == "test-client-id-123.apps.googleusercontent.com"
+        assert resp.json()["enabled"] is True
+
+    with patch.dict(os.environ, {}, clear=True):
+        resp = client.get("/api/v1/auth/google/config/")
+        assert resp.status_code == 200
+        assert resp.json()["client_id"] is None
+        assert resp.json()["enabled"] is False
 
 
 def test_google_auth_without_configuration_returns_503():
