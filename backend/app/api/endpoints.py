@@ -649,25 +649,22 @@ def register(request: RegisterRequest):
     if existing is not None:
         raise HTTPException(status_code=409, detail="Email already registered")
 
-    account_type = (request.account_type or "personal").strip().lower()
-    if account_type == "doctor":
-        mode = os.getenv("DOCTOR_REGISTRATION_MODE", "disabled").strip().lower()
-        invite_code = os.getenv("DOCTOR_INVITE_CODE", "").strip()
-        if mode != "invite" or not invite_code:
-            raise HTTPException(
-                status_code=400,
-                detail="Doctor registration is unavailable or the invite code is invalid.",
-            )
-        submitted_code = (request.doctor_invite_code or "").strip()
-        if not submitted_code or not hmac.compare_digest(submitted_code.encode("utf-8"), invite_code.encode("utf-8")):
-            raise HTTPException(
-                status_code=400,
-                detail="Doctor registration is unavailable or the invite code is invalid.",
-            )
-        assigned_role = "doctor"
-    else:
-        # Default / personal registration always creates role="user"
-        assigned_role = "user"
+    if request.role is not None and not request.role.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Role selection is required. Allowed roles are 'user' and 'doctor'.",
+        )
+
+    raw_role = request.role or request.account_type or "user"
+    selected_role = str(raw_role).strip().lower()
+    if selected_role == "personal":
+        selected_role = "user"
+
+    if selected_role not in ("user", "doctor"):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid role '{raw_role}'. Allowed roles are 'user' and 'doctor'.",
+        )
 
     now = utc_now_iso()
     user_id = db.execute(
@@ -679,7 +676,7 @@ def register(request: RegisterRequest):
             request.email.lower(),
             request.full_name.strip(),
             hash_password(request.password),
-            assigned_role,
+            selected_role,
             now,
             now,
         ),
@@ -705,7 +702,7 @@ def register(request: RegisterRequest):
             "id": user_id,
             "email": request.email.lower(),
             "full_name": request.full_name.strip(),
-            "role": assigned_role,
+            "role": selected_role,
         },
     )
 
@@ -782,7 +779,7 @@ def google_auth(request: GoogleAuthRequest):
     email = str(id_info.get("email")).lower().strip()
     full_name = str(id_info.get("name") or id_info.get("given_name") or "Google User").strip()
 
-    # 1. Google sub already linked -> log into associated user
+    # 1. Google sub already linked -> log into associated user (role is immutable; ignore request.role)
     oauth_row = db.fetch_one(
         "SELECT user_id FROM oauth_accounts WHERE provider = 'google' AND provider_subject = ?",
         (sub,),
@@ -801,14 +798,28 @@ def google_auth(request: GoogleAuthRequest):
                 detail="An account already exists with this email. Sign in using your existing account first.",
             )
 
-        # 3. Google sub not linked + email not present -> create new normal user with role=user
+        # 3. First-time Google user: require role selection before creating application account
+        if not request.role:
+            return AuthResponse(
+                access_token=None,
+                needs_role_selection=True,
+                user={"email": email, "full_name": full_name},
+            )
+
+        selected_role = request.role.strip().lower()
+        if selected_role not in ("user", "doctor"):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid role '{request.role}'. Allowed roles are 'user' and 'doctor'.",
+            )
+
         now = utc_now_iso()
         user_id = db.execute(
             """
             INSERT INTO users (email, full_name, password_hash, role, created_at, updated_at)
-            VALUES (?, ?, ?, 'user', ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?)
             """,
-            (email, full_name, f"oauth:google:{sub}", now, now),
+            (email, full_name, f"oauth:google:{sub}", selected_role, now, now),
         )
         db.execute(
             """
@@ -829,6 +840,7 @@ def google_auth(request: GoogleAuthRequest):
     )
     return AuthResponse(
         access_token=token,
+        needs_role_selection=False,
         user=_serialize_user(user_row),
     )
 

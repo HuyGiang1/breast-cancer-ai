@@ -127,17 +127,20 @@ class RegisterRequest(BaseModel):
     email: str
     full_name: str
     password: str = Field(..., min_length=8)
-    account_type: Literal["personal", "doctor"] = "personal"
+    role: Optional[str] = None
+    account_type: Optional[str] = None
     doctor_invite_code: Optional[str] = None
 
 
 class LoginRequest(BaseModel):
     email: str
     password: str
+    role: Optional[str] = None
 
 
 class GoogleAuthRequest(BaseModel):
     credential: str = Field(..., min_length=16, description="Signed Google Identity Services ID Token (JWT)")
+    role: Optional[str] = None
 
 
 class GoogleConfigResponse(BaseModel):
@@ -153,9 +156,10 @@ class GoogleLinkResponse(BaseModel):
 
 
 class AuthResponse(BaseModel):
-    access_token: str
+    access_token: Optional[str] = None
     token_type: str = "bearer"
-    user: Dict[str, Any]
+    user: Optional[Dict[str, Any]] = None
+    needs_role_selection: bool = False
 
 
 class ForgotPasswordRequest(BaseModel):

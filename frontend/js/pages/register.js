@@ -2,6 +2,7 @@ import { guestOnly } from '../core/guards.js';
 import { authService } from '../services/auth.service.js';
 import { toast } from '../components/toast.js';
 import { cleanAuthUrl } from '../core/config.js';
+import { openGoogleRoleModal } from '../components/role-modal.js';
 
 cleanAuthUrl();
 
@@ -66,30 +67,22 @@ function initRegisterPage() {
   const cardDoctor = document.getElementById('cardTypeDoctor');
   const radioPersonal = document.getElementById('typePersonalRadio');
   const radioDoctor = document.getElementById('typeDoctorRadio');
-  const doctorInviteBlock = document.getElementById('doctorInviteBlock');
-  const googleDoctorNote = document.getElementById('googleDoctorNote');
-  const inviteCodeInput = document.getElementById('regDoctorInviteCode');
 
   function updateAccountTypeSelection(type) {
     if (type === 'doctor') {
       if (radioDoctor) radioDoctor.checked = true;
       cardDoctor?.classList.add('selected');
       cardPersonal?.classList.remove('selected');
-      if (doctorInviteBlock) doctorInviteBlock.style.display = 'block';
-      if (googleDoctorNote) googleDoctorNote.style.display = 'block';
-      inviteCodeInput?.focus();
     } else {
       if (radioPersonal) radioPersonal.checked = true;
       cardPersonal?.classList.add('selected');
       cardDoctor?.classList.remove('selected');
-      if (doctorInviteBlock) doctorInviteBlock.style.display = 'none';
-      if (googleDoctorNote) googleDoctorNote.style.display = 'none';
     }
   }
 
-  cardPersonal?.addEventListener('click', () => updateAccountTypeSelection('personal'));
+  cardPersonal?.addEventListener('click', () => updateAccountTypeSelection('user'));
   cardDoctor?.addEventListener('click', () => updateAccountTypeSelection('doctor'));
-  radioPersonal?.addEventListener('change', () => updateAccountTypeSelection('personal'));
+  radioPersonal?.addEventListener('change', () => updateAccountTypeSelection('user'));
   radioDoctor?.addEventListener('change', () => updateAccountTypeSelection('doctor'));
 
   // Password visibility toggle
@@ -114,8 +107,7 @@ function initRegisterPage() {
       const email = form.email.value.trim();
       const password = form.password.value;
       const confirm = form.confirm.value;
-      const accountType = form.account_type?.value || 'personal';
-      const doctorInviteCode = form.doctor_invite_code?.value.trim() || '';
+      const selectedRole = form.account_type?.value === 'doctor' ? 'doctor' : 'user';
 
       if (!fullName) {
         showAlert('Please enter your full name.');
@@ -131,12 +123,6 @@ function initRegisterPage() {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         showAlert('Please enter a valid email address format.');
-        return;
-      }
-
-      if (accountType === 'doctor' && !doctorInviteCode) {
-        showAlert('Please enter a valid Doctor Workspace Invite Code.');
-        inviteCodeInput?.focus();
         return;
       }
 
@@ -158,11 +144,8 @@ function initRegisterPage() {
           full_name: fullName,
           email: email,
           password: password,
-          account_type: accountType,
+          role: selectedRole,
         };
-        if (accountType === 'doctor') {
-          payload.doctor_invite_code = doctorInviteCode;
-        }
 
         await authService.register(payload);
 
@@ -255,10 +238,30 @@ function initRegisterPage() {
     }
 
     hideAlert();
-    showAlert('Creating and verifying research workspace session with Google...', 'info');
+    showAlert('Verifying Google credentials with research studio...', 'info');
 
     try {
-      await authService.googleLogin(response.credential);
+      const result = await authService.googleLogin(response.credential);
+      if (result && result.needs_role_selection) {
+        hideAlert();
+        openGoogleRoleModal({
+          credential: response.credential,
+          user: result.user,
+          onSelect: async (selectedRole) => {
+            showAlert('Creating account with selected role...', 'info');
+            try {
+              await authService.googleLogin(response.credential, selectedRole);
+              window.location.assign('index.html');
+            } catch (err) {
+              showAlert(err.message || 'Failed to complete registration.');
+            }
+          },
+          onCancel: () => {
+            hideAlert();
+          },
+        });
+        return;
+      }
       window.location.assign('index.html');
     } catch (err) {
       showAlert(err.message || 'Google account authentication failed.');

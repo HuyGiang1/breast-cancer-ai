@@ -8,31 +8,81 @@ from app.core.database import db
 client = TestClient(app)
 
 
-def test_public_registration_forces_user_role():
+def test_password_registration_self_selected_roles():
     db.init()
-    email = "test_public_user_01@example.com"
-    # Ensure clean state
-    db.execute("DELETE FROM users WHERE email = ?", (email,))
+    user_email = "test_pw_reg_user@example.com"
+    doc_email = "test_pw_reg_doctor@example.com"
+    admin_email = "test_pw_reg_admin@example.com"
+    db.execute("DELETE FROM users WHERE email IN (?, ?, ?)", (user_email, doc_email, admin_email))
 
-    # Attempt to self-assign doctor role
-    response = client.post(
+    # 1. Register as regular user
+    resp_user = client.post(
         "/api/v1/auth/register/",
         json={
-            "email": email,
-            "full_name": "Dr Attempt",
+            "email": user_email,
+            "full_name": "Standard User",
             "password": "ValidPassword123!",
-            "role": "doctor"
-        }
+            "role": "user",
+        },
     )
-    assert response.status_code == 200, response.text
-    data = response.json()
-    assert data["user"]["email"] == email
-    # Must be forced to "user"
-    assert data["user"]["role"] == "user"
-    assert "access_token" in data
+    assert resp_user.status_code == 200, resp_user.text
+    assert resp_user.json()["user"]["role"] == "user"
+    row_user = db.fetch_one("SELECT role FROM users WHERE email = ?", (user_email,))
+    assert row_user["role"] == "user"
 
-    # Verify directly in database
-    row = db.fetch_one("SELECT role FROM users WHERE email = ?", (email,))
+    # 2. Register as doctor (self-declared)
+    resp_doc = client.post(
+        "/api/v1/auth/register/",
+        json={
+            "email": doc_email,
+            "full_name": "Dr Self Declared",
+            "password": "ValidPassword123!",
+            "role": "doctor",
+        },
+    )
+    assert resp_doc.status_code == 200, resp_doc.text
+    assert resp_doc.json()["user"]["role"] == "doctor"
+    row_doc = db.fetch_one("SELECT role FROM users WHERE email = ?", (doc_email,))
+    assert row_doc["role"] == "doctor"
+
+    # 3. Reject disallowed roles (admin, manager, superuser, staff)
+    for bad_role in ("admin", "manager", "superuser", "staff"):
+        resp_bad = client.post(
+            "/api/v1/auth/register/",
+            json={
+                "email": f"{bad_role}_{admin_email}",
+                "full_name": "Attacker",
+                "password": "ValidPassword123!",
+                "role": bad_role,
+            },
+        )
+        assert resp_bad.status_code == 400, f"Expected 400 for role '{bad_role}'"
+        assert "Invalid role" in resp_bad.json()["detail"]
+
+
+def test_password_login_preserves_stored_role():
+    user_email = "test_login_user@example.com"
+    doc_email = "test_login_doc@example.com"
+    db.execute("DELETE FROM users WHERE email IN (?, ?)", (user_email, doc_email))
+
+    client.post("/api/v1/auth/register/", json={"email": user_email, "full_name": "U", "password": "Password123!", "role": "user"})
+    client.post("/api/v1/auth/register/", json={"email": doc_email, "full_name": "D", "password": "Password123!", "role": "doctor"})
+
+    # Standard user login
+    resp1 = client.post("/api/v1/auth/login/", json={"email": user_email, "password": "Password123!"})
+    assert resp1.status_code == 200
+    assert resp1.json()["user"]["role"] == "user"
+
+    # Doctor login
+    resp2 = client.post("/api/v1/auth/login/", json={"email": doc_email, "password": "Password123!"})
+    assert resp2.status_code == 200
+    assert resp2.json()["user"]["role"] == "doctor"
+
+    # Client payload attempting role elevation during login must be ignored
+    resp3 = client.post("/api/v1/auth/login/", json={"email": user_email, "password": "Password123!", "role": "doctor"})
+    assert resp3.status_code == 200
+    assert resp3.json()["user"]["role"] == "user"
+    row = db.fetch_one("SELECT role FROM users WHERE email = ?", (user_email,))
     assert row["role"] == "user"
 
 
@@ -117,10 +167,10 @@ def test_google_auth_token_audience_mismatch():
             assert "audience mismatch" in resp.json()["detail"]
 
 
-def test_google_auth_new_user_success():
+def test_first_time_google_auth_requires_role_selection():
     client_id = "configured-client-id.apps.googleusercontent.com"
-    email = "new_google_researcher@gmail.com"
-    sub = "google-sub-unique-998877"
+    email = "new_google_prompt_role@gmail.com"
+    sub = "google-sub-unique-prompt-role-111"
     db.execute("DELETE FROM oauth_accounts WHERE provider_subject = ?", (sub,))
     db.execute("DELETE FROM users WHERE email = ?", (email,))
 
@@ -130,28 +180,96 @@ def test_google_auth_new_user_success():
             "iss": "https://accounts.google.com",
             "email": email,
             "email_verified": "true",
-            "name": "Dr Google Researcher",
+            "name": "Prompt Role User",
             "sub": sub
         }
         with patch("app.api.endpoints.google_id_token.verify_oauth2_token", return_value=mock_payload):
+            # 1. No role provided -> Must prompt for role selection, NOT create user yet
             resp = client.post(
                 "/api/v1/auth/google/",
                 json={"credential": "mock_google_token_1234567890"}
             )
             assert resp.status_code == 200, resp.text
             data = resp.json()
+            assert data["needs_role_selection"] is True
+            assert data["access_token"] is None or data["access_token"] == ""
             assert data["user"]["email"] == email
-            # New google user role must strictly be "user"
-            assert data["user"]["role"] == "user"
-            assert "access_token" in data
 
-            # Verify oauth_accounts entry
-            oauth_entry = db.fetch_one(
-                "SELECT * FROM oauth_accounts WHERE provider = 'google' AND provider_subject = ?",
-                (sub,)
+            # Assert no user row in DB yet
+            row_uncreated = db.fetch_one("SELECT id FROM users WHERE email = ?", (email,))
+            assert row_uncreated is None
+
+            # 2. Rejection of invalid role
+            resp_bad = client.post(
+                "/api/v1/auth/google/",
+                json={"credential": "mock_google_token_1234567890", "role": "admin"}
             )
-            assert oauth_entry is not None
-            assert oauth_entry["email"] == email
+            assert resp_bad.status_code == 400
+            assert "Invalid role" in resp_bad.json()["detail"]
+
+
+def test_first_time_google_auth_creates_user_and_doctor_roles():
+    client_id = "configured-client-id.apps.googleusercontent.com"
+    email_u = "new_google_user_role@gmail.com"
+    sub_u = "google-sub-unique-role-user-222"
+    email_d = "new_google_doc_role@gmail.com"
+    sub_d = "google-sub-unique-role-doc-333"
+
+    db.execute("DELETE FROM oauth_accounts WHERE provider_subject IN (?, ?)", (sub_u, sub_d))
+    db.execute("DELETE FROM users WHERE email IN (?, ?)", (email_u, email_d))
+
+    with patch.dict(os.environ, {"GOOGLE_CLIENT_ID": client_id}):
+        # A. Create as role="user"
+        payload_u = {"aud": client_id, "iss": "https://accounts.google.com", "email": email_u, "email_verified": "true", "name": "Google User", "sub": sub_u}
+        with patch("app.api.endpoints.google_id_token.verify_oauth2_token", return_value=payload_u):
+            resp_u = client.post("/api/v1/auth/google/", json={"credential": "mock_google_token_user_1234567890", "role": "user"})
+            assert resp_u.status_code == 200
+            assert resp_u.json()["user"]["role"] == "user"
+            assert resp_u.json()["needs_role_selection"] is False
+            assert "access_token" in resp_u.json()
+            row_u = db.fetch_one("SELECT role FROM users WHERE email = ?", (email_u,))
+            assert row_u["role"] == "user"
+
+        # B. Create as role="doctor"
+        payload_d = {"aud": client_id, "iss": "https://accounts.google.com", "email": email_d, "email_verified": "true", "name": "Google Doc", "sub": sub_d}
+        with patch("app.api.endpoints.google_id_token.verify_oauth2_token", return_value=payload_d):
+            resp_d = client.post("/api/v1/auth/google/", json={"credential": "mock_google_token_doctor_1234567890", "role": "doctor"})
+            assert resp_d.status_code == 200
+            assert resp_d.json()["user"]["role"] == "doctor"
+            assert resp_d.json()["needs_role_selection"] is False
+            assert "access_token" in resp_d.json()
+            row_d = db.fetch_one("SELECT role FROM users WHERE email = ?", (email_d,))
+            assert row_d["role"] == "doctor"
+
+
+def test_returning_google_user_preserves_role_and_blocks_mutation():
+    client_id = "configured-client-id.apps.googleusercontent.com"
+    email = "immutable_google_user@gmail.com"
+    sub = "google-sub-immutable-999"
+
+    db.execute("DELETE FROM oauth_accounts WHERE provider_subject = ?", (sub,))
+    db.execute("DELETE FROM users WHERE email = ?", (email,))
+
+    with patch.dict(os.environ, {"GOOGLE_CLIENT_ID": client_id}):
+        mock_payload = {"aud": client_id, "iss": "https://accounts.google.com", "email": email, "email_verified": "true", "name": "Immutable User", "sub": sub}
+        with patch("app.api.endpoints.google_id_token.verify_oauth2_token", return_value=mock_payload):
+            # First-time: create as user
+            resp1 = client.post("/api/v1/auth/google/", json={"credential": "mock_google_token_1_1234567890", "role": "user"})
+            assert resp1.status_code == 200
+            user_id = resp1.json()["user"]["id"]
+            assert resp1.json()["user"]["role"] == "user"
+
+            # Returning login: client maliciously attempts to elevate role to "doctor"
+            resp2 = client.post("/api/v1/auth/google/", json={"credential": "mock_google_token_2_1234567890", "role": "doctor"})
+            assert resp2.status_code == 200
+            assert resp2.json()["user"]["id"] == user_id
+            # Role MUST remain user!
+            assert resp2.json()["user"]["role"] == "user"
+            assert resp2.json()["needs_role_selection"] is False
+
+            # Verify directly in database
+            row = db.fetch_one("SELECT role FROM users WHERE id = ?", (user_id,))
+            assert row["role"] == "user"
 
 
 def test_google_auth_existing_password_account_collision_refuses_auto_link():
@@ -325,7 +443,7 @@ def test_google_unlink_refused_without_password():
         with patch("app.api.endpoints.google_id_token.verify_oauth2_token", return_value=mock_payload):
             auth_resp = client.post(
                 "/api/v1/auth/google/",
-                json={"credential": "mock_google_token_1234567890"}
+                json={"credential": "mock_google_token_1234567890", "role": "user"}
             )
             assert auth_resp.status_code == 200
             token = auth_resp.json()["access_token"]
@@ -440,9 +558,9 @@ def test_reset_password_expired_token():
 
 
 def test_registration_strict_account_type_validation():
-    """Verify that invalid account_type values are strictly rejected with HTTP 422."""
+    """Verify that invalid role and account_type values are strictly rejected with HTTP 400."""
     db.init()
-    # 1. account_type='admin' must be rejected with 422
+    # 1. account_type='admin' must be rejected with 400
     resp_admin = client.post(
         "/api/v1/auth/register/",
         json={
@@ -452,19 +570,21 @@ def test_registration_strict_account_type_validation():
             "account_type": "admin"
         }
     )
-    assert resp_admin.status_code == 422
+    assert resp_admin.status_code == 400
+    assert "Invalid role" in resp_admin.json()["detail"]
 
-    # 2. account_type='banana' must be rejected with 422
+    # 2. role='banana' must be rejected with 400
     resp_banana = client.post(
         "/api/v1/auth/register/",
         json={
             "email": "banana_attempt@example.com",
             "full_name": "Banana Attempt",
             "password": "ValidPassword123!",
-            "account_type": "banana"
+            "role": "banana"
         }
     )
-    assert resp_banana.status_code == 422
+    assert resp_banana.status_code == 400
+    assert "Invalid role" in resp_banana.json()["detail"]
 
     # 3. account_type='personal' succeeds as role='user'
     email_pers = "strict_personal@example.com"
@@ -481,18 +601,61 @@ def test_registration_strict_account_type_validation():
     assert resp_pers.status_code == 200
     assert resp_pers.json()["user"]["role"] == "user"
 
-    # 4. Attempting to inject role='doctor' or role='admin' with personal account cannot elevate
-    email_inj = "injection_attempt@example.com"
-    db.execute("DELETE FROM users WHERE email = ?", (email_inj,))
-    resp_inj = client.post(
+
+def test_profile_update_cannot_mutate_role():
+    email = "profile_role_mutate_test@example.com"
+    db.execute("DELETE FROM users WHERE email = ?", (email,))
+    reg_resp = client.post(
         "/api/v1/auth/register/",
         json={
-            "email": email_inj,
-            "full_name": "Injection Attempt",
+            "email": email,
+            "full_name": "Original Name",
             "password": "ValidPassword123!",
-            "account_type": "personal",
-            "role": "doctor"
+            "role": "user"
         }
     )
-    assert resp_inj.status_code == 200
-    assert resp_inj.json()["user"]["role"] == "user"
+    assert reg_resp.status_code == 200
+    token = reg_resp.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # Attempt to mutate role via profile update
+    upd_resp = client.put(
+        "/api/v1/auth/profile/",
+        json={"full_name": "New Name", "role": "doctor"},
+        headers=headers
+    )
+    assert upd_resp.status_code == 200
+    # Role must still be user
+    assert upd_resp.json()["role"] == "user"
+    assert upd_resp.json()["full_name"] == "New Name"
+
+    row = db.fetch_one("SELECT role, full_name FROM users WHERE email = ?", (email,))
+    assert row["role"] == "user"
+    assert row["full_name"] == "New Name"
+
+
+def test_ui_disclaimers_and_role_immutability():
+    # 1. Check register.html contains the self-declared doctor research disclaimer
+    with open("frontend/register.html", "r", encoding="utf-8") as f:
+        reg_html = f.read()
+    assert "Doctor role is self-declared for research and demonstration purposes. Professional credentials are not verified." in reg_html
+
+    # 2. Check role-modal.js contains the modal copy and disclaimers
+    with open("frontend/js/components/role-modal.js", "r", encoding="utf-8") as f:
+        modal_js = f.read()
+    assert "Choose how you want to use Breast Health Studio" in modal_js
+    assert "Doctor role is self-declared for research and demonstration purposes. Professional credentials are not verified." in modal_js
+    assert "Regular User" in modal_js
+    assert "Doctor / Healthcare Professional" in modal_js
+
+    # 3. Check profile.html and profile.js do NOT contain role-switch controls
+    with open("frontend/pages/profile.html", "r", encoding="utf-8") as f:
+        prof_html = f.read()
+    assert "Switch to Doctor" not in prof_html
+    assert "Switch to User" not in prof_html
+
+    with open("frontend/js/pages/profile.js", "r", encoding="utf-8") as f:
+        prof_js = f.read()
+    assert "Switch to Doctor" not in prof_js
+    assert "Switch to User" not in prof_js
+    assert "Role Immutability Policy:" in prof_js

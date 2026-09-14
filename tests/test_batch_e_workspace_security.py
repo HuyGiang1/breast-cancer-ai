@@ -74,108 +74,47 @@ def test_personal_registration_assigns_user_role():
     _clean_user_by_email(email)
 
 
-def test_doctor_registration_disabled_mode_rejected():
-    email = "doc_disabled_mode@example.com"
+def test_doctor_registration_self_declared_assigns_doctor_role():
+    email = "doc_self_declared@example.com"
     _clean_user_by_email(email)
 
-    with patch.dict(os.environ, {"DOCTOR_REGISTRATION_MODE": "disabled", "DOCTOR_INVITE_CODE": "SECRET123"}):
-        resp = client.post(
-            "/api/v1/auth/register/",
-            json={
-                "email": email,
-                "full_name": "Dr Disabled",
-                "password": "ValidPassword123!",
-                "account_type": "doctor",
-                "doctor_invite_code": "SECRET123",
-            },
-        )
-        assert resp.status_code == 400
-        assert "unavailable or the invite code is invalid" in resp.json()["detail"].lower()
-
-    row = db.fetch_one("SELECT id FROM users WHERE email = ?", (email,))
-    assert row is None
-
-
-def test_doctor_registration_invalid_invite_rejected():
-    email = "doc_invalid_invite@example.com"
-    _clean_user_by_email(email)
-
-    with patch.dict(os.environ, {"DOCTOR_REGISTRATION_MODE": "invite", "DOCTOR_INVITE_CODE": "CORRECT_CODE"}):
-        # Wrong code
-        resp = client.post(
-            "/api/v1/auth/register/",
-            json={
-                "email": email,
-                "full_name": "Dr Invalid",
-                "password": "ValidPassword123!",
-                "account_type": "doctor",
-                "doctor_invite_code": "WRONG_CODE",
-            },
-        )
-        assert resp.status_code == 400
-        assert "unavailable or the invite code is invalid" in resp.json()["detail"].lower()
-
-        # Blank code
-        resp2 = client.post(
-            "/api/v1/auth/register/",
-            json={
-                "email": email,
-                "full_name": "Dr Invalid",
-                "password": "ValidPassword123!",
-                "account_type": "doctor",
-                "doctor_invite_code": "",
-            },
-        )
-        assert resp2.status_code == 400
-
-    row = db.fetch_one("SELECT id FROM users WHERE email = ?", (email,))
-    assert row is None
-
-
-def test_doctor_registration_valid_invite_assigns_doctor_role():
-    email = "doc_valid_invite@example.com"
-    _clean_user_by_email(email)
-
-    with patch.dict(os.environ, {"DOCTOR_REGISTRATION_MODE": "invite", "DOCTOR_INVITE_CODE": "RESEARCH_SECRET_2026"}):
-        resp = client.post(
-            "/api/v1/auth/register/",
-            json={
-                "email": email,
-                "full_name": "Dr Validated",
-                "password": "ValidPassword123!",
-                "account_type": "doctor",
-                "doctor_invite_code": "RESEARCH_SECRET_2026",
-            },
-        )
-        assert resp.status_code == 200
-        data = resp.json()
-        assert data["user"]["role"] == "doctor"
+    resp = client.post(
+        "/api/v1/auth/register/",
+        json={
+            "email": email,
+            "full_name": "Dr Validated",
+            "password": "ValidPassword123!",
+            "role": "doctor",
+        },
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["user"]["role"] == "doctor"
 
     row = db.fetch_one("SELECT role FROM users WHERE email = ?", (email,))
     assert row["role"] == "doctor"
     _clean_user_by_email(email)
 
 
-def test_role_manipulation_is_completely_ignored():
+def test_registration_role_admin_is_rejected():
     email = "hacker_role_inject@example.com"
     _clean_user_by_email(email)
 
-    # Malicious attempt: client sends role="doctor" and role="admin"
+    # Malicious attempt: client sends role="admin"
     resp = client.post(
         "/api/v1/auth/register/",
         json={
             "email": email,
             "full_name": "Hacker Attempt",
             "password": "ValidPassword123!",
-            "account_type": "personal",
             "role": "admin",
         },
     )
-    assert resp.status_code == 200
-    assert resp.json()["user"]["role"] == "user"
+    assert resp.status_code == 400
+    assert "Invalid role" in resp.json()["detail"]
 
-    row = db.fetch_one("SELECT role FROM users WHERE email = ?", (email,))
-    assert row["role"] == "user"
+    row = db.fetch_one("SELECT id FROM users WHERE email = ?", (email,))
+    assert row is None
     _clean_user_by_email(email)
 
 

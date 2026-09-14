@@ -83,6 +83,11 @@ async function initProfile() {
           <strong>Research &amp; Educational Prototype:</strong>
           This application is strictly designed for research and educational purposes. It does not provide medical licensing, clinical accreditation, or autonomous diagnostic capability. All decisions must be validated by certified medical professionals.
         </div>
+
+        <div style="margin-top: 0.75rem; font-size: 0.8125rem; color: var(--slate-600); background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem 1rem;">
+          <strong style="color: #0f172a;">Role Immutability Policy:</strong>
+          Account role is permanently set at creation. Role changes and in-place role switching are prohibited. To use Breast Health Studio under a different role, register a separate account.
+        </div>
       </section>
 
       <!-- Account Identity -->

@@ -24,13 +24,19 @@ export const authService = {
 
   googleConfig: () => request('/auth/google/config/'),
 
-  async googleLogin(credential) {
+  async googleLogin(credential, role = null) {
+    const payload = { credential };
+    if (role) {
+      payload.role = role;
+    }
     const result = await request('/auth/google/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ credential }),
+      body: JSON.stringify(payload),
     });
-    auth.save(result);
+    if (result.access_token) {
+      auth.save(result);
+    }
     return result;
   },
 

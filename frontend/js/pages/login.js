@@ -2,6 +2,7 @@ import { guestOnly } from '../core/guards.js';
 import { authService } from '../services/auth.service.js';
 import { toast } from '../components/toast.js';
 import { cleanAuthUrl } from '../core/config.js';
+import { openGoogleRoleModal } from '../components/role-modal.js';
 
 cleanAuthUrl();
 
@@ -147,7 +148,27 @@ function initLoginPage() {
     showAlert('Verifying Google credentials with research studio...', 'info');
 
     try {
-      await authService.googleLogin(response.credential);
+      const result = await authService.googleLogin(response.credential);
+      if (result && result.needs_role_selection) {
+        hideAlert();
+        openGoogleRoleModal({
+          credential: response.credential,
+          user: result.user,
+          onSelect: async (selectedRole) => {
+            showAlert('Creating account with selected role...', 'info');
+            try {
+              await authService.googleLogin(response.credential, selectedRole);
+              window.location.assign('index.html');
+            } catch (err) {
+              showAlert(err.message || 'Failed to complete registration.');
+            }
+          },
+          onCancel: () => {
+            hideAlert();
+          },
+        });
+        return;
+      }
       window.location.assign('index.html');
     } catch (err) {
       showAlert(err.message || 'Google authentication failed.');

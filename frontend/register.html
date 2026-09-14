@@ -91,9 +91,6 @@
               <span>Continue with Google</span>
             </button>
           </div>
-          <p id="googleDoctorNote" class="google-doctor-note" style="display: none;">
-            Doctor workspace registration requires an authorization code. Please register via the email form below.
-          </p>
         </div>
 
         <div class="auth-divider">
@@ -109,7 +106,7 @@
             </div>
             <div class="account-type-grid" role="radiogroup" aria-label="Account type selection">
               <label class="account-type-card selected" id="cardTypePersonal">
-                <input type="radio" name="account_type" value="personal" checked id="typePersonalRadio">
+                <input type="radio" name="account_type" value="user" checked id="typePersonalRadio">
                 <span class="account-type-badge">Individual</span>
                 <span class="account-type-title">Personal Analysis</span>
                 <p class="account-type-desc">For individuals running self-assessments, exploring ML/DL models, and saving personal reports.</p>
@@ -122,12 +119,13 @@
                 <p class="account-type-desc">For practitioners managing patient registries, multi-patient timelines, and research records.</p>
               </label>
             </div>
-          </div>
 
-          <div id="doctorInviteBlock" class="doctor-invite-block" style="display: none;">
-            <label class="form-label" for="regDoctorInviteCode">Doctor Workspace Invite Code</label>
-            <input type="text" id="regDoctorInviteCode" name="doctor_invite_code" class="form-input" placeholder="e.g. BHS-DOC-2026-DEV" autocomplete="off">
-            <div class="doctor-invite-hint">Invite code is required to activate clinician workspace features and patient registry access.</div>
+            <div class="doctor-invite-block" id="doctorDisclaimerBlock" style="border: 1px solid #e2e8f0; background: #f8fafc; margin-top: 0.75rem;">
+              <div style="font-size: 0.75rem; color: #475569; line-height: 1.4;">
+                <strong style="color: #0f172a;">Research &amp; Demonstration Notice:</strong><br>
+                Doctor role is self-declared for research and demonstration purposes. Professional credentials are not verified. Role selection is permanent for this account.
+              </div>
+            </div>
           </div>
 
           <div class="form-group">
