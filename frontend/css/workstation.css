@@ -2549,6 +2549,139 @@
   padding-top: 20px;
 }
 
+/* V2 Modal & Button Primitives for Fusion Workstation */
+.v2-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.v2-modal-card {
+  background: #ffffff;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #cbd5e1;
+}
+
+.v2-modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 8px;
+}
+
+.v2-modal-desc {
+  font-size: 0.88rem;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0 0 14px;
+}
+
+.v2-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.v2-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  text-decoration: none;
+  font-family: inherit;
+  line-height: 1.25;
+}
+
+.v2-button:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.v2-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.v2-button.primary {
+  background: #0284c7;
+  border-color: #0284c7;
+  color: #ffffff;
+}
+
+.v2-button.primary:hover:not(:disabled) {
+  background: #0369a1;
+  border-color: #0369a1;
+}
+
+.v2-button.secondary {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+.v2-button.secondary:hover:not(:disabled) {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.v2-button.ghost {
+  background: transparent;
+  border-color: transparent;
+  color: #64748b;
+}
+
+.v2-button.ghost:hover:not(:disabled) {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.v2-button.btn-xs {
+  padding: 4px 10px;
+  font-size: 0.78rem;
+}
+
+.v2-button.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.82rem;
+}
+
+.fusion-csv-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.fusion-csv-table th,
+.fusion-csv-table td {
+  padding: 8px 10px;
+  font-size: 0.82rem;
+}
+
+.fusion-csv-table tbody tr:hover {
+  background: #f1f5f9;
+}
+
 /* Responsive Overrides for Fusion Workstation */
 @media (max-width: 1100px) {
   .fusion-dual-grid {

@@ -34,6 +34,8 @@ const state = {
   inputs: Object.fromEntries(ML_FEATURES.map((f) => [f, ''])),
   outlierConfirmed: false,
   activeMlGroupTab: 'all',
+  branch1InputMode: 'manual', // 'manual' | 'csv'
+  branch1Notification: null, // { type: 'success'|'error', message: string } | null
 
   // Mammography DL Branch State
   file: null,
@@ -56,6 +58,8 @@ const state = {
   // UI Modals
   modal: null, // 'csv' | 'ocr' | 'outlier' | null
   modalData: null,
+  selectedCsvRowIndex: null,
+  csvError: null,
   differsExpanded: false,
 };
 
@@ -260,6 +264,7 @@ function loadStructuredSample(type) {
     state.inputs[feat] = sample[feat] !== undefined ? String(sample[feat]) : '';
   }
   state.outlierConfirmed = false;
+  state.branch1Notification = null;
   state.errorMessage = null;
   render();
 }
@@ -270,6 +275,7 @@ function clearStructuredInputs() {
     state.inputs[feat] = '';
   }
   state.outlierConfirmed = false;
+  state.branch1Notification = null;
   state.errorMessage = null;
   render();
 }
@@ -508,18 +514,32 @@ function renderStructuredBranch() {
         <span>Frozen Cutoff: <strong>Raw ≥ 0.36</strong></span>
       </div>
 
-      <div class="fusion-toolbar">
-        <div class="fusion-toolbar-left">
-          <span style="font-size:0.82rem;font-weight:700;color:#334155;">Presets:</span>
-          <button type="button" class="v2-button secondary btn-xs" id="loadMlBenignBtn">Benign Research #8510426</button>
-          <button type="button" class="v2-button secondary btn-xs" id="loadMlMalignantBtn">Malignant Research #842302</button>
-        </div>
-        <div class="fusion-toolbar-right">
-          <button type="button" class="v2-button secondary btn-xs" id="openCsvModalBtn">Import CSV</button>
-          <button type="button" class="v2-button secondary btn-xs" id="openOcrModalBtn">OCR Report</button>
-          <button type="button" class="v2-button ghost btn-xs" id="clearMlBtn" title="Clear all 30 fields">Clear</button>
+      <div class="fusion-toolbar" style="display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="font-size:0.82rem;font-weight:700;color:#1e293b;">Input method:</span>
+            <button type="button" class="v2-button ${state.branch1InputMode === 'manual' ? 'primary' : 'secondary'} btn-xs" id="branch1ManualBtn" title="Direct manual entry in 30 feature fields">Manual Entry</button>
+            <button type="button" class="v2-button secondary btn-xs" id="openCsvModalBtn" title="Import 30 WDBC features from CSV">Import WDBC CSV</button>
+            <button type="button" class="v2-button secondary btn-xs" id="openOcrModalBtn" title="Extract features from lab report photo">OCR Report</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span style="font-size:0.78rem;font-weight:600;color:#64748b;">Presets:</span>
+            <button type="button" class="v2-button ghost btn-xs" id="loadMlBenignBtn" title="Load Benign Research #8510426">Benign #8510426</button>
+            <button type="button" class="v2-button ghost btn-xs" id="loadMlMalignantBtn" title="Load Malignant Research #842302">Malignant #842302</button>
+            <button type="button" class="v2-button ghost btn-xs" id="clearMlBtn" title="Clear all 30 fields" style="color:#b91c1c;">Clear</button>
+          </div>
         </div>
       </div>
+
+      ${state.branch1Notification ? `
+        <div class="fusion-branch-alert" id="branch1Notification" style="display:flex;align-items:center;justify-content:space-between;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:6px;padding:8px 12px;font-size:0.84rem;color:#065f46;margin-top:-2px;">
+          <span style="display:flex;align-items:center;gap:6px;">
+            <span style="font-weight:700;">✓</span>
+            <span id="branch1NotificationMsg">${esc(state.branch1Notification.message)}</span>
+          </span>
+          <button type="button" id="dismissBranch1NotificationBtn" style="background:none;border:none;cursor:pointer;color:#065f46;font-size:1.1rem;line-height:1;padding:0 4px;" aria-label="Dismiss">&times;</button>
+        </div>
+      ` : ''}
 
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
         <span class="fusion-quality-pill ${quality.isComplete ? 'complete' : ''}">
@@ -1050,19 +1070,116 @@ function renderModals() {
 
   // CSV Import Modal
   if (state.modal === 'csv') {
+    if (state.modalData?.isMultiRow) {
+      const { rows, rowCount } = state.modalData;
+      return `
+        <div class="v2-modal-backdrop" id="modalBackdrop">
+          <div class="v2-modal-card" style="max-width:680px;">
+            <h3 class="v2-modal-title">Import WDBC FNA Features CSV</h3>
+            <div style="font-size:0.84rem;font-weight:700;color:#0369a1;margin-bottom:6px;">
+              Multiple WDBC Observations Detected (${rowCount} rows)
+            </div>
+            <p class="v2-modal-desc" style="margin-bottom:10px;">
+              Experimental Fusion represents exactly <strong>ONE</strong> WDBC structured observation + <strong>ONE</strong> mammography image.
+              Select one valid observation below for this Fusion run:
+            </p>
+
+            <div style="font-size:0.75rem;color:#64748b;background:#f8fafc;border:1px solid #e2e8f0;padding:8px 12px;border-radius:6px;margin-bottom:12px;line-height:1.4;">
+              <strong>Unpaired Dataset Notice:</strong> WDBC cytology observations and CBIS-DDSM mammography images are scientifically unpaired datasets. Selecting this observation does not imply clinical association with the selected mammogram.
+            </div>
+
+            <div class="fusion-csv-table-wrap" style="max-height:260px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:6px;margin-bottom:14px;">
+              <table class="fusion-csv-table" style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+                <thead style="background:#f1f5f9;position:sticky;top:0;z-index:1;">
+                  <tr style="text-align:left;border-bottom:1px solid #cbd5e1;">
+                    <th style="padding:8px 10px;width:54px;text-align:center;">Select</th>
+                    <th style="padding:8px 10px;">Row #</th>
+                    <th style="padding:8px 10px;">Sample ID</th>
+                    <th style="padding:8px 10px;">Features</th>
+                    <th style="padding:8px 10px;">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rows.map((row, idx) => `
+                    <tr style="border-bottom:1px solid #f1f5f9;background:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+                      <td style="padding:8px 10px;text-align:center;">
+                        <input
+                          type="radio"
+                          name="csvObservationSelect"
+                          id="csvRowRadio_${idx}"
+                          value="${idx}"
+                          ${!row.valid ? 'disabled' : ''}
+                          ${state.selectedCsvRowIndex === idx ? 'checked' : ''}
+                          aria-label="Select row ${row.rowNumber}"
+                        />
+                      </td>
+                      <td style="padding:8px 10px;font-weight:600;">#${row.rowNumber}</td>
+                      <td style="padding:8px 10px;color:#334155;">${esc(row.id || 'N/A')}</td>
+                      <td style="padding:8px 10px;color:#475569;">${row.completedCount} / 30</td>
+                      <td style="padding:8px 10px;">
+                        ${row.valid
+                          ? '<span style="color:#15803d;font-weight:700;">✓ Valid</span>'
+                          : `<span style="color:#dc2626;font-size:0.75rem;" title="${esc(row.errors.join('; '))}">✗ ${esc(row.errors[0])}</span>`
+                        }
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <button type="button" class="v2-button ghost btn-xs" id="csvPickAnotherBtn">Select Different File</button>
+              <div style="display:flex;gap:8px;">
+                <button type="button" class="v2-button ghost btn-xs" id="cancelModalBtn">Cancel</button>
+                <button
+                  type="button"
+                  class="v2-button primary btn-xs"
+                  id="btnLoadSelectedCsvRow"
+                  ${state.selectedCsvRowIndex === null || !rows[state.selectedCsvRowIndex]?.valid ? 'disabled' : ''}
+                >
+                  Import Selected Observation
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
     return `
       <div class="v2-modal-backdrop" id="modalBackdrop">
-        <div class="v2-modal-card">
-          <h3 class="v2-modal-title">Import Clinical Features CSV</h3>
+        <div class="v2-modal-card" style="max-width:580px;">
+          <h3 class="v2-modal-title">Import WDBC FNA Features CSV</h3>
           <p class="v2-modal-desc">
-            Upload a CSV containing the 30 WDBC nuclear morphology features. You can download our formatted template below.
+            Upload a CSV containing the 30 WDBC nuclear morphology features used by the Structured FNA Cytology branch.
           </p>
-          <div class="fusion-dropzone-box" id="csvDropzone" style="min-height:140px;margin:16px 0;">
-            <div style="font-size:1.6rem;color:#0284c7;margin-bottom:6px;">📄</div>
+
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;margin:10px 0;font-size:0.80rem;line-height:1.5;color:#334155;">
+            <div style="font-weight:700;color:#0f172a;margin-bottom:3px;">Accepted CSV Format:</div>
+            <div>• <strong>Required:</strong> 30 WDBC feature columns (mean_radius ... worst_fractal_dimension)</div>
+            <div>• <strong>Optional:</strong> <code>id</code> column</div>
+            <div>• <strong>Ignored if present:</strong> <code>diagnosis</code>, <code>target</code>, <code>label</code>, unnamed index fields</div>
+          </div>
+
+          <div style="font-size:0.75rem;color:#64748b;margin:0 0 12px;line-height:1.4;">
+            <strong>Unpaired Dataset Notice:</strong> WDBC cytology measurements and CBIS-DDSM mammography images are scientifically independent. A valid imported observation will populate Branch 1 inputs for this experimental fusion run without implying clinical pairing with any mammogram.
+          </div>
+
+          ${state.csvError ? `
+            <div class="v2-alert error" id="csvErrorBox" style="background:#fef2f2;border:1px solid #fca5a5;color:#991b1b;border-radius:6px;padding:8px 12px;font-size:0.82rem;margin-bottom:12px;line-height:1.4;">
+              <strong style="display:block;margin-bottom:2px;">CSV Validation Error:</strong>
+              ${esc(state.csvError)}
+            </div>
+          ` : ''}
+
+          <div class="fusion-dropzone-box" id="csvDropzone" style="min-height:130px;margin:12px 0;">
+            <div style="font-size:1.6rem;color:#0284c7;margin-bottom:4px;">📄</div>
             <p style="margin:0 0 8px;font-size:0.88rem;font-weight:600;">Drag CSV here or browse</p>
             <button type="button" class="v2-button secondary btn-xs" id="csvFileTriggerBtn">Select CSV File</button>
             <input type="file" id="csvFileInput" accept=".csv,text/csv" style="display:none;" />
           </div>
+
           <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
             <div style="display:flex;gap:8px;">
               <button type="button" class="v2-button ghost btn-xs" id="downloadCsvTemplateBtn">Download Template</button>
@@ -1170,7 +1287,15 @@ function bindEvents() {
 
   // CSV & OCR Modal Triggers
   const openCsvModalBtn = document.querySelector('#openCsvModalBtn');
-  if (openCsvModalBtn) openCsvModalBtn.onclick = () => { state.modal = 'csv'; render(); };
+  if (openCsvModalBtn) {
+    openCsvModalBtn.onclick = () => {
+      state.modal = 'csv';
+      state.modalData = null;
+      state.selectedCsvRowIndex = null;
+      state.csvError = null;
+      render();
+    };
+  }
 
   const openOcrModalBtn = document.querySelector('#openOcrModalBtn');
   if (openOcrModalBtn) openOcrModalBtn.onclick = () => { state.modal = 'ocr'; render(); };
@@ -1290,6 +1415,8 @@ function bindEvents() {
     if (modalCleanup) { modalCleanup(); modalCleanup = null; }
     state.modal = null;
     state.modalData = null;
+    state.selectedCsvRowIndex = null;
+    state.csvError = null;
     render();
   };
   if (modalBackdrop) {
@@ -1309,31 +1436,146 @@ function bindEvents() {
     };
   }
 
+  // Branch 1 Input Method Controls
+  const branch1ManualBtn = document.querySelector('#branch1ManualBtn');
+  if (branch1ManualBtn) {
+    branch1ManualBtn.onclick = () => {
+      state.branch1InputMode = 'manual';
+      const firstInput = document.querySelector('.fusion-field-input');
+      if (firstInput) {
+        firstInput.focus();
+        firstInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
+  }
+
+  const dismissBranch1Notif = document.querySelector('#dismissBranch1NotificationBtn');
+  if (dismissBranch1Notif) {
+    dismissBranch1Notif.onclick = () => {
+      state.branch1Notification = null;
+      render();
+    };
+  }
+
   // CSV Modal actions
+  const handleCsvText = (text) => {
+    try {
+      state.csvError = null;
+      const parsed = parseClinicalCsv(text);
+      if (parsed.isMultiRow) {
+        state.modal = 'csv';
+        state.modalData = parsed;
+        state.selectedCsvRowIndex = null; // NEVER silently choose row 1
+        render();
+      } else {
+        const row = parsed.rows[0];
+        if (!row.valid) {
+          state.csvError = row.errors.join(' ');
+          render();
+          return;
+        }
+        for (const feat of ML_FEATURES) {
+          if (row.values[feat] !== undefined) {
+            state.inputs[feat] = String(row.values[feat]);
+          }
+        }
+        state.outlierConfirmed = false;
+        state.branch1Notification = {
+          type: 'success',
+          message: '1 valid WDBC observation loaded.',
+        };
+        closeModal();
+      }
+    } catch (err) {
+      state.csvError = err.message || 'Failed to parse CSV file.';
+      render();
+    }
+  };
+
   const csvTrigger = document.querySelector('#csvFileTriggerBtn');
   const csvInput = document.querySelector('#csvFileInput');
   if (csvTrigger && csvInput) csvTrigger.onclick = () => csvInput.click();
   if (csvInput) {
     csvInput.onchange = async (e) => {
-      const file = e.target.files[0];
+      const file = e.target.files?.[0];
       if (!file) return;
       try {
         const text = await file.text();
-        const parsed = parseClinicalCsv(text);
-        if (parsed.success && parsed.data) {
-          for (const feat of ML_FEATURES) {
-            if (parsed.data[feat] !== undefined) {
-              state.inputs[feat] = String(parsed.data[feat]);
-            }
-          }
-          state.outlierConfirmed = false;
-          closeModal();
-        } else {
-          alert(`CSV parse error: ${parsed.error || 'Invalid CSV structure.'}`);
-        }
+        handleCsvText(text);
       } catch (err) {
-        alert(`Failed to read CSV: ${err.message}`);
+        state.csvError = `Failed to read CSV: ${err.message}`;
+        render();
+      } finally {
+        csvInput.value = '';
       }
+    };
+  }
+
+  const csvDropzone = document.querySelector('#csvDropzone');
+  if (csvDropzone) {
+    csvDropzone.ondragover = (e) => {
+      e.preventDefault();
+      csvDropzone.classList.add('dragover');
+    };
+    csvDropzone.ondragleave = () => {
+      csvDropzone.classList.remove('dragover');
+    };
+    csvDropzone.ondrop = async (e) => {
+      e.preventDefault();
+      csvDropzone.classList.remove('dragover');
+      const file = e.dataTransfer?.files?.[0];
+      if (file) {
+        try {
+          const text = await file.text();
+          handleCsvText(text);
+        } catch (err) {
+          state.csvError = `Failed to read CSV: ${err.message}`;
+          render();
+        }
+      }
+    };
+  }
+
+  // Multi-row Observation Selection
+  const rowRadios = document.querySelectorAll('input[name="csvObservationSelect"]');
+  rowRadios.forEach((radio) => {
+    radio.onchange = (e) => {
+      state.selectedCsvRowIndex = parseInt(e.target.value, 10);
+      const btn = document.querySelector('#btnLoadSelectedCsvRow');
+      if (btn) {
+        const row = state.modalData?.rows?.[state.selectedCsvRowIndex];
+        btn.disabled = !(row && row.valid);
+      }
+    };
+  });
+
+  const btnLoadSelected = document.querySelector('#btnLoadSelectedCsvRow');
+  if (btnLoadSelected) {
+    btnLoadSelected.onclick = () => {
+      if (state.selectedCsvRowIndex === null) return;
+      const row = state.modalData?.rows?.[state.selectedCsvRowIndex];
+      if (!row || !row.valid) return;
+      for (const feat of ML_FEATURES) {
+        if (row.values[feat] !== undefined) {
+          state.inputs[feat] = String(row.values[feat]);
+        }
+      }
+      state.outlierConfirmed = false;
+      state.branch1Notification = {
+        type: 'success',
+        message: '1 valid WDBC observation loaded.',
+      };
+      closeModal();
+    };
+  }
+
+  const csvPickAnotherBtn = document.querySelector('#csvPickAnotherBtn');
+  if (csvPickAnotherBtn) {
+    csvPickAnotherBtn.onclick = () => {
+      state.modalData = null;
+      state.selectedCsvRowIndex = null;
+      state.csvError = null;
+      render();
     };
   }
 
