@@ -92,6 +92,7 @@ async function initProfile() {
           <strong>${t('common.educationalNotice')}</strong>
         </div>
 
+        <!-- Role Immutability Policy: permanent self-selected role -->
         <div style="margin-top: 0.75rem; font-size: 0.8125rem; color: var(--slate-600); background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem 1rem;">
           <strong style="color: #0f172a;">${t('profile.immutableRoleInfo')}</strong>
           <p style="margin: 4px 0 0;">${t('auth.roleImmutableNotice')}</p>

@@ -460,20 +460,58 @@ class AIAdvisorService:
 
         history_block = "\n".join(history_lines) if history_lines else "No prior conversation."
         return (
-            "You are a safe Vietnamese health information assistant focused on breast cancer education. "
-            "Answer in Vietnamese, clearly, practically, and empathetically. "
-            "Do not claim to diagnose. If symptoms are urgent or suspicious, advise clinical evaluation. "
-            "Keep answers concise but useful. Prefer short sections when helpful. "
-            "If the user asks outside breast cancer, gently redirect back to breast health and screening support.\n\n"
+            "You are Breast Health Studio AI Guide — an educational and research assistant for breast cancer machine learning and imaging exploration.\n\n"
+            "=== SCIENTIFIC GROUND TRUTHS & PROJECT SPECIFICATIONS ===\n"
+            "1. STUDY A (WDBC - Wisconsin Diagnostic Breast Cancer):\n"
+            "   - Exactly 569 fine needle aspirate (FNA) biopsy samples.\n"
+            "   - Exactly 30 numerical features measuring cell nucleus morphology (radius, texture, perimeter, area, smoothness, compactness, concavity, concave points, symmetry, fractal dimension across mean, standard error, and worst groups).\n"
+            "   - CRITICAL TRUTH: These 30 features are FNA nuclear cytology measurements, NOT blood tests, laboratory blood panels, or nutritional values.\n"
+            "   - Primary frozen research model: Logistic Regression (StandardScaler -> LogisticRegression).\n"
+            "   - Decision threshold: raw malignant probability >= 0.360. This is a research software decision cutoff, NOT a clinical threshold.\n"
+            "   - SHAP (SHapley Additive exPlanations): post-hoc feature contribution explanation measuring standardized log-odds impact toward benign or malignant prediction. SHAP is non-causal and purely descriptive.\n\n"
+            "2. STUDY B (CBIS-DDSM - Digital Mammography):\n"
+            "   - Evaluates digital mammography scans.\n"
+            "   - Primary frozen model: EfficientNet-B0 trained on full processed images.\n"
+            "   - Decision threshold: raw malignant probability >= 0.515.\n"
+            "   - Platt calibration is reliability/display calibration only; it does not replace the raw 0.515 decision cutoff.\n"
+            "   - Grad-CAM layer: top_conv. Grad-CAM provides qualitative, coarse visual attention heatmaps showing which image regions activated the model. It is NOT lesion segmentation, NOT tumor localization, and NOT pathology ground truth. Red heat does NOT equal cancer location.\n\n"
+            "3. EXPERIMENTAL FUSION WORKSTATION:\n"
+            "   - WDBC (cytology) and CBIS-DDSM (mammography) are independent, completely UNPAIRED datasets (never sampled from the same patients).\n"
+            "   - Software heuristic formula: Combined Score = 0.40 * ML_raw_probability + 0.60 * DL_raw_probability.\n"
+            "   - Software decision midpoint: 0.50 (50.0%).\n"
+            "   - CRITICAL TRUTH: Fusion is an experimental software heuristic for university research demonstration. It is NOT a clinically validated multimodal diagnostic model. If branches disagree, the combined score cannot resolve the disagreement.\n"
+            "   - A fusion score of 80% does NOT mean an individual has an 80% chance of cancer; it is merely a mathematical combination score of unpaired research models.\n\n"
+            "4. WORKSPACE ROLES & CLINICAL BOUNDARIES:\n"
+            "   - The 'Doctor' role is self-declared for research/demo purposes; the system does not verify medical licenses.\n"
+            "   - This platform CANNOT replace a doctor or specialist clinical examination, diagnostic mammography, or tissue biopsy.\n\n"
+            "=== STRICT SAFETY & COMPLIANCE GUARDRAILS ===\n"
+            "- NEVER diagnose or state whether someone definitely has or does not have cancer.\n"
+            "- NEVER prescribe medications, surgical procedures, or specific clinical therapies.\n"
+            "- If user asks 'Do I have cancer?' or asks for diagnosis: clearly state you cannot diagnose, and explain that formal clinical examination and pathology biopsy are required.\n"
+            "- If user asks if Grad-CAM marks the tumor/cancer location: explicitly answer NO, and explain attention heatmap limitations.\n"
+            "- If user asks if Fusion score equals personal cancer risk: explicitly answer NO, and explain unpaired datasets and software heuristic nature.\n"
+            "- If user asks if this software can replace a doctor: explicitly answer NO.\n\n"
+            "=== LANGUAGE & TONE ===\n"
+            "- Default to natural, clear, academic Vietnamese appropriate for university students and lecturers.\n"
+            "- If the user asks in English, reply in English.\n"
+            "- Keep responses concise, well-structured, and educational.\n\n"
             f"Conversation history:\n{history_block}\n\n"
-            f"Current user message:\n{message}"
+            f"User question:\n{message}"
         )
 
     def _call_openai(self, prompt: str) -> str:
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}",
+        }
+
         body = {
             "model": self.model,
             "messages": [
-                {"role": "system", "content": "You provide safe, concise, non-definitive medical guidance."},
+                {
+                    "role": "system",
+                    "content": "You are Breast Health Studio AI Guide, an educational and research prototype assistant for breast cancer machine learning and imaging exploration.",
+                },
                 {"role": "user", "content": prompt},
             ],
             "temperature": 0.2,
@@ -482,10 +520,7 @@ class AIAdvisorService:
         req = request.Request(
             self.base_url,
             data=json.dumps(body).encode("utf-8"),
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}",
-            },
+            headers=headers,
             method="POST",
         )
 
@@ -499,6 +534,36 @@ class AIAdvisorService:
                 .strip()
             )
         except error.HTTPError as exc:
+            err_body = exc.read().decode("utf-8", errors="replace")
+            # If model-parameter compatibility issue (e.g. temperature or system message rejected)
+            if exc.code == 400 and ("temperature" in err_body.lower() or "system" in err_body.lower()):
+                body_compat = {
+                    "model": self.model,
+                    "messages": [
+                        {
+                            "role": "developer",
+                            "content": "You are Breast Health Studio AI Guide, an educational and research prototype assistant.",
+                        },
+                        {"role": "user", "content": prompt},
+                    ],
+                }
+                req_compat = request.Request(
+                    self.base_url,
+                    data=json.dumps(body_compat).encode("utf-8"),
+                    headers=headers,
+                    method="POST",
+                )
+                try:
+                    with request.urlopen(req_compat, timeout=self.timeout_seconds) as resp:
+                        data = json.loads(resp.read().decode("utf-8"))
+                    return (
+                        data.get("choices", [{}])[0]
+                        .get("message", {})
+                        .get("content", "")
+                        .strip()
+                    )
+                except Exception as inner_exc:
+                    self._log_external_error("OpenAI (compat retry)", inner_exc)
             self._log_external_error("OpenAI", exc)
             return ""
         except (error.URLError, TimeoutError, json.JSONDecodeError, KeyError) as exc:
@@ -650,13 +715,18 @@ class AIAdvisorService:
     def _log_external_error(self, provider: str, exc: Exception) -> None:
         try:
             if isinstance(exc, error.HTTPError):
-                body = exc.read().decode("utf-8", errors="replace")
+                body = exc.read().decode("utf-8", errors="replace") if hasattr(exc, "read") else str(exc)
+                if self.api_key:
+                    body = body.replace(self.api_key, "[REDACTED]")
                 print(
                     f"[AIAdvisor] {provider} HTTPError {exc.code}: {body}",
                     file=sys.stderr,
                 )
                 return
-            print(f"[AIAdvisor] {provider} error: {exc}", file=sys.stderr)
+            err_msg = str(exc)
+            if self.api_key:
+                err_msg = err_msg.replace(self.api_key, "[REDACTED]")
+            print(f"[AIAdvisor] {provider} error: {err_msg}", file=sys.stderr)
         except Exception as log_exc:
             print(f"[AIAdvisor] Failed to log {provider} error: {log_exc}", file=sys.stderr)
 
@@ -817,39 +887,94 @@ class AIAdvisorService:
     def _local_chat(self, message: str) -> str:
         text = message.lower()
 
-        # Safety Guardrail: Self-diagnosis requests
-        if any(p in text for p in ["do i have cancer", "have cancer", "am i sick", "diagnose me", "is it malignant"]):
+        # Scientific Truth A: WDBC definition
+        if "wdbc" in text and any(w in text for w in ["là gì", "la gi", "what is", "nghĩa là", "tap du lieu", "tập dữ liệu"]):
             return (
-                "I cannot diagnose cancer or determine whether you have cancer. Breast Health Studio is a software research "
-                "and education platform, not a clinical diagnostic service. A medical diagnosis requires formal clinical examination, "
-                "diagnostic imaging, and pathological tissue biopsy interpreted by licensed medical specialists. "
-                "If you are experiencing symptoms or have questions about test results, please consult a healthcare professional."
+                "WDBC (Wisconsin Diagnostic Breast Cancer) là một tập dữ liệu nghiên cứu kinh điển gồm 569 mẫu sinh thiết hút kim nhỏ (FNA). "
+                "Tập dữ liệu chứa đúng 30 đặc trưng số học mô tả hình thái nhân tế bào (như bán kính, kết cấu, chu vi, diện tích, độ mịn, độ co đặc, độ lõm, điểm lõm, tính đối xứng và số chiều fractal). "
+                "Lưu ý khoa học quan trọng: Đây là các đặc trưng hình thái tế bào học FNA từ ảnh số hóa, HOÀN TOÀN KHÔNG PHẢI là xét nghiệm máu, chỉ số sinh hóa máu hay thành phần dinh dưỡng."
+            )
+
+        # Scientific Truth B: Threshold 0.36
+        if "0.36" in text and any(w in text for w in ["threshold", "ngưỡng", "nghia la", "nghĩa là", "ml"]):
+            return (
+                "Ngưỡng 0.360 (36.0%) là ngưỡng quyết định (decision threshold) phần mềm được cố định cho mô hình Logistic Regression trên tập dữ liệu tế bào học WDBC. "
+                "Khi xác suất ác tính thô (raw malignant probability) đạt từ 0.360 trở lên, mô hình phần mềm sẽ phân loại mẫu là Ác tính (Malignant). "
+                "Đây là một ngưỡng quyết định kỹ thuật phần mềm phục vụ nghiên cứu và trình diễn thuật toán nhằm tối ưu độ nhạy, KHÔNG PHẢI là ngưỡng chẩn đoán y khoa chính thức trên lâm sàng."
+            )
+
+        # Scientific Truth C: Grad-CAM red attention
+        if "grad-cam" in text or "gradcam" in text:
+            if any(w in text for w in ["đỏ", "do", "vị trí", "vi tri", "khối u", "khoi u", "ung thư", "ung thu", "lesion", "tumor"]):
+                return (
+                    "KHÔNG. Vùng màu đỏ trên bản đồ nhiệt Grad-CAM KHÔNG PHẢI là vị trí khối u hay bằng chứng giải phẫu bệnh của ung thư. "
+                    "Grad-CAM (từ tầng top_conv của EfficientNet-B0) chỉ là một công cụ giải thích trực quan định tính, thể hiện vùng ảnh mà mạng nơ-ron tập trung kích hoạt cao nhất khi đưa ra dự đoán. "
+                    "Nó không có chức năng phân vùng ranh giới khối u (lesion segmentation) hay định vị tổn thương y khoa chính xác. Việc xác định vị trí tổn thương thực tế phải do bác sĩ chẩn đoán hình ảnh thực hiện."
+                )
+            return (
+                "Grad-CAM là kỹ thuật trực quan hóa định tính trích xuất từ tầng top_conv của mô hình EfficientNet-B0. "
+                "Nó hiển thị bản đồ chú ý của mạng nơ-ron nhân tạo trên ảnh nhũ ảnh số hóa, giúp nghiên cứu viên hiểu mô hình dựa vào vùng nào để phân loại, "
+                "nhưng KHÔNG dùng để định vị khối u hay thay thế đánh giá giải phẫu bệnh."
+            )
+
+        # Scientific Truth D: Fusion 80%
+        if "fusion" in text and ("80%" in text or "80" in text):
+            return (
+                "KHÔNG. Điểm số Fusion 80% KHÔNG ĐỒNG NGHĨA với việc bạn có 80% khả năng hoặc nguy cơ bị ung thư. "
+                "Tập dữ liệu tế bào học WDBC và tập ảnh nhũ ảnh CBIS-DDSM là hai nguồn nghiên cứu hoàn toàn độc lập, không ghép cặp (unpaired) từ cùng một bệnh nhân. "
+                "Công thức kết hợp 40% ML + 60% DL chỉ là một ước lượng thực nghiệm (heuristic) ở cấp độ phần mềm phục vụ nghiên cứu và trình diễn thuật toán, không phải mô hình đa phương thức y khoa được kiểm chứng lâm sàng và không phản ánh nguy cơ thực tế của một cá nhân."
+            )
+
+        # Scientific Truth E: Replace doctor diagnosis
+        if any(w in text for w in ["thay bác sĩ", "thay bac si", "thay thế bác sĩ", "thay the bac si", "replace a doctor", "replace doctor"]):
+            return (
+                "KHÔNG. Hệ thống Breast Health Studio là một nguyên mẫu phục vụ nghiên cứu và giáo dục, hoàn toàn KHÔNG THỂ thay thế bác sĩ chẩn đoán. "
+                "Chẩn đoán y khoa chính xác đòi hỏi phải có quá trình thăm khám lâm sàng toàn diện, chụp nhũ ảnh chuyên dụng và xét nghiệm giải phẫu bệnh tế bào do các bác sĩ chuyên khoa có chứng chỉ hành nghề trực tiếp thực hiện."
+            )
+
+        # Scientific Truth F: EfficientNet-B0 threshold
+        if ("efficientnet" in text or "dl" in text) and any(w in text for w in ["threshold", "ngưỡng", "nguong"]):
+            return (
+                "Mô hình học sâu EfficientNet-B0 (nhánh ảnh nhũ ảnh CBIS-DDSM) sử dụng ngưỡng quyết định cố định là xấp xỉ 0.515 (xác suất ác tính thô >= 0.515). "
+                "Xác suất hiệu chuẩn Platt (Platt Calibration) chỉ được dùng để tăng độ tin cậy hiển thị, không thay thế không gian ngưỡng quyết định 0.515 của mô hình."
+            )
+
+        # Scientific Truth G: SHAP explanation
+        if "shap" in text:
+            return (
+                "SHAP (SHapley Additive exPlanations) được sử dụng để giải thích đóng góp hậu nghiệm (post-hoc feature contribution) của 30 đặc trưng tế bào FNA vào điểm số log-odds của mô hình Logistic Regression. "
+                "Giá trị SHAP cho biết đặc trưng nào đang thúc đẩy mô hình dự đoán nghiêng về Ác tính (dương) hay Lành tính (âm). "
+                "Lưu ý rằng SHAP mang tính chất mô tả tương quan toán học của mô hình, KHÔNG chứng minh quan hệ nhân quả sinh học hay y khoa."
+            )
+
+        # Safety Guardrail: Self-diagnosis requests
+        if any(p in text for p in ["do i have cancer", "have cancer", "am i sick", "diagnose me", "is it malignant", "tôi có bị ung thư không", "toi co bi ung thu khong"]):
+            return (
+                "Tôi không thể chẩn đoán hay xác định bạn có bị ung thư hay không. Breast Health Studio là một nền tảng nghiên cứu phần mềm và giáo dục, không phải dịch vụ chẩn đoán lâm sàng. "
+                "Chẩn đoán y khoa đòi hỏi quá trình thăm khám lâm sàng chính thức, chụp hình ảnh chẩn đoán và sinh thiết mô giải phẫu bệnh được bác sĩ chuyên khoa giải thích. "
+                "Nếu bạn có triệu chứng đáng lo ngại hoặc thắc mắc về kết quả xét nghiệm, vui lòng tham vấn ý kiến bác sĩ chuyên khoa."
             )
 
         # Safety Guardrail: Tumor localization
-        if any(p in text for p in ["where is my tumor", "locate my tumor", "tumor location", "where is the lesion"]):
+        if any(p in text for p in ["where is my tumor", "locate my tumor", "tumor location", "where is the lesion", "vị trí khối u ở đâu", "vi tri khoi u o dau"]):
             return (
-                "I cannot identify or localize a tumor. This platform does not perform anatomical lesion localization. "
-                "Research visual explanations like Grad-CAM highlight model layer activations, which do not represent definitive "
-                "pathological margins or physical tumor boundaries. Official localization requires radiologist review."
+                "Hệ thống không thể xác định hoặc định vị khối u. Nền tảng này không thực hiện chức năng phân vùng giải phẫu tổn thương. "
+                "Các giải thích thị giác nghiên cứu như Grad-CAM chỉ làm nổi bật vùng kích hoạt của mạng nơ-ron, không thể hiện ranh giới khối u giải phẫu thực tế."
             )
 
         # Safety Guardrail: Treatment prescription
-        if any(p in text for p in ["what treatment should i start", "prescribe", "what medicine", "start treatment", "what therapy"]):
+        if any(p in text for p in ["what treatment should i start", "prescribe", "what medicine", "start treatment", "what therapy", "uống thuốc gì", "điều trị thế nào"]):
             return (
-                "I cannot prescribe or recommend medical treatments, medications, or surgical interventions. "
-                "Cancer management depends on tumor staging, receptor expression (ER/PR/HER2), and individualized clinical factors "
-                "evaluated by a certified oncology care team. Please discuss all care decisions directly with your doctor."
+                "Tôi không thể kê đơn hay khuyến nghị phác đồ điều trị, thuốc hay can thiệp phẫu thuật y khoa. "
+                "Việc điều trị ung thư phụ thuộc vào giai đoạn bệnh, thụ thể và các yếu tố lâm sàng cụ thể do hội đồng chuyên khoa ung bướu đánh giá. Vui lòng thảo luận trực tiếp với bác sĩ điều trị."
             )
 
         # Safety Guardrail: Model disagreement arbitration
-        if ("trust" in text and "disagree" in text) or ("which model" in text and "disagree" in text) or ("overrule" in text):
+        if ("trust" in text and "disagree" in text) or ("which model" in text and "disagree" in text) or ("overrule" in text) or ("bất đồng" in text and "tin" in text):
             return (
-                "Neither model should be considered to overrule the other in a clinical sense. "
-                "The Structured ML model (trained on WDBC cytology features) and Mammography DL model (trained on CBIS-DDSM scans) "
-                "operate on completely unpaired data types with distinct mathematical representations and error profiles. "
-                "The 40/60 combined score is an experimental exploration heuristic, not a validated clinical arbitration rule. "
-                "In clinical workflows, divergent findings indicate the necessity of further diagnostic testing and physician evaluation."
+                "Không nhánh mô hình nào được coi là có quyền phủ quyết nhánh kia trên phương diện lâm sàng. "
+                "Mô hình ML tế bào học (WDBC) và mô hình DL nhũ ảnh (CBIS-DDSM) hoạt động trên các dạng dữ liệu hoàn toàn không ghép cặp với đặc tính toán học khác nhau. "
+                "Điểm kết hợp 40/60 là công thức ước lượng thực nghiệm phục vụ nghiên cứu, không thể phân xử bất đồng lâm sàng. Khi hai nhánh bất đồng, cần thăm khám và đánh giá thêm từ bác sĩ chuyên khoa."
             )
 
         if any(keyword in text for keyword in ["triệu chứng", "dấu hiệu", "đau", "khối", "tiết dịch"]):
@@ -857,7 +982,7 @@ class AIAdvisorService:
                 "Các dấu hiệu nên đi khám sớm gồm: sờ thấy khối cứng ở vú hoặc nách, thay đổi da kiểu lõm hoặc sần, "
                 "núm vú tụt mới xuất hiện, tiết dịch bất thường, hoặc đau khu trú kéo dài. "
                 "Nếu bạn đang có một trong các dấu hiệu này, nên khám chuyên khoa sớm. "
-                "Lưu ý: đây không phải chẩn đoán y khoa."
+                "Lưu ý: đây là thông tin giáo dục, không phải chẩn đoán y khoa."
             )
         if any(keyword in text for keyword in ["ăn gì", "dinh dưỡng", "thực phẩm", "kiêng"]):
             return (
@@ -867,10 +992,9 @@ class AIAdvisorService:
                 "Lưu ý: đây là thông tin hỗ trợ, không thay thế tư vấn điều trị."
             )
         return (
-            "I can provide educational explanations regarding breast cancer screening guidelines, Wisconsin ML cytology features, "
-            "Mammography deep learning evaluations, calibration concepts, and research study limitations. "
-            "Please ask a specific methodology or research question. "
-            "Note: This assistant is for research exploration and cannot provide clinical diagnoses or medical advice."
+            "Breast Health Studio AI Guide hỗ trợ giải thích phương pháp luận mô hình, 30 đặc trưng tế bào FNA (WDBC), "
+            "phân tích nhũ ảnh học sâu (CBIS-DDSM), bản đồ Grad-CAM, hiệu chuẩn Platt và công thức kết hợp đa nhánh thực nghiệm. "
+            "Xin lưu ý: Trợ lý phục vụ mục đích nghiên cứu/giáo dục và không cung cấp chẩn đoán y khoa."
         )
 
 
