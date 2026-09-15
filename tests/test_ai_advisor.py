@@ -119,3 +119,49 @@ def test_ai_advisor_openai_billing_blocked_fallback():
             assert res["model"] == "rule-based-advisor"
             assert "569" in res["answer"]
             assert "sk-test" not in str(res)
+
+
+def test_ai_advisor_gemini_success():
+    with patch.dict(os.environ, {
+        "AI_ADVISOR_PROVIDER": "gemini",
+        "GEMINI_API_KEY": "fake-gemini-secret-key",
+        "GEMINI_MODEL": "gemini-3.6-flash",
+    }):
+        svc = AIAdvisorService()
+        mock_response = MagicMock()
+        mock_response.read.return_value = b'{"candidates": [{"content": {"parts": [{"text": "GEMINI_STAGING_OK"}]}}]}'
+        mock_response.__enter__.return_value = mock_response
+
+        with patch("urllib.request.urlopen", return_value=mock_response):
+            res = svc.chat_about_breast_cancer(message="Hello")
+            assert res["provider"] == "gemini"
+            assert res["model"] == "gemini-3.6-flash"
+            assert res["answer"] == "GEMINI_STAGING_OK"
+            assert "fake-gemini" not in str(res)
+
+
+def test_ai_advisor_gemini_503_retry():
+    import urllib.error
+    with patch.dict(os.environ, {
+        "AI_ADVISOR_PROVIDER": "gemini",
+        "GEMINI_API_KEY": "fake-gemini-secret-key",
+        "GEMINI_MODEL": "gemini-3.6-flash",
+    }):
+        svc = AIAdvisorService()
+        
+        mock_err = urllib.error.HTTPError(
+            url="https://generativelanguage.googleapis.com",
+            code=503,
+            msg="Service Unavailable",
+            hdrs={},
+            fp=MagicMock(read=lambda: b'{"error": {"code": 503, "message": "High demand"}}')
+        )
+        mock_success = MagicMock()
+        mock_success.read.return_value = b'{"candidates": [{"content": {"parts": [{"text": "RETRY_SUCCESS"}]}}]}'
+        mock_success.__enter__.return_value = mock_success
+
+        with patch("urllib.request.urlopen", side_effect=[mock_err, mock_success]), patch("time.sleep"):
+            res = svc.chat_about_breast_cancer(message="Hello")
+            assert res["provider"] == "gemini"
+            assert res["model"] == "gemini-3.6-flash"
+            assert res["answer"] == "RETRY_SUCCESS"

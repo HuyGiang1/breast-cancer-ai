@@ -642,23 +642,29 @@ class AIAdvisorService:
             method="POST",
         )
 
-        try:
-            with request.urlopen(req, timeout=self.timeout_seconds) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
+        for attempt in range(2):
+            try:
+                with request.urlopen(req, timeout=self.timeout_seconds) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
 
-            candidates = data.get("candidates", [])
-            if not candidates:
+                candidates = data.get("candidates", [])
+                if not candidates:
+                    return ""
+
+                parts = candidates[0].get("content", {}).get("parts", [])
+                text_parts = [part.get("text", "").strip() for part in parts if part.get("text")]
+                return "\n".join(part for part in text_parts if part).strip()
+            except error.HTTPError as exc:
+                if exc.code == 503 and attempt == 0:
+                    import time
+                    time.sleep(1.2)
+                    continue
+                self._log_external_error("Gemini", exc)
                 return ""
-
-            parts = candidates[0].get("content", {}).get("parts", [])
-            text_parts = [part.get("text", "").strip() for part in parts if part.get("text")]
-            return "\n".join(part for part in text_parts if part).strip()
-        except error.HTTPError as exc:
-            self._log_external_error("Gemini", exc)
-            return ""
-        except (error.URLError, TimeoutError, json.JSONDecodeError, KeyError) as exc:
-            self._log_external_error("Gemini", exc)
-            return ""
+            except (error.URLError, TimeoutError, json.JSONDecodeError, KeyError) as exc:
+                self._log_external_error("Gemini", exc)
+                return ""
+        return ""
 
     def _call_gemini_with_image(self, prompt: str, image_bytes: bytes, content_type: str) -> str:
         url = f"{self.gemini_base_url}/{self.gemini_model}:generateContent?key={self.gemini_api_key}"
