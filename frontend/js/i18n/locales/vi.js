@@ -496,3 +496,5 @@ export const vi = {
     "unsupportedFormat": "Định dạng tệp không được hỗ trợ. Vui lòng tải lên ảnh nhũ ảnh JPEG hoặc PNG tiêu chuẩn."
   }
 };
+
+export default vi;

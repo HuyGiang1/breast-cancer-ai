@@ -496,3 +496,5 @@ export const en = {
     "unsupportedFormat": "Unsupported file format. Please upload a standard JPEG or PNG mammography image."
   }
 };
+
+export default en;
