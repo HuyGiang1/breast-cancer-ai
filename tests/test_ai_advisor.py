@@ -165,3 +165,33 @@ def test_ai_advisor_gemini_503_retry():
             assert res["provider"] == "gemini"
             assert res["model"] == "gemini-3.6-flash"
             assert res["answer"] == "RETRY_SUCCESS"
+
+
+def test_ai_advisor_gemini_falls_back_directly_to_local():
+    import urllib.error
+    with patch.dict(os.environ, {
+        "AI_ADVISOR_PROVIDER": "gemini",
+        "GEMINI_API_KEY": "fake-gemini-secret-key",
+        "GEMINI_MODEL": "gemini-2.5-flash-lite",
+        "OPENAI_API_KEY": "sk-configured-but-should-never-be-called",
+    }):
+        svc = AIAdvisorService()
+        
+        # Simulate 429 quota exhausted error on Gemini
+        mock_err = urllib.error.HTTPError(
+            url="https://generativelanguage.googleapis.com",
+            code=429,
+            msg="Too Many Requests",
+            hdrs={},
+            fp=MagicMock(read=lambda: b'{"error": {"code": 429, "message": "RESOURCE_EXHAUSTED"}}')
+        )
+
+        with patch("urllib.request.urlopen", side_effect=mock_err) as mock_url:
+            res = svc.chat_about_breast_cancer(message="WDBC là gì?")
+            # Must fall back directly to local rule-based advisor, NOT openai
+            assert res["provider"] == "local"
+            assert res["model"] == "rule-based-advisor"
+            assert "569" in res["answer"]
+            # Urlopen must only be called for Gemini, never for OpenAI
+            assert mock_url.call_count == 1
+            assert "openai.com" not in mock_url.call_args[0][0].full_url

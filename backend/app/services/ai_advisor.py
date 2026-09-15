@@ -116,19 +116,16 @@ class AIAdvisorService:
             answer = self._call_gemini(prompt)
             if answer:
                 return {"answer": answer, "provider": "gemini", "model": self.gemini_model}
-            if self.api_key:
-                answer = self._call_openai(prompt)
-                if answer:
-                    return {"answer": answer, "provider": "openai_fallback", "model": self.model}
+            return {
+                "answer": self._local_chat(message),
+                "provider": "local",
+                "model": "rule-based-advisor",
+            }
 
         if self.provider == "openai" and self.api_key:
             answer = self._call_openai(prompt)
             if answer:
                 return {"answer": answer, "provider": "openai", "model": self.model}
-            if self.gemini_api_key:
-                answer = self._call_gemini(prompt)
-                if answer:
-                    return {"answer": answer, "provider": "gemini_fallback", "model": self.gemini_model}
 
         return {
             "answer": self._local_chat(message),
@@ -198,21 +195,11 @@ class AIAdvisorService:
             parsed = self._parse_clinical_feature_json(text)
             if parsed:
                 llm_candidates.append((parsed, "gemini", self.gemini_model, text))
-            if self.api_key:
-                text = self._call_openai_with_image(prompt, image_bytes, content_type)
-                parsed = self._parse_clinical_feature_json(text)
-                if parsed:
-                    llm_candidates.append((parsed, "openai_fallback", self.model, text))
         elif self.provider == "openai" and self.api_key:
             text = self._call_openai_with_image(prompt, image_bytes, content_type)
             parsed = self._parse_clinical_feature_json(text)
             if parsed:
                 llm_candidates.append((parsed, "openai", self.model, text))
-            if self.gemini_api_key:
-                text = self._call_gemini_with_image(prompt, image_bytes, content_type)
-                parsed = self._parse_clinical_feature_json(text)
-                if parsed:
-                    llm_candidates.append((parsed, "gemini_fallback", self.gemini_model, text))
 
         for candidate in llm_candidates:
             parsed, _, _, _ = candidate
@@ -420,13 +407,9 @@ class AIAdvisorService:
             advice = self._call_gemini(prompt)
             if advice:
                 return {"advice": advice, "provider": "gemini", "model": self.gemini_model}
-            if self.api_key:
-                advice = self._call_openai(prompt)
-                if advice:
-                    return {"advice": advice, "provider": "openai_fallback", "model": self.model}
             return {
                 "advice": local_generator(payload),
-                "provider": "local_fallback",
+                "provider": "local",
                 "model": "rule-based-advisor",
             }
 
@@ -434,13 +417,9 @@ class AIAdvisorService:
             advice = self._call_openai(prompt)
             if advice:
                 return {"advice": advice, "provider": "openai", "model": self.model}
-            if self.gemini_api_key:
-                advice = self._call_gemini(prompt)
-                if advice:
-                    return {"advice": advice, "provider": "gemini_fallback", "model": self.gemini_model}
             return {
                 "advice": local_generator(payload),
-                "provider": "local_fallback",
+                "provider": "local",
                 "model": "rule-based-advisor",
             }
 
