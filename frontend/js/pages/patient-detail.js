@@ -1,6 +1,7 @@
 import { requireAuth } from '../core/guards.js';
 import { mountShell } from '../components/shell.js';
 import { auth } from '../core/auth.js';
+import { t } from '../core/i18n.js';
 import { patientService } from '../services/patient.service.js';
 import { reportService } from '../services/report.service.js';
 import { toast } from '../components/toast.js';
@@ -126,7 +127,7 @@ async function initPatientDetailPage() {
     contentEl.innerHTML = `
       <!-- Breadcrumb Navigation -->
       <nav class="patient-breadcrumb" aria-label="Breadcrumb">
-        <a href="patients.html">← Patient Registry</a>
+        <a href="patients.html">${t('patients.detail.back', '← Patient Registry')}</a>
         <span>/</span>
         <span style="color: var(--slate-800); font-weight: 600;">${esc(p.full_name)}</span>
       </nav>
@@ -139,11 +140,11 @@ async function initPatientDetailPage() {
             <div class="patient-detail-title-group">
               <h1>${esc(p.full_name)}</h1>
               <div class="patient-detail-demographics">
-                <span class="patient-id-badge">ID: ${esc(p.id)}</span>
-                ${age != null ? `<span>${age} years old</span> · ` : ''}
-                <span>${esc(p.gender || 'Unspecified Gender')}</span>
-                ${p.date_of_birth ? `<span>· DOB: ${formatDate(p.date_of_birth)}</span>` : ''}
-                <span>· Registered: ${formatDate(p.created_at)}</span>
+                <span class="patient-id-badge">${t('patients.patientId', 'Patient ID')}: ${esc(p.id)}</span>
+                ${age != null ? `<span>${t('patients.detail.yearsOld', { age })}</span> · ` : ''}
+                <span>${esc(p.gender || t('patients.genderOther', 'Other'))}</span>
+                ${p.date_of_birth ? `<span>· ${t('patients.detail.dob', { date: formatDate(p.date_of_birth) })}</span>` : ''}
+                <span>· ${t('patients.detail.registered', { date: formatDate(p.created_at) })}</span>
               </div>
             </div>
           </div>
@@ -154,7 +155,7 @@ async function initPatientDetailPage() {
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
               </svg>
-              <span>Edit Demographic Info</span>
+              <span>${t('patients.detail.editDemographics', 'Edit Demographic Info')}</span>
             </button>
           </div>
         </div>
@@ -162,7 +163,7 @@ async function initPatientDetailPage() {
         <!-- 3-Modality Quick Launch Strip -->
         <div class="patient-launch-strip">
           <span style="font-size: 0.8125rem; font-weight: 700; color: var(--slate-700); align-self: center; margin-right: 0.5rem;">
-            New Analysis for this Patient:
+            ${t('patients.detail.newAnalysisPrompt', 'New Analysis for this Patient:')}
           </span>
           <a href="ml-analysis.html?patient_id=${esc(p.id)}" class="patient-launch-btn ml" title="Perform Wisconsin Cytology Structured ML Analysis">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -170,7 +171,7 @@ async function initPatientDetailPage() {
               <line x1="3" y1="9" x2="21" y2="9"></line>
               <line x1="9" y1="21" x2="9" y2="9"></line>
             </svg>
-            <span>Run Wisconsin Structured ML</span>
+            <span>${t('patients.detail.runMl', 'Run Wisconsin Structured ML')}</span>
           </a>
           <a href="dl-analysis.html?patient_id=${esc(p.id)}" class="patient-launch-btn dl" title="Perform CBIS-DDSM Mammography Deep Learning Analysis">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -178,7 +179,7 @@ async function initPatientDetailPage() {
               <circle cx="8.5" cy="8.5" r="1.5"></circle>
               <polyline points="21 15 16 10 5 21"></polyline>
             </svg>
-            <span>Run Mammography DL</span>
+            <span>${t('patients.detail.runDl', 'Run Mammography DL')}</span>
           </a>
           <a href="multimodal.html?patient_id=${esc(p.id)}" class="patient-launch-btn fusion" title="Perform Experimental Multimodal Fusion Analysis">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -186,7 +187,7 @@ async function initPatientDetailPage() {
               <polyline points="2 17 12 22 22 17"></polyline>
               <polyline points="2 12 12 17 22 12"></polyline>
             </svg>
-            <span>Run Multimodal Fusion</span>
+            <span>${t('patients.detail.runFusion', 'Run Multimodal Fusion')}</span>
           </a>
         </div>
       </header>
@@ -196,9 +197,9 @@ async function initPatientDetailPage() {
         <!-- Left: Chronological Analysis Timeline -->
         <section>
           <div class="timeline-section-title">
-            <span>Diagnostic &amp; Research Timeline (${totalAnalyses})</span>
+            <span>${t('patients.detail.timelineTitle', 'Diagnostic & Research Timeline')} (${totalAnalyses})</span>
             <a href="history.html?patient_id=${esc(p.id)}" class="studio-btn studio-btn-outline studio-btn-sm">
-              Full Activity History →
+              ${t('patients.detail.fullHistory', 'Full Activity History →')}
             </a>
           </div>
 
@@ -208,10 +209,10 @@ async function initPatientDetailPage() {
               <div class="studio-card" style="text-align: center; padding: 2.5rem 1.5rem;">
                 <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔬</div>
                 <h3 style="font-size: 1.0625rem; font-weight: 700; color: var(--slate-800); margin-bottom: 0.375rem;">
-                  No Analyses Recorded
+                  ${t('patients.detail.noAnalyses', 'No Analyses Recorded')}
                 </h3>
                 <p style="font-size: 0.8125rem; color: var(--slate-500); max-width: 380px; margin: 0 auto 1rem;">
-                  No prediction records have been logged for this patient yet. Use the quick launch buttons above to run Wisconsin ML, Mammography DL, or Multimodal Fusion.
+                  ${t('patients.detail.noAnalysesDesc')}
                 </p>
               </div>
             `
@@ -227,8 +228,8 @@ async function initPatientDetailPage() {
         <aside>
           <div class="studio-card" style="margin-bottom: 1rem;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-              <h3 style="font-size: 1rem; font-weight: 700; color: var(--slate-900); margin: 0;">Research Notes</h3>
-              <button type="button" class="btn-icon-action" id="editNotesBtn" title="Edit Research Notes">
+              <h3 style="font-size: 1rem; font-weight: 700; color: var(--slate-900); margin: 0;">${t('patients.detail.researchNotes', 'Research Notes')}</h3>
+              <button type="button" class="btn-icon-action" id="editNotesBtn" title="${t('patients.detail.researchNotes', 'Research Notes')}">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -236,29 +237,29 @@ async function initPatientDetailPage() {
               </button>
             </div>
             <p style="font-size: 0.875rem; color: var(--slate-600); line-height: 1.5; white-space: pre-wrap; margin: 0;">
-              ${esc(p.notes || 'No research notes recorded for this patient.')}
+              ${esc(p.notes || t('patients.detail.noNotes', 'No research notes recorded for this patient.'))}
             </p>
           </div>
 
           <div class="studio-card">
             <h3 style="font-size: 1rem; font-weight: 700; color: var(--slate-900); margin-bottom: 0.75rem;">
-              Modality Summary
+              ${t('patients.detail.modalitySummary', 'Modality Summary')}
             </h3>
             <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.8125rem;">
               <div style="display: flex; justify-content: space-between; padding-bottom: 0.375rem; border-bottom: 1px solid var(--border-subtle);">
-                <span style="color: var(--slate-600);">Structured ML Runs:</span>
+                <span style="color: var(--slate-600);">${t('patients.detail.mlRuns', 'Structured ML Runs:')}</span>
                 <strong style="color: var(--teal-800);">${mlCount}</strong>
               </div>
               <div style="display: flex; justify-content: space-between; padding-bottom: 0.375rem; border-bottom: 1px solid var(--border-subtle);">
-                <span style="color: var(--slate-600);">Mammography Scans:</span>
+                <span style="color: var(--slate-600);">${t('patients.detail.dlRuns', 'Mammography Scans:')}</span>
                 <strong style="color: #1d4ed8;">${dlCount}</strong>
               </div>
               <div style="display: flex; justify-content: space-between; padding-bottom: 0.375rem; border-bottom: 1px solid var(--border-subtle);">
-                <span style="color: var(--slate-600);">Multimodal Fusions:</span>
+                <span style="color: var(--slate-600);">${t('patients.detail.fusionRuns', 'Multimodal Fusions:')}</span>
                 <strong style="color: #7e22ce;">${fusionCount}</strong>
               </div>
               <div style="display: flex; justify-content: space-between; padding-top: 0.25rem;">
-                <span style="color: var(--slate-800); font-weight: 700;">Total Analyses:</span>
+                <span style="color: var(--slate-800); font-weight: 700;">${t('patients.detail.totalAnalyses', 'Total Analyses:')}</span>
                 <strong style="color: var(--slate-900);">${totalAnalyses}</strong>
               </div>
             </div>
@@ -362,6 +363,10 @@ async function initPatientDetailPage() {
       }
     });
   }
+
+  window.addEventListener('bcai:languageChanged', () => {
+    if (currentPatient) renderPatientView();
+  });
 
   // Initial load
   loadPatient();

@@ -3,6 +3,7 @@ import { authService } from '../services/auth.service.js';
 import { toast } from '../components/toast.js';
 import { cleanAuthUrl } from '../core/config.js';
 import { openGoogleRoleModal } from '../components/role-modal.js';
+import { renderLanguageSwitcher, bindLanguageSwitcherEvents } from '../core/i18n.js';
 
 cleanAuthUrl();
 
@@ -11,6 +12,16 @@ if (guestOnly('index.html')) {
 }
 
 function initRegisterPage() {
+  const langSlot = document.getElementById('authLangSlot');
+  function updateLangSlot() {
+    if (langSlot) {
+      langSlot.innerHTML = renderLanguageSwitcher();
+      bindLanguageSwitcherEvents(langSlot);
+    }
+  }
+  updateLangSlot();
+  window.addEventListener('bcai:languageChanged', updateLangSlot);
+
   const form = document.getElementById('registerForm');
   const alertBox = document.getElementById('authAlert');
   const togglePassBtn = document.getElementById('toggleRegPassword');

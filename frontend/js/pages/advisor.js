@@ -3,6 +3,7 @@ import { mountShell } from '../components/shell.js';
 import { advisorService } from '../services/advisor.service.js';
 import { addMessage } from '../components/support.js';
 import { esc } from '../components/workspace.js';
+import { t, getLanguage } from '../core/i18n.js';
 
 if (requireAuth('../login.html?v=auth-v3')) {
   mountShell('AI Guide');
@@ -11,6 +12,7 @@ if (requireAuth('../login.html?v=auth-v3')) {
 
 async function initAdvisorPage() {
   const app = document.querySelector('#app');
+  const isVi = getLanguage() === 'vi';
 
   // Check contextual handoff from structured analysis, mammography, or fusion
   let contextData = null;
@@ -22,8 +24,17 @@ async function initAdvisorPage() {
   }
 
   let contextBannerHtml = '';
-  let pageHeaderTitle = 'AI Guide';
-  let dynamicSuggestions = [
+  let pageHeaderTitle = t('advisor.title', 'AI Guide');
+  let dynamicSuggestions = isVi ? [
+    'Giải thích cách mô hình đưa ra dự đoán',
+    'Hiệu chuẩn xác suất (Platt Calibration) có ý nghĩa gì?',
+    'Đặc trưng hình thái nhân đóng góp như thế nào (SHAP)?',
+    'Bản đồ nhiệt Grad-CAM nên được diễn giải như thế nào?',
+    'Tại sao nhánh tế bào học WDBC và ảnh nhũ ảnh không so sánh trực tiếp được?',
+    'Những giới hạn nghiên cứu chính của tập dữ liệu là gì?',
+    'Ngưỡng quyết định 0.515 của mô hình DL thể hiện điều gì?',
+    'Tại sao kết hợp đa nhánh lại được xem là thực nghiệm?',
+  ] : [
     'Explain how model predictions are generated',
     'What does probability calibration mean?',
     'What is SHAP feature attribution?',
@@ -130,9 +141,9 @@ async function initAdvisorPage() {
   app.innerHTML = `
     <section class="research-main">
       <header class="research-hero">
-        <span class="eyebrow">Research and Educational Assistant</span>
+        <span class="eyebrow">${t('advisor.eyebrow')}</span>
         <h1 id="advisorHeading">${esc(pageHeaderTitle)}</h1>
-        <p>Analysis-aware research assistant for methodology, feature contributions, and study interpretations. Does not provide medical diagnoses or treatment prescriptions.</p>
+        <p>${t('advisor.desc')}</p>
       </header>
 
       ${contextBannerHtml}
@@ -141,30 +152,30 @@ async function initAdvisorPage() {
         <section class="studio-card chat-panel">
           <div class="chat-toolbar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;border-bottom:1px solid var(--border-subtle);padding-bottom:0.75rem;">
             <div style="display:flex;align-items:center;gap:8px;">
-              <strong style="color:var(--slate-800);">Conversation</strong>
-              <span style="font-size:0.75rem;color:var(--slate-500);">(Saved account history is unchanged)</span>
+              <strong style="color:var(--slate-800);">${t('advisor.conversation')}</strong>
+              <span style="font-size:0.75rem;color:var(--slate-500);">${t('advisor.historyUnchanged')}</span>
             </div>
-            <button id="clear" class="studio-btn studio-btn-outline studio-btn-sm" type="button">Start new conversation</button>
+            <button id="clear" class="studio-btn studio-btn-outline studio-btn-sm" type="button">${t('advisor.newConversation')}</button>
           </div>
 
           <div id="messages" class="support-messages" aria-live="polite" style="max-height:480px;overflow-y:auto;padding-right:4px;">
-            <p class="v2-empty" id="empty">Ask about model methodology, feature contributions, calibration, or research limitations.</p>
+            <p class="v2-empty" id="empty">${t('advisor.emptyHint')}</p>
           </div>
 
           <p id="status" role="status" style="font-size:0.8125rem;color:var(--slate-500);margin:0.5rem 0;min-height:1.25rem;"></p>
 
           <form id="composer" class="chat-composer" style="margin-top:0.5rem;">
-            <label for="message" style="display:block;font-size:0.875rem;font-weight:600;margin-bottom:0.375rem;color:var(--slate-700);">Your research question</label>
-            <textarea id="message" class="form-input" rows="3" placeholder="Ask a question regarding model interpretations, datasets, or methodology..." required style="width:100%;resize:vertical;"></textarea>
+            <label for="message" style="display:block;font-size:0.875rem;font-weight:600;margin-bottom:0.375rem;color:var(--slate-700);">${t('advisor.questionLabel')}</label>
+            <textarea id="message" class="form-input" rows="3" placeholder="${t('advisor.chatPlaceholder')}" required style="width:100%;resize:vertical;"></textarea>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.625rem;">
-              <span style="font-size:0.75rem;color:var(--slate-400);">Press Enter to send, Shift+Enter for new line</span>
-              <button class="studio-btn studio-btn-primary" id="btnSendMessage" type="submit">Send Question</button>
+              <span style="font-size:0.75rem;color:var(--slate-400);">${t('advisor.enterHint')}</span>
+              <button class="studio-btn studio-btn-primary" id="btnSendMessage" type="submit">${t('advisor.sendBtn')}</button>
             </div>
           </form>
         </section>
 
         <aside class="studio-card prompt-panel">
-          <h2 style="font-size:1rem;font-weight:700;color:var(--slate-800);margin-bottom:0.75rem;">Suggested Topics</h2>
+          <h2 style="font-size:1rem;font-weight:700;color:var(--slate-800);margin-bottom:0.75rem;">${t('advisor.suggestedTopics')}</h2>
           <div id="suggestedPromptsList" style="display:flex;flex-direction:column;gap:0.5rem;">
             ${dynamicSuggestions
               .map(
@@ -309,3 +320,7 @@ async function initAdvisorPage() {
     status.textContent = `History unavailable: ${error.message}`;
   }
 }
+
+window.addEventListener('bcai:languageChanged', () => {
+  initAdvisorPage();
+});

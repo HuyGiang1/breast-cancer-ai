@@ -5,11 +5,16 @@ import { predictionService } from '../services/prediction.service.js';
 import { patientService } from '../services/patient.service.js';
 import { reportService } from '../services/report.service.js';
 import { activityCardHtml, esc } from '../components/workspace.js';
+import { t } from '../core/i18n.js';
 
 if (requireAuth('../login.html?v=auth-v3')) {
   mountShell('Activity');
   initHistoryPage();
 }
+
+window.addEventListener('bcai:languageChanged', () => {
+  initHistoryPage();
+});
 
 async function initHistoryPage() {
   const app = document.querySelector('#app');
@@ -22,12 +27,12 @@ async function initHistoryPage() {
   app.innerHTML = `
     <section class="research-main">
       <header class="research-hero">
-        <span class="eyebrow">${isDoctor ? 'Doctor Workspace' : 'Personal Records'}</span>
-        <h1>${isDoctor ? 'Analysis Activity' : 'My Activity'}</h1>
+        <span class="eyebrow">${isDoctor ? t('nav.doctorWorkspace') : t('profile.personalAccount')}</span>
+        <h1>${isDoctor ? t('history.doctorTitle') : t('history.userTitle')}</h1>
         <p>${
           isDoctor
-            ? 'Review and filter saved research analyses, model classifications, and patient-linked records.'
-            : 'Review your personal analysis records, model classifications, and research reports.'
+            ? t('history.doctorSubtitle')
+            : t('history.userSubtitle')
         }</p>
       </header>
 
@@ -39,42 +44,42 @@ async function initHistoryPage() {
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <input type="search" id="historySearchInput" class="workspace-search-input" placeholder="Search by model, result, or keyword...">
+            <input type="search" id="historySearchInput" class="workspace-search-input" placeholder="${t('history.searchPlaceholder')}">
           </div>
 
           <select id="historyModalitySelect" class="workspace-select" aria-label="Filter by analysis modality">
-            <option value="">All Modalities</option>
-            <option value="ml">Wisconsin Structured ML</option>
-            <option value="dl">Mammography Deep Learning</option>
-            <option value="multimodal">Experimental Fusion</option>
+            <option value="">${t('history.filterAll')}</option>
+            <option value="ml">${t('history.filterMl')}</option>
+            <option value="dl">${t('history.filterDl')}</option>
+            <option value="multimodal">${t('history.filterMultimodal')}</option>
           </select>
 
           ${
             isDoctor
               ? `
             <select id="historyPatientSelect" class="workspace-select" aria-label="Filter by patient">
-              <option value="">All Patients &amp; Standalone</option>
-              <option value="unlinked">Standalone Analyses Only</option>
+              <option value="">${t('history.filterAllPatients')}</option>
+              <option value="unlinked">${t('history.filterStandalone')}</option>
             </select>
           `
               : ''
           }
 
           <div class="workspace-date-filter-group" style="display: flex; align-items: center; gap: 0.5rem;">
-            <label for="historyDateFrom" style="font-size: 0.8125rem; font-weight: 500; color: var(--slate-600);">From:</label>
+            <label for="historyDateFrom" style="font-size: 0.8125rem; font-weight: 500; color: var(--slate-600);">${t('history.fromDate')}</label>
             <input type="date" id="historyDateFrom" class="form-input" style="padding: 0.375rem 0.5rem; font-size: 0.8125rem; width: auto;" aria-label="Filter from date">
-            <label for="historyDateTo" style="font-size: 0.8125rem; font-weight: 500; color: var(--slate-600);">To:</label>
+            <label for="historyDateTo" style="font-size: 0.8125rem; font-weight: 500; color: var(--slate-600);">${t('history.toDate')}</label>
             <input type="date" id="historyDateTo" class="form-input" style="padding: 0.375rem 0.5rem; font-size: 0.8125rem; width: auto;" aria-label="Filter to date">
           </div>
 
           <button type="button" id="historyClearFiltersBtn" class="studio-btn studio-btn-outline studio-btn-sm" style="height: 38px;">
-            Clear Filters
+            ${t('history.clearFilters')}
           </button>
         </div>
 
         <div class="workspace-toolbar-right" style="margin-left: auto;">
           <span id="historyCountBadge" class="patient-modality-pill has-analyses" style="font-size: 0.8125rem;">
-            Loading records...
+            ${t('common.loading')}
           </span>
         </div>
       </div>
@@ -82,7 +87,7 @@ async function initHistoryPage() {
       <!-- Activity Feed List -->
       <div id="activityList">
         <div class="studio-card" style="text-align: center; padding: 2.5rem; color: var(--slate-500);">
-          Loading activity records...
+          ${t('common.loading')}
         </div>
       </div>
     </section>

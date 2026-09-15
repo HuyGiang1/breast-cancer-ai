@@ -4,6 +4,7 @@ import { authService } from '../services/auth.service.js';
 import { auth } from '../core/auth.js';
 import { toast } from '../components/toast.js';
 import { bindModalAccessibility } from '../components/workspace.js';
+import { t } from '../core/i18n.js';
 
 const esc = (s) =>
   String(s || '').replace(/[&<>"']/g, (c) => ({
@@ -16,17 +17,25 @@ const esc = (s) =>
 
 if (requireAuth()) {
   mountShell('Profile');
+  initProfilePage();
+}
+
+window.addEventListener('bcai:languageChanged', () => {
+  initProfilePage();
+});
+
+function initProfilePage() {
   const app = document.querySelector('#app');
   app.innerHTML = `
     <section class="research-main">
       <header class="research-hero">
-        <span class="eyebrow">Authenticated Account</span>
-        <h1>Account &amp; Security</h1>
-        <p>Manage your account identity, role capabilities, connected authentications, and session security.</p>
+        <span class="eyebrow">${t('profile.title')}</span>
+        <h1>${t('profile.title')}</h1>
+        <p>${t('profile.subtitle')}</p>
       </header>
       <div id="profileModalHost"></div>
       <div id="profile" class="profile-grid">
-        <section class="studio-card">Loading profile...</section>
+        <section class="studio-card">${t('common.loading')}</section>
       </div>
     </section>
   `;
@@ -48,99 +57,93 @@ async function initProfile() {
     root.innerHTML = `
       <!-- Account Type & Capabilities -->
       <section class="studio-card">
-        <h2>Account Type &amp; Capabilities</h2>
+        <h2>${t('profile.role')}</h2>
 
         <div class="profile-account-type-banner ${isDoctor ? 'doctor' : 'personal'}">
           <div>
             <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              ${isDoctor ? 'Clinician Workspace' : 'Individual Assessment'}
+              ${isDoctor ? t('profile.clinicianAccount') : t('profile.personalAccount')}
             </div>
             <strong style="font-size: 1.125rem;">
-              ${isDoctor ? 'Doctor / Clinician Account' : 'Personal Analysis Account'}
+              ${isDoctor ? t('auth.roleDoctorTitle') : t('auth.roleUserTitle')}
             </strong>
           </div>
           <span class="v2-badge ${isDoctor ? 'primary' : ''}">
-            ${isDoctor ? 'Doctor Role' : 'Personal User'}
+            ${isDoctor ? 'Doctor' : 'User'}
           </span>
         </div>
 
         <div class="profile-account-capabilities">
           <p style="margin: 0 0 0.5rem 0; font-weight: 600; color: var(--slate-800);">Active Capabilities:</p>
           <ul style="margin: 0; padding-left: 1.25rem; color: var(--slate-600); display: flex; flex-direction: column; gap: 0.25rem;">
-            <li>Wisconsin Cytology Structured Machine Learning evaluations</li>
-            <li>CBIS-DDSM Mammography Deep Learning &amp; Grad-CAM visual explainability</li>
-            <li>Experimental Multimodal Decision-Level Fusion analysis</li>
-            <li>Personal activity logs and print-ready research reports</li>
+            <li>${t('nav.structuredAnalysis')} (WDBC)</li>
+            <li>${t('nav.mammographyAnalysis')} (CBIS-DDSM)</li>
+            <li>${t('fusion.title')}</li>
+            <li>${t('history.title')}</li>
             ${
               isDoctor
-                ? '<li style="color: #1e40af; font-weight: 600;">Full Patient Registry management (Add / Edit / Delete patients)</li><li style="color: #1e40af; font-weight: 600;">Patient-associated diagnostic evaluations and longitudinal timelines</li>'
-                : '<li style="color: var(--slate-500); font-style: italic;">Patient Registry disabled (Personal use only)</li>'
+                ? `<li style="color: #1e40af; font-weight: 600;">${t('patients.title')}</li>`
+                : `<li style="color: var(--slate-500); font-style: italic;">${t('auth.roleUserDesc')}</li>`
             }
           </ul>
         </div>
 
         <div class="profile-disclaimer-card">
-          <strong>Research &amp; Educational Prototype:</strong>
-          This application is strictly designed for research and educational purposes. It does not provide medical licensing, clinical accreditation, or autonomous diagnostic capability. All decisions must be validated by certified medical professionals.
+          <strong>${t('common.educationalNotice')}</strong>
         </div>
 
         <div style="margin-top: 0.75rem; font-size: 0.8125rem; color: var(--slate-600); background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem 1rem;">
-          <strong style="color: #0f172a;">Role Immutability Policy:</strong>
-          Account role is permanently set at creation. Role changes and in-place role switching are prohibited. To use Breast Health Studio under a different role, register a separate account.
+          <strong style="color: #0f172a;">${t('profile.immutableRoleInfo')}</strong>
+          <p style="margin: 4px 0 0;">${t('auth.roleImmutableNotice')}</p>
         </div>
       </section>
 
       <!-- Account Identity -->
       <section class="studio-card">
-        <h2>Account Identity</h2>
+        <h2>${t('profile.title')}</h2>
         <form id="account">
-          <label class="v2-field">Full name
+          <label class="v2-field">${t('profile.fullName')}
             <input class="v2-input" name="full_name" value="${esc(user.full_name || '')}" required>
           </label>
-          <label class="v2-field">Email address
+          <label class="v2-field">${t('profile.email')}
             <input class="v2-input" type="email" value="${esc(user.email || '')}" readonly style="background: #f8fafc; color: var(--slate-600);">
           </label>
           <p id="accountStatus" role="status" style="font-size: 0.875rem;"></p>
-          <button class="v2-button">Save profile name</button>
+          <button class="v2-button">${t('common.save')}</button>
         </form>
       </section>
 
       <!-- Connected Accounts (Google OAuth) -->
       <section class="studio-card">
-        <h2>Connected Accounts</h2>
-        <p style="color:var(--slate-600);font-size:0.875rem;margin-bottom:1rem;">Link external Google identity for quick sign-in.</p>
+        <h2>Google OAuth</h2>
         <div id="googleConnection"></div>
         <p id="connectionStatus" role="status" style="margin-top:0.75rem;font-size:0.875rem;"></p>
       </section>
 
       <!-- Password Security -->
       <section class="studio-card">
-        <h2>Password Security</h2>
+        <h2>${t('profile.changePassword')}</h2>
         <form id="password">
-          <label class="v2-field">Current password
+          <label class="v2-field">${t('profile.currentPassword')}
             <input class="v2-input" name="current_password" type="password" autocomplete="current-password" required>
           </label>
-          <label class="v2-field">New password (8+ characters)
+          <label class="v2-field">${t('profile.newPassword')}
             <input class="v2-input" name="new_password" type="password" minlength="8" autocomplete="new-password" required>
           </label>
           <p id="passwordStatus" role="status" style="font-size: 0.875rem;"></p>
-          <button class="v2-button">Change password</button>
+          <button class="v2-button">${t('profile.updatePasswordBtn')}</button>
         </form>
       </section>
 
       <!-- Session Security & Logout -->
       <section class="studio-card">
-        <h2>Session &amp; Device Security</h2>
-        <p style="font-size: 0.875rem; color: var(--slate-600); margin-bottom: 1.25rem;">
-          Manage your active research sessions across browsers and workstations.
-        </p>
-
+        <h2>${t('common.logout')}</h2>
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
           <button id="logoutThisDeviceBtn" class="v2-button secondary" type="button">
-            Sign out (this device)
+            ${t('common.logout')}
           </button>
           <button id="logoutAllDevicesBtn" class="v2-button secondary" type="button" style="color: #b91c1c; border-color: #fecaca; background: #fef2f2;">
-            Sign out all devices...
+            ${t('common.logout')} (All devices)
           </button>
         </div>
       </section>

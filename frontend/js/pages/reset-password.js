@@ -1,5 +1,6 @@
 import { authService } from '../services/auth.service.js';
 import { toast } from '../components/toast.js';
+import { t, renderLanguageSwitcher, bindLanguageSwitcherEvents, applyDomTranslations } from '../core/i18n.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   initResetPasswordPage();
@@ -10,6 +11,17 @@ if (document.readyState !== 'loading') {
 }
 
 function initResetPasswordPage() {
+  const langSlot = document.getElementById('authLangSlot');
+  function updateLangSlot() {
+    if (langSlot) {
+      langSlot.innerHTML = renderLanguageSwitcher();
+      bindLanguageSwitcherEvents(langSlot);
+    }
+    applyDomTranslations(document.body);
+  }
+  updateLangSlot();
+  window.addEventListener('bcai:languageChanged', updateLangSlot);
+
   const form = document.getElementById('resetForm');
   if (!form || form.dataset.initialized) return;
   form.dataset.initialized = 'true';
@@ -57,11 +69,11 @@ function initResetPasswordPage() {
 
   // 3. If token is missing, show controlled invalid link state
   if (!token) {
-    if (titleEl) titleEl.textContent = 'Invalid reset link';
-    if (subtitleEl) subtitleEl.textContent = 'This password reset link is missing a security token.';
+    if (titleEl) titleEl.textContent = t('auth.invalidToken');
+    if (subtitleEl) subtitleEl.textContent = t('auth.invalidTokenDesc');
     form.style.display = 'none';
     if (invalidActions) invalidActions.style.display = 'block';
-    showAlert('Reset link is invalid or incomplete. Please request a new password reset link.', 'error');
+    showAlert(t('auth.invalidTokenDesc'), 'error');
     return;
   }
 
@@ -73,7 +85,7 @@ function initResetPasswordPage() {
       if (confirmInput) {
         confirmInput.type = isPassword ? 'text' : 'password';
       }
-      togglePassBtn.textContent = isPassword ? 'Hide' : 'Show';
+      togglePassBtn.textContent = isPassword ? t('common.hide', 'Hide') : t('common.show', 'Show');
     });
   }
 
@@ -86,17 +98,17 @@ function initResetPasswordPage() {
     const confirmPassword = confirmInput.value;
 
     if (!newPassword || newPassword.length < 8) {
-      showAlert('Password must be at least 8 characters long.');
+      showAlert(t('auth.passwordMinLength'));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      showAlert('Passwords do not match. Please verify and try again.');
+      showAlert(t('auth.passwordsDoNotMatch'));
       return;
     }
 
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Updating password...';
+    submitBtn.textContent = t('common.updating', 'Updating password...');
 
     try {
       const result = await authService.reset({
@@ -104,18 +116,18 @@ function initResetPasswordPage() {
         new_password: newPassword,
       });
 
-      showAlert(result.message || 'Password updated successfully! Redirecting to sign in...', 'info');
+      showAlert(result.message || t('auth.passwordUpdatedSuccess'), 'info');
       passInput.disabled = true;
       confirmInput.disabled = true;
-      submitBtn.textContent = 'Password Updated';
+      submitBtn.textContent = t('auth.saveNewPassword');
 
       setTimeout(() => {
         window.location.assign('login.html?v=auth-v3');
       }, 1200);
     } catch (err) {
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Reset password';
-      const msg = err.message || 'Failed to update password. The link may have expired.';
+      submitBtn.textContent = t('auth.resetPasswordBtn');
+      const msg = err.message || t('errors.requestFailed');
       showAlert(msg, 'error');
       if (msg.toLowerCase().includes('expired') || msg.toLowerCase().includes('invalid')) {
         if (invalidActions) invalidActions.style.display = 'block';

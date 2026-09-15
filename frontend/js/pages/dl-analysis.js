@@ -3,6 +3,7 @@ import { predictionService } from '../services/prediction.service.js';
 import { patientService } from '../services/patient.service.js';
 import { reportService } from '../services/report.service.js';
 import { auth } from '../core/auth.js';
+import { t } from '../core/i18n.js';
 
 mountShell('Mammography Research Analysis');
 
@@ -50,12 +51,12 @@ function esc(str) {
 
 // Stage configurations for transparent execution tracking
 const STAGES = [
-  { id: 'validating', label: 'Validating mammography image format and dimensions' },
-  { id: 'uploading', label: 'Uploading image to inference runtime' },
-  { id: 'inferring', label: 'Running frozen EfficientNet-B0 (224×224 input)' },
-  { id: 'gradcam', label: 'Generating Grad-CAM attention map on top_conv' },
-  { id: 'interpreting', label: 'Evaluating raw probability vs frozen 0.515 cutoff' },
-  { id: 'saving', label: 'Saving analysis record' },
+  { id: 'validating', get label() { return t('dl.stages.validating', 'Validating mammography image format and dimensions'); } },
+  { id: 'uploading', get label() { return t('dl.stages.uploading', 'Uploading image to inference runtime'); } },
+  { id: 'inferring', get label() { return t('dl.stages.inferring', 'Running frozen EfficientNet-B0 (224×224 input)'); } },
+  { id: 'gradcam', get label() { return t('dl.stages.gradcam', 'Generating Grad-CAM attention map on top_conv'); } },
+  { id: 'interpreting', get label() { return t('dl.stages.interpreting', 'Evaluating raw probability vs frozen 0.515 cutoff'); } },
+  { id: 'saving', get label() { return t('dl.stages.saving', 'Saving analysis record'); } },
 ];
 
 function getStageStatus(stageId) {
@@ -85,7 +86,7 @@ async function handleFileSelected(file, isPreset = false, presetType = null) {
 
   // 1. Empty / zero-byte file check
   if (file.size === 0) {
-    state.errorMessage = 'The selected file is empty (0 bytes). Please choose a valid image.';
+    state.errorMessage = t('errors.zeroByteFile', 'The selected file is empty (0 bytes). Please choose a valid image.');
     render();
     return;
   }
@@ -96,14 +97,14 @@ async function handleFileSelected(file, isPreset = false, presetType = null) {
   const validExts = ['jpg', 'jpeg', 'png'];
 
   if (!validTypes.includes(file.type) && !validExts.includes(ext)) {
-    state.errorMessage = 'Unsupported file format. Please upload a standard JPEG or PNG mammography image.';
+    state.errorMessage = t('errors.unsupportedFormat', 'Unsupported file format. Please upload a standard JPEG or PNG mammography image.');
     render();
     return;
   }
 
   // 3. Oversized file check (> 20 MB)
   if (file.size > 20 * 1024 * 1024) {
-    state.errorMessage = 'Image upload is too large. Maximum supported file size is 20 MB.';
+    state.errorMessage = t('errors.payloadTooLarge', 'Image upload is too large. Maximum supported file size is 20 MB.');
     render();
     return;
   }
@@ -137,7 +138,7 @@ async function handleFileSelected(file, isPreset = false, presetType = null) {
     render();
   } catch {
     cleanupObjectUrl();
-    state.errorMessage = 'Corrupt or unreadable image file. Unable to decode image data.';
+    state.errorMessage = t('errors.corruptImage', 'Corrupt or unreadable image file. Unable to decode image data.');
     render();
   }
 }
@@ -280,23 +281,19 @@ function render() {
       <!-- 1. Hero & Model Context -->
       <header class="ml-hero">
         <div class="ml-hero-eyebrow">
-          <span>🔬 Study B · CBIS-DDSM Full Processed Image</span>
-          <span>•</span>
-          <span>EfficientNet-B0 Candidate</span>
+          <span>${t('dl.heroEyebrow')}</span>
         </div>
-        <h1>Mammography Research Analysis Workstation</h1>
+        <h1>${t('dl.heroTitle')}</h1>
         <p class="ml-hero-desc">
-          High-precision research inspection for digitized mammography images.
-          Evaluated against the frozen <strong>EfficientNet-B0</strong> model (ID: <code>cbis-efficientnetb0-full-v1</code>)
-          with a frozen decision cutoff at <strong>≥ 0.515 raw malignant probability</strong>.
+          ${t('dl.heroDesc')}
         </p>
         <div class="ml-hero-specs">
-          <span class="ml-spec-pill">Architecture: <strong>EfficientNet-B0</strong></span>
-          <span class="ml-spec-pill">Dataset: <strong>CBIS-DDSM (Processed)</strong></span>
+          <span class="ml-spec-pill">${t('dl.specModel')}</span>
+          <span class="ml-spec-pill">${t('dl.specDataset')}</span>
           <span class="ml-spec-pill">Input Tensor: <strong>224 × 224 × 3</strong></span>
-          <span class="ml-spec-pill">Raw Cutoff: <strong>0.515</strong></span>
-          <span class="ml-spec-pill">XAI Layer: <strong>top_conv (Grad-CAM)</strong></span>
-          <span class="ml-spec-pill">Calibration: <strong>Platt (Display Only)</strong></span>
+          <span class="ml-spec-pill">${t('dl.specCutoff')}</span>
+          <span class="ml-spec-pill">${t('dl.specExplain')}</span>
+          <span class="ml-spec-pill">${t('dl.specScope')}</span>
         </div>
       </header>
 
@@ -466,9 +463,9 @@ function render() {
             ${!hasImage || state.isAnalyzing ? 'disabled' : ''}
           >
             ${state.isAnalyzing ? `
-              <span>⏳ Analyzing Mammogram…</span>
+              <span>⏳ ${t('dl.analyzing')}</span>
             ` : `
-              <span>⚡ Analyze Mammogram</span>
+              <span>⚡ ${t('dl.runBtn')}</span>
             `}
           </button>
 
@@ -623,21 +620,21 @@ function renderResultWorkspace() {
               class="dl-comp-tab ${state.comparisonMode === 'side-by-side' ? 'active' : ''}"
               data-mode="side-by-side"
             >
-              Side by Side
+              ${t('dl.viewSideBySide')}
             </button>
             <button
               type="button"
               class="dl-comp-tab ${state.comparisonMode === 'original' ? 'active' : ''}"
               data-mode="original"
             >
-              Original Mammogram
+              ${t('dl.viewOriginal')}
             </button>
             <button
               type="button"
               class="dl-comp-tab ${state.comparisonMode === 'gradcam' ? 'active' : ''}"
               data-mode="gradcam"
             >
-              Grad-CAM Overlay
+              ${t('dl.viewGradcam')}
             </button>
           </div>
         </div>
@@ -741,7 +738,7 @@ function renderResultWorkspace() {
       <!-- 8. Action Bar -->
       <div class="dl-action-bar">
         <button type="button" class="v2-button secondary" id="btnAnalyzeAnother">
-          Analyze Another Image
+          ${t('dl.resetAnalysis')}
         </button>
         <button type="button" class="v2-button secondary" id="btnAskAiGuide">
           Ask AI Guide About This Result
@@ -871,5 +868,9 @@ async function init() {
   }
   render();
 }
+
+window.addEventListener('bcai:languageChanged', () => {
+  render();
+});
 
 init();

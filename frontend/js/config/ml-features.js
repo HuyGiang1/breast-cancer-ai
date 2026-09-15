@@ -1,3 +1,5 @@
+import { t } from '../core/i18n.js';
+
 export const ML_GROUPS = [
   ['Mean features', [
     'mean_radius', 'mean_texture', 'mean_perimeter', 'mean_area', 'mean_smoothness',
@@ -15,8 +17,17 @@ export const ML_GROUPS = [
 
 export const ML_FEATURES = ML_GROUPS.flatMap(([, features]) => features);
 
-export const featureLabel = (key) =>
-  key.split('_').map((x) => x[0].toUpperCase() + x.slice(1)).join(' ');
+export const featureLabel = (key) => {
+  const defaultLabel = key.split('_').map((x) => x[0].toUpperCase() + x.slice(1)).join(' ');
+  return t(`wdbc.features.${key}`, { defaultValue: defaultLabel });
+};
+
+export const groupLabel = (title) => {
+  if (title === 'Mean features') return t('wdbc.groups.mean', { defaultValue: title });
+  if (title === 'Standard error features') return t('wdbc.groups.se', { defaultValue: title });
+  if (title === 'Worst features') return t('wdbc.groups.worst', { defaultValue: title });
+  return title;
+};
 
 export const SAMPLES = {
   benign: {
@@ -43,11 +54,18 @@ export const SAMPLES = {
   },
 };
 
-export const GROUP_DESCRIPTIONS = {
+export const GROUP_DESCRIPTIONS = new Proxy({
   'Mean features': 'Average morphology measurements across fine needle aspirate (FNA) cell nuclei.',
   'Standard error features': 'Variability and estimation error of nuclear features across sampled cells.',
   'Worst features': 'Mean of the three largest (most severe) cell nuclei measurements per sample as defined in WDBC.',
-};
+}, {
+  get(target, prop) {
+    if (prop === 'Mean features') return t('wdbc.descriptions.mean', { defaultValue: target[prop] });
+    if (prop === 'Standard error features') return t('wdbc.descriptions.se', { defaultValue: target[prop] });
+    if (prop === 'Worst features') return t('wdbc.descriptions.worst', { defaultValue: target[prop] });
+    return target[prop];
+  }
+});
 
 export const WDBC_DEVELOPMENT_REFERENCE = {
   mean_radius: { min: 6.981, p01: 8.4091, p05: 9.5481, median: 13.34, p95: 20.593, p99: 24.9014, max: 28.11, mean: 14.1661, std: 3.5751, display_name: 'Mean Radius', group: 'Mean', description: 'Mean distance from center to points on cell nucleus perimeter.' },

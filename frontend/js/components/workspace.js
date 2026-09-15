@@ -1,4 +1,5 @@
 /* Breast Health Intelligence Studio — V4 Workspace UI Components */
+import { t, getLanguage } from '../core/i18n.js';
 
 export const esc = (v) =>
   String(v ?? '').replace(/[&<>"']/g, (c) => ({
@@ -14,7 +15,8 @@ export function formatDate(dateStr) {
   try {
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return String(dateStr);
-    return d.toLocaleDateString('en-US', {
+    const locale = getLanguage() === 'vi' ? 'vi-VN' : 'en-US';
+    return d.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -29,7 +31,8 @@ export function formatDateTime(dateStr) {
   try {
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return String(dateStr);
-    return d.toLocaleDateString('en-US', {
+    const locale = getLanguage() === 'vi' ? 'vi-VN' : 'en-US';
+    return d.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -133,8 +136,8 @@ export function patientModalHtml(patient = {}) {
     <div class="workspace-modal-overlay" id="patientModalOverlay" role="dialog" aria-modal="true" aria-labelledby="patientModalTitle">
       <div class="workspace-modal">
         <div class="workspace-modal-header">
-          <h2 class="workspace-modal-title" id="patientModalTitle">${isEdit ? 'Edit Research Patient Record' : 'Register Research Patient'}</h2>
-          <button type="button" class="workspace-modal-close" id="closePatientModalBtn" aria-label="Close dialog">
+          <h2 class="workspace-modal-title" id="patientModalTitle">${isEdit ? t('patients.editPatient', { defaultValue: 'Edit Research Patient Record' }) : t('patients.addPatient', { defaultValue: 'Register Research Patient' })}</h2>
+          <button type="button" class="workspace-modal-close" id="closePatientModalBtn" aria-label="${t('common.close', { defaultValue: 'Close dialog' })}">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -146,38 +149,38 @@ export function patientModalHtml(patient = {}) {
             <input type="hidden" name="id" value="${esc(p.id || '')}">
 
             <div class="form-group" style="margin-bottom: 1rem;">
-              <label class="form-label" for="patFullName">Full Name *</label>
+              <label class="form-label" for="patFullName">${t('patients.name', { defaultValue: 'Full Name' })} *</label>
               <input type="text" id="patFullName" name="full_name" class="form-input" value="${esc(p.full_name || '')}" placeholder="e.g. Jane M. Doe" required autocomplete="off">
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
               <div class="form-group">
-                <label class="form-label" for="patDob">Date of Birth</label>
+                <label class="form-label" for="patDob">${t('patients.dob', { defaultValue: 'Date of Birth' })}</label>
                 <input type="date" id="patDob" name="date_of_birth" class="form-input" value="${esc(p.date_of_birth || '')}">
               </div>
               <div class="form-group">
-                <label class="form-label" for="patGender">Gender</label>
+                <label class="form-label" for="patGender">${t('patients.gender', { defaultValue: 'Gender' })}</label>
                 <select id="patGender" name="gender" class="workspace-select" style="width: 100%;">
-                  <option value="" ${!p.gender ? 'selected' : ''}>Select gender...</option>
-                  <option value="Female" ${p.gender === 'Female' ? 'selected' : ''}>Female</option>
-                  <option value="Male" ${p.gender === 'Male' ? 'selected' : ''}>Male</option>
-                  <option value="Other" ${p.gender === 'Other' ? 'selected' : ''}>Other</option>
-                  <option value="Unspecified" ${p.gender === 'Unspecified' ? 'selected' : ''}>Unspecified</option>
+                  <option value="" ${!p.gender ? 'selected' : ''}>${t('patients.selectGender', { defaultValue: 'Select gender...' })}</option>
+                  <option value="Female" ${p.gender === 'Female' ? 'selected' : ''}>${t('patients.genderFemale', { defaultValue: 'Female' })}</option>
+                  <option value="Male" ${p.gender === 'Male' ? 'selected' : ''}>${t('patients.genderMale', { defaultValue: 'Male' })}</option>
+                  <option value="Other" ${p.gender === 'Other' ? 'selected' : ''}>${t('patients.genderOther', { defaultValue: 'Other' })}</option>
+                  <option value="Unspecified" ${p.gender === 'Unspecified' ? 'selected' : ''}>${t('patients.genderUnspecified', { defaultValue: 'Unspecified' })}</option>
                 </select>
               </div>
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="patNotes">Research Notes</label>
+              <label class="form-label" for="patNotes">${t('patients.notes', { defaultValue: 'Research Notes' })}</label>
               <textarea id="patNotes" name="notes" class="form-input" rows="3" placeholder="Optional research context, study identifiers, or workflow notes.">${esc(p.notes || '')}</textarea>
             </div>
 
             <div id="patientFormError" class="auth-alert-box error" style="display: none; margin-top: 1rem;" role="alert"></div>
           </div>
           <div class="workspace-modal-footer">
-            <button type="button" class="studio-btn studio-btn-outline" id="cancelPatientModalBtn">Cancel</button>
+            <button type="button" class="studio-btn studio-btn-outline" id="cancelPatientModalBtn">${t('common.cancel', { defaultValue: 'Cancel' })}</button>
             <button type="submit" class="studio-btn studio-btn-primary" id="savePatientSubmitBtn">
-              ${isEdit ? 'Save Changes' : 'Create Patient'}
+              ${isEdit ? t('common.save', { defaultValue: 'Save Changes' }) : t('patients.createPatient', { defaultValue: 'Create Patient' })}
             </button>
           </div>
         </form>
@@ -195,8 +198,8 @@ export function deleteConfirmModalHtml(patient = {}) {
     <div class="workspace-modal-overlay" id="deleteModalOverlay" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
       <div class="workspace-modal">
         <div class="workspace-modal-header" style="border-bottom-color: #fee2e2;">
-          <h2 class="workspace-modal-title" id="deleteModalTitle" style="color: #b91c1c;">Confirm Patient Deletion</h2>
-          <button type="button" class="workspace-modal-close" id="closeDeleteModalBtn" aria-label="Close dialog">
+          <h2 class="workspace-modal-title" id="deleteModalTitle" style="color: #b91c1c;">${t('patients.confirmDeleteTitle', { defaultValue: 'Confirm Patient Deletion' })}</h2>
+          <button type="button" class="workspace-modal-close" id="closeDeleteModalBtn" aria-label="${t('common.close', { defaultValue: 'Close dialog' })}">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -205,7 +208,7 @@ export function deleteConfirmModalHtml(patient = {}) {
         </div>
         <div class="workspace-modal-body">
           <div class="delete-patient-name-confirm">
-            Are you sure you want to delete patient <strong>${esc(p.full_name || '')}</strong> (ID: <code>${esc(p.id || '')}</code>)?
+            ${t('patients.confirmDeleteMsg', { name: esc(p.full_name || ''), id: esc(p.id || ''), defaultValue: `Are you sure you want to delete patient ${esc(p.full_name || '')} (ID: ${esc(p.id || '')})?` })}
           </div>
 
           <div class="delete-safety-warning">
@@ -217,14 +220,14 @@ export function deleteConfirmModalHtml(patient = {}) {
               </svg>
             </div>
             <div class="delete-safety-text">
-              <strong>Patient Association Unlinking</strong>
-              Deleting this patient record preserves existing saved analysis records, but those analyses will no longer be associated with this patient.
+              <strong>${t('patients.unlinkingTitle', { defaultValue: 'Patient Association Unlinking' })}</strong>
+              ${t('patients.unlinkingNotice', { defaultValue: 'Deleting this patient record preserves existing saved analysis records, but those analyses will no longer be associated with this patient.' })}
             </div>
           </div>
         </div>
         <div class="workspace-modal-footer">
-          <button type="button" class="studio-btn studio-btn-outline" id="cancelDeleteModalBtn">Cancel</button>
-          <button type="button" class="studio-btn studio-btn-danger" id="confirmDeleteModalBtn" style="background:#dc2626;color:#ffffff;border:none;padding:0.625rem 1.125rem;border-radius:8px;font-weight:600;cursor:pointer;">Delete Patient Record</button>
+          <button type="button" class="studio-btn studio-btn-outline" id="cancelDeleteModalBtn">${t('common.cancel', { defaultValue: 'Cancel' })}</button>
+          <button type="button" class="studio-btn studio-btn-danger" id="confirmDeleteModalBtn" style="background:#dc2626;color:#ffffff;border:none;padding:0.625rem 1.125rem;border-radius:8px;font-weight:600;cursor:pointer;">${t('patients.deleteRecord', { defaultValue: 'Delete Patient Record' })}</button>
         </div>
       </div>
     </div>
@@ -251,7 +254,7 @@ export function patientCardHtml(p, counts = {}) {
             <a href="patient-detail.html?id=${esc(p.id)}" class="patient-name-link">${esc(p.full_name)}</a>
             <div class="patient-meta-line">
               <span class="patient-id-badge">ID: ${esc(p.id)}</span>
-              ${age != null ? `<span>${age} yrs</span> · ` : ''}
+              ${age != null ? `<span>${age} ${t('common.yearsShort', 'yrs')}</span> · ` : ''}
               <span>${esc(p.gender || 'Unspecified')}</span>
               ${p.date_of_birth ? `<span>· DOB: ${formatDate(p.date_of_birth)}</span>` : ''}
             </div>
@@ -262,7 +265,7 @@ export function patientCardHtml(p, counts = {}) {
 
         <div class="patient-metrics-badges">
           <span class="patient-modality-pill ${totalAnalyses > 0 ? 'has-analyses' : ''}">
-            ${totalAnalyses} ${totalAnalyses === 1 ? 'Analysis' : 'Analyses'}
+            ${totalAnalyses} ${totalAnalyses === 1 ? t('patients.analysis', 'Analysis') : t('patients.analyses', 'Analyses')}
           </span>
           ${mlCount > 0 ? `<span class="patient-modality-pill has-analyses">${mlCount} ML</span>` : ''}
           ${dlCount > 0 ? `<span class="patient-modality-pill has-analyses">${dlCount} DL</span>` : ''}
@@ -272,31 +275,31 @@ export function patientCardHtml(p, counts = {}) {
 
       <div class="patient-card-actions">
         <div class="patient-quick-launches">
-          <a href="ml-analysis.html?patient_id=${esc(p.id)}" class="btn-launch-modality btn-launch-ml" title="Run Wisconsin Structured ML Analysis">
+          <a href="ml-analysis.html?patient_id=${esc(p.id)}" class="btn-launch-modality btn-launch-ml" title="${t('nav.structuredAnalysis', 'Run Wisconsin Structured ML Analysis')}">
             <span>ML</span>
           </a>
-          <a href="dl-analysis.html?patient_id=${esc(p.id)}" class="btn-launch-modality btn-launch-dl" title="Run Mammography Deep Learning Analysis">
+          <a href="dl-analysis.html?patient_id=${esc(p.id)}" class="btn-launch-modality btn-launch-dl" title="${t('nav.mammographyAnalysis', 'Run Mammography Deep Learning Analysis')}">
             <span>DL</span>
           </a>
-          <a href="multimodal.html?patient_id=${esc(p.id)}" class="btn-launch-modality btn-launch-fusion" title="Run Experimental Multimodal Fusion Analysis">
+          <a href="multimodal.html?patient_id=${esc(p.id)}" class="btn-launch-modality btn-launch-fusion" title="${t('nav.experimentalFusion', 'Run Experimental Multimodal Fusion Analysis')}">
             <span>Fusion</span>
           </a>
         </div>
 
         <div class="patient-manage-actions">
-          <a href="patient-detail.html?id=${esc(p.id)}" class="btn-icon-action" title="View Patient Details &amp; History">
+          <a href="patient-detail.html?id=${esc(p.id)}" class="btn-icon-action" title="${t('patients.viewDetails', 'View Details')}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
               <circle cx="12" cy="12" r="3"></circle>
             </svg>
           </a>
-          <button type="button" class="btn-icon-action" data-edit-patient="${esc(p.id)}" title="Edit Patient Record">
+          <button type="button" class="btn-icon-action" data-edit-patient="${esc(p.id)}" title="${t('patients.editModalTitle', 'Edit Patient Record')}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
             </svg>
           </button>
-          <button type="button" class="btn-icon-action delete" data-delete-patient="${esc(p.id)}" title="Delete Patient Record">
+          <button type="button" class="btn-icon-action delete" data-delete-patient="${esc(p.id)}" title="${t('patients.deleteRecord', 'Delete Patient Record')}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -317,7 +320,7 @@ export function parsePredictionPayload(r) {
   if (typeof r.response_payload === 'string') {
     try {
       return JSON.parse(r.response_payload);
-    } catch (_) {
+    } catch {
       return {};
     }
   }
@@ -325,40 +328,35 @@ export function parsePredictionPayload(r) {
 }
 
 /**
- * Compute scientifically consistent labels for all modalities
+ * Normalize model name / modality for clean display
  */
 export function getPredictionSemantics(r) {
   const pld = parsePredictionPayload(r);
-  const modality = r.prediction_type || 'ml';
+  const modality = (r.modality || '').toLowerCase();
 
   if (modality === 'multimodal') {
-    const score =
-      pld.combined_malignant_score != null
-        ? Number(pld.combined_malignant_score)
-        : r.raw_probability != null
-        ? Number(r.raw_probability)
-        : null;
-    const scorePct = score != null ? (score * 100).toFixed(1) + '%' : 'N/A';
-    const isMalignantSide =
-      score != null ? score >= 0.5 : (r.diagnosis || '').toLowerCase().includes('malignant');
-    const indicationLabel = isMalignantSide
-      ? 'Malignant-side heuristic indication'
-      : 'Benign-side heuristic indication';
+    const rawScore = pld.combined_score != null ? Number(pld.combined_score) : null;
+    const scorePct = rawScore != null ? (rawScore * 100).toFixed(1) + '%' : 'N/A';
+    const indication = pld.combined_indication || '';
+    const isMalignantSide = indication.toLowerCase().includes('malignant');
+    const indicationLabel = isMalignantSide ? t('common.malignant', { defaultValue: 'Malignant' }) : t('common.benign', { defaultValue: 'Benign' });
 
     let branchStatus = '';
     if (pld.branch_agreement) {
-      branchStatus = `Branch Agreement: ${pld.branch_agreement}`;
+      branchStatus = `${t('fusion.agreementBadge', { defaultValue: 'Branch Agreement' })}: ${pld.branch_agreement}`;
     } else if (pld.branch_disagreement != null) {
-      branchStatus = pld.branch_disagreement ? 'Branch Disagreement' : 'Branch Agreement: Concordant';
+      branchStatus = pld.branch_disagreement
+        ? t('fusion.disagreementBadge', { defaultValue: 'Branch Disagreement' })
+        : `${t('fusion.agreementBadge', { defaultValue: 'Branch Agreement' })}: Concordant`;
     }
 
     return {
       modality: 'multimodal',
-      modalityLabel: 'Experimental Fusion',
+      modalityLabel: t('fusion.title', { defaultValue: 'Experimental Fusion' }),
       isMalignant: isMalignantSide,
       statusLabel: indicationLabel,
-      scoreLabel: `Experimental Combined Score: ${scorePct}`,
-      thresholdLabel: 'Software Midpoint: 50.0%',
+      scoreLabel: `${t('fusion.combinedScore', { defaultValue: 'Experimental Combined Score' })}: ${scorePct}`,
+      thresholdLabel: `${t('fusion.combinedThresholdNotice', { defaultValue: 'Software Midpoint' })}: 50.0%`,
       branchStatus,
       rawProb: scorePct,
     };
@@ -367,18 +365,19 @@ export function getPredictionSemantics(r) {
   const isMalignant = (r.diagnosis || '').toLowerCase().includes('malignant');
   const rawNum = r.raw_probability != null ? Number(r.raw_probability) : null;
   const rawPct = rawNum != null ? (rawNum * 100).toFixed(1) + '%' : 'N/A';
+  const diagClass = isMalignant ? t('common.malignant', { defaultValue: 'Malignant' }) : t('common.benign', { defaultValue: 'Benign' });
 
   if (modality === 'dl') {
     const calNum = pld.calibrated_probability != null ? Number(pld.calibrated_probability) : null;
     const calPct = calNum != null ? (calNum * 100).toFixed(1) + '%' : null;
     return {
       modality: 'dl',
-      modalityLabel: 'Mammography DL',
+      modalityLabel: t('dl.title', { defaultValue: 'Mammography DL' }),
       isMalignant,
-      statusLabel: `Model Classification: ${isMalignant ? 'Malignant' : 'Benign'}`,
-      scoreLabel: `Raw malignant probability: ${rawPct}`,
-      thresholdLabel: 'Decision Threshold: 0.515',
-      calibratedProb: calPct ? `Calibrated: ${calPct}` : null,
+      statusLabel: `${t('fusion.modelClassification', { defaultValue: 'Model Classification' })}: ${diagClass}`,
+      scoreLabel: `${t('common.rawProbability', { defaultValue: 'Raw malignant probability' })}: ${rawPct}`,
+      thresholdLabel: `${t('common.threshold', { defaultValue: 'Decision Threshold' })}: 0.515`,
+      calibratedProb: calPct ? `${t('common.calibratedProbability', { defaultValue: 'Calibrated' })}: ${calPct}` : null,
       branchStatus: '',
       rawProb: rawPct,
     };
@@ -387,11 +386,11 @@ export function getPredictionSemantics(r) {
   // Wisconsin ML default
   return {
     modality: 'ml',
-    modalityLabel: 'Wisconsin ML',
+    modalityLabel: t('ml.title', { defaultValue: 'Wisconsin ML' }),
     isMalignant,
-    statusLabel: `Model Classification: ${isMalignant ? 'Malignant' : 'Benign'}`,
-    scoreLabel: `Raw malignant probability: ${rawPct}`,
-    thresholdLabel: 'Decision Threshold: 0.360',
+    statusLabel: `${t('fusion.modelClassification', { defaultValue: 'Model Classification' })}: ${diagClass}`,
+    scoreLabel: `${t('common.rawProbability', { defaultValue: 'Raw malignant probability' })}: ${rawPct}`,
+    thresholdLabel: `${t('common.threshold', { defaultValue: 'Decision Threshold' })}: 0.360`,
     calibratedProb: null,
     branchStatus: '',
     rawProb: rawPct,
@@ -439,14 +438,14 @@ export function timelineEntryHtml(r, reportUrl = '') {
         </div>
 
         <div class="timeline-meta-grid">
-          <div><strong>Model:</strong> ${esc(r.model_name || sem.modalityLabel)}</div>
+          <div><strong>${t('history.modelUsed', 'Model')}:</strong> ${esc(r.model_name || sem.modalityLabel)}</div>
           <div style="margin-top: 0.25rem;">
             <span>${esc(sem.scoreLabel)}</span> ·
             <span style="color: var(--slate-500);">${esc(sem.thresholdLabel)}</span>
             ${sem.calibratedProb ? ` · <span style="color: var(--slate-500);">(${esc(sem.calibratedProb)})</span>` : ''}
             ${sem.branchStatus ? ` · <strong style="color: var(--purple-700);">${esc(sem.branchStatus)}</strong>` : ''}
           </div>
-          ${r.notes ? `<div style="margin-top: 0.25rem;"><strong>Notes:</strong> ${esc(r.notes)}</div>` : ''}
+          ${r.notes ? `<div style="margin-top: 0.25rem;"><strong>${t('patients.notes', 'Notes')}:</strong> ${esc(r.notes)}</div>` : ''}
         </div>
 
         <div class="timeline-actions">
@@ -455,7 +454,7 @@ export function timelineEntryHtml(r, reportUrl = '') {
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline>
             </svg>
-            <span>View Report</span>
+            <span>${t('history.viewReport', 'View Report')}</span>
           </button>
           <button type="button" class="studio-btn studio-btn-outline studio-btn-sm btn-print-report" data-prediction-id="${esc(r.id)}" data-report-url="${reportUrl}" style="display: inline-flex; align-items: center; gap: 0.375rem;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -463,7 +462,7 @@ export function timelineEntryHtml(r, reportUrl = '') {
               <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
               <rect x="6" y="14" width="12" height="8"></rect>
             </svg>
-            <span>Print</span>
+            <span>${t('common.print', 'Print')}</span>
           </button>
         </div>
       </article>
@@ -489,7 +488,7 @@ export function activityCardHtml(r, reportUrl = '', patientName = '') {
               ${esc(sem.statusLabel)}
             </span>
             <span class="patient-id-badge">#${esc(r.id)}</span>
-            ${patientName ? `<span style="font-size:0.8125rem; font-weight:600; color:var(--teal-800);">Patient: ${esc(patientName)}</span>` : ''}
+            ${patientName ? `<span style="font-size:0.8125rem; font-weight:600; color:var(--teal-800);">${t('patients.patient', 'Patient')}: ${esc(patientName)}</span>` : ''}
           </div>
           <div class="activity-subline">
             <span>${esc(r.model_name || sem.modalityLabel)}</span> ·
@@ -506,7 +505,7 @@ export function activityCardHtml(r, reportUrl = '', patientName = '') {
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
           </svg>
-          <span>View Report</span>
+          <span>${t('history.viewReport', 'View Report')}</span>
         </button>
         <button type="button" class="studio-btn studio-btn-outline studio-btn-sm btn-print-report" data-prediction-id="${esc(r.id)}" data-report-url="${reportUrl}" style="display: inline-flex; align-items: center; gap: 0.375rem;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -514,7 +513,7 @@ export function activityCardHtml(r, reportUrl = '', patientName = '') {
             <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
             <rect x="6" y="14" width="12" height="8"></rect>
           </svg>
-          <span>Print</span>
+          <span>${t('common.print', 'Print')}</span>
         </button>
       </div>
     </article>
@@ -535,15 +534,15 @@ export function reportCardHtml(r, reportUrl = '', patientName = '') {
         </div>
         <div class="activity-text-group">
           <div class="activity-title-row">
-            <strong style="font-size: 1rem; color: var(--slate-900);">Report #${esc(r.id)} — ${esc(sem.modalityLabel)}</strong>
+            <strong style="font-size: 1rem; color: var(--slate-900);">${t('reports.reportId', 'Report')} #${esc(r.id)} — ${esc(sem.modalityLabel)}</strong>
             <span class="activity-diagnosis ${sem.isMalignant ? 'malignant' : 'benign'}">
               ${esc(sem.statusLabel)}
             </span>
           </div>
           <div class="activity-subline">
-            ${patientName ? `<span><strong>Patient:</strong> ${esc(patientName)}</span> · ` : ''}
-            <span><strong>Model:</strong> ${esc(r.model_name || sem.modalityLabel)}</span> ·
-            <span><strong>Score:</strong> ${esc(sem.scoreLabel)}</span> ·
+            ${patientName ? `<span><strong>${t('patients.patient', 'Patient')}:</strong> ${esc(patientName)}</span> · ` : ''}
+            <span><strong>${t('history.modelUsed', 'Model')}:</strong> ${esc(r.model_name || sem.modalityLabel)}</span> ·
+            <span><strong>${t('history.score', 'Score')}:</strong> ${esc(sem.scoreLabel)}</span> ·
             <span>${formatDateTime(r.created_at)}</span>
             ${sem.branchStatus ? ` · <strong style="color:var(--purple-700);">${esc(sem.branchStatus)}</strong>` : ''}
           </div>
@@ -556,7 +555,7 @@ export function reportCardHtml(r, reportUrl = '', patientName = '') {
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
             <circle cx="12" cy="12" r="3"></circle>
           </svg>
-          <span>View Full Report</span>
+          <span>${t('history.viewFullReport', 'View Full Report')}</span>
         </button>
         <button type="button" class="studio-btn studio-btn-outline studio-btn-sm btn-print-report" data-prediction-id="${esc(r.id)}" data-report-url="${reportUrl}" style="display: inline-flex; align-items: center; gap: 0.375rem;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -564,7 +563,7 @@ export function reportCardHtml(r, reportUrl = '', patientName = '') {
             <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
             <rect x="6" y="14" width="12" height="8"></rect>
           </svg>
-          <span>Print / Save PDF</span>
+          <span>${t('common.print', 'Print')}</span>
         </button>
       </div>
     </article>

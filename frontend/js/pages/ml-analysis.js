@@ -3,6 +3,7 @@ import { predictionService } from '../services/prediction.service.js';
 import { patientService } from '../services/patient.service.js';
 import { reportService } from '../services/report.service.js';
 import { auth } from '../core/auth.js';
+import { t } from '../core/i18n.js';
 import {
   ML_GROUPS,
   ML_FEATURES,
@@ -53,37 +54,37 @@ function esc(str) {
 // Compute reference state for a single field
 function getFieldReferenceState(feature, rawValue) {
   if (rawValue === '' || rawValue === undefined || rawValue === null) {
-    return { state: 'waiting', label: 'Awaiting input', class: 'status-waiting' };
+    return { state: 'waiting', label: t('ml.awaitingInput', 'Awaiting input'), class: 'status-waiting' };
   }
   const val = Number(rawValue);
   if (Number.isNaN(val)) {
-    return { state: 'invalid', label: 'Non-numeric', class: 'status-outside' };
+    return { state: 'invalid', label: t('ml.nonNumeric', 'Non-numeric'), class: 'status-outside' };
   }
   if (val < 0) {
-    return { state: 'invalid', label: 'Cannot be negative', class: 'status-outside' };
+    return { state: 'invalid', label: t('ml.cannotBeNegative', 'Cannot be negative'), class: 'status-outside' };
   }
 
   const ref = WDBC_DEVELOPMENT_REFERENCE[feature];
   if (!ref) {
-    return { state: 'common', label: 'Input set', class: 'status-common' };
+    return { state: 'common', label: t('ml.inputSet', 'Input set'), class: 'status-common' };
   }
 
   if (val < ref.min || val > ref.max) {
     return {
       state: 'outside',
-      label: `Outside observed (${val < ref.min ? `< ${ref.min}` : `> ${ref.max}`})`,
+      label: `${t('ml.rangeOutside', 'Outside observed')} (${val < ref.min ? `< ${ref.min}` : `> ${ref.max}`})`,
       class: 'status-outside',
       min: ref.min,
       max: ref.max,
     };
   }
   if (val < ref.p01 || val > ref.p99) {
-    return { state: 'extreme', label: 'Extreme (outside P1–P99)', class: 'status-extreme' };
+    return { state: 'extreme', label: t('ml.rangeExtreme', 'Extreme (outside P1–P99)'), class: 'status-extreme' };
   }
   if (val < ref.p05 || val > ref.p95) {
-    return { state: 'unusual', label: 'Unusual (outside P5–P95)', class: 'status-unusual' };
+    return { state: 'unusual', label: t('ml.rangeUnusual', 'Unusual (outside P5–P95)'), class: 'status-unusual' };
   }
-  return { state: 'common', label: 'Common range (P5–P95)', class: 'status-common' };
+  return { state: 'common', label: t('ml.rangeCommon', 'Common range (P5–P95)'), class: 'status-common' };
 }
 
 // Compute aggregate input quality metrics
@@ -123,21 +124,18 @@ function render() {
       <!-- 1. Hero & Model Context -->
       <header class="ml-hero">
         <div class="ml-hero-eyebrow">
-          <span>🔬 Study A · WDBC Cytology</span>
-          <span>•</span>
-          <span>Logistic Regression Candidate</span>
+          <span>${t('ml.heroEyebrow')}</span>
         </div>
-        <h1>Structured Feature Analysis Workstation</h1>
+        <h1>${t('ml.heroTitle')}</h1>
         <p class="ml-hero-desc">
-          Professional research workstation for 30 fine needle aspirate (FNA) nuclear morphology features.
-          Evaluated with frozen StandardScaler → LogisticRegression pipeline (decision cutoff: <strong>≥ 0.36 raw malignant probability</strong>).
+          ${t('ml.heroDesc')}
         </p>
         <div class="ml-hero-specs">
-          <span class="ml-spec-pill">Model: <strong>Logistic Regression</strong></span>
-          <span class="ml-spec-pill">Dataset: <strong>WDBC (569 FNA Samples)</strong></span>
-          <span class="ml-spec-pill">Outer Holdout: <strong>114 Test Rows Excluded</strong></span>
-          <span class="ml-spec-pill">Decision Threshold: <strong>0.36 Raw</strong></span>
-          <span class="ml-spec-pill">Clinical Use: <strong>false (Research Prototype)</strong></span>
+          <span class="ml-spec-pill">${t('ml.specModel')}</span>
+          <span class="ml-spec-pill">${t('ml.specDataset')}</span>
+          <span class="ml-spec-pill">${t('ml.specHoldout')}</span>
+          <span class="ml-spec-pill">${t('ml.specThreshold')}</span>
+          <span class="ml-spec-pill">${t('ml.specClinical')}</span>
         </div>
       </header>
 
@@ -145,19 +143,19 @@ function render() {
       ${isDoctor ? `
         <div class="doctor-patient-bar">
           <div class="doctor-patient-info">
-            <span class="doctor-patient-badge">Doctor Workspace</span>
+            <span class="doctor-patient-badge">${t('ml.doctorBadge')}</span>
             <span>
               ${selectedPatient
-                ? `Analyzing for <strong>${esc(selectedPatient.full_name)}</strong> (ID: ${selectedPatient.id})`
-                : 'No patient selected (Research-only analysis)'
+                ? `${t('ml.analyzingFor')} <strong>${esc(selectedPatient.full_name)}</strong> (ID: ${selectedPatient.id})`
+                : t('ml.noPatientSelected')
               }
             </span>
-            ${selectedPatient ? `<a href="/pages/patients.html" class="v2-link" style="margin-left:8px;">View Patient</a>` : ''}
+            ${selectedPatient ? `<a href="/pages/patients.html" class="v2-link" style="margin-left:8px;">${t('ml.viewPatient')}</a>` : ''}
           </div>
           <div class="doctor-patient-controls">
-            <label for="doctorPatientSelect" style="font-size:0.82rem;font-weight:600;color:#166534;">Attach to Patient:</label>
+            <label for="doctorPatientSelect" style="font-size:0.82rem;font-weight:600;color:#166534;">${t('ml.attachToPatient')}</label>
             <select id="doctorPatientSelect" class="doctor-patient-select">
-              <option value="">— No patient / Research-only —</option>
+              <option value="">${t('ml.noPatientOption')}</option>
               ${state.patients.map((p) => `
                 <option value="${p.id}" ${String(p.id) === String(state.selectedPatientId) ? 'selected' : ''}>
                   ${esc(p.full_name)} (DOB: ${esc(p.date_of_birth || 'N/A')})
@@ -172,31 +170,31 @@ function render() {
       <section class="ml-toolbar" aria-label="Quick Entry Toolbar">
         <div class="ml-toolbar-actions">
           <button type="button" class="ml-tool-btn" id="btnImportCsv">
-            <span>📥</span> Import CSV
+            <span>📥</span> ${t('ml.importCsv')}
           </button>
           <button type="button" class="ml-tool-btn" id="btnExtractOcr">
-            <span>📷</span> Extract from Report Image
+            <span>📷</span> ${t('ml.extractOcr')}
           </button>
           <button type="button" class="ml-tool-btn primary-sample" id="btnSampleBenign" title="Loads canonical WDBC development Row 19">
-            <span>🔬</span> Load benign research example
+            <span>🔬</span> ${t('ml.loadBenign')}
           </button>
           <button type="button" class="ml-tool-btn primary-sample" id="btnSampleMalignant" title="Loads canonical WDBC development Row 0">
-            <span>🔬</span> Load malignant research example
+            <span>🔬</span> ${t('ml.loadMalignant')}
           </button>
           <button type="button" class="ml-tool-btn danger-action" id="btnClearAll">
-            <span>🗑️</span> Clear All
+            <span>🗑️</span> ${t('ml.clearAll')}
           </button>
         </div>
 
         <div class="ml-toolbar-meta">
           <button type="button" class="ml-tool-btn" id="btnDownloadTemplate" style="background:#fff;">
-            <span>📄</span> Download CSV Template
+            <span>📄</span> ${t('ml.downloadTemplate')}
           </button>
           <button type="button" class="ml-tool-btn" id="btnDownloadExample" style="background:#fff;">
-            <span>📄</span> Download Example CSV
+            <span>📄</span> ${t('ml.downloadExample')}
           </button>
           <span class="ml-progress-pill" id="toolbarProgressPill">
-            <span id="count">${quality.completed} / 30</span> fields complete
+            <span id="count">${quality.completed} / 30</span> ${t('common.status', 'complete')}
           </span>
         </div>
       </section>
@@ -212,16 +210,16 @@ function render() {
           <!-- Group Navigation Tabs -->
           <nav class="ml-group-nav" aria-label="Feature Groups">
             <button type="button" class="ml-group-tab ${state.activeTab === 'all' ? 'active' : ''}" data-tab="all">
-              All Features (30)
+              ${t('ml.tabAll')}
             </button>
             <button type="button" class="ml-group-tab ${state.activeTab === 'mean' ? 'active' : ''}" data-tab="mean">
-              Mean Features (10)
+              ${t('ml.tabMean')}
             </button>
             <button type="button" class="ml-group-tab ${state.activeTab === 'se' ? 'active' : ''}" data-tab="se">
-              Standard Error Features (10)
+              ${t('ml.tabSe')}
             </button>
             <button type="button" class="ml-group-tab ${state.activeTab === 'worst' ? 'active' : ''}" data-tab="worst">
-              Worst Features (10)
+              ${t('ml.tabWorst')}
             </button>
           </nav>
 
@@ -237,13 +235,13 @@ function render() {
           <!-- Run Execution Panel -->
           <div class="ml-side-panel">
             <h3>
-              <span>⚡ Model Execution</span>
-              <span style="font-size:0.75rem;color:#0f766e;font-weight:600;">Frozen Candidate</span>
+              <span>⚡ ${t('ml.modelExecution')}</span>
+              <span style="font-size:0.75rem;color:#0f766e;font-weight:600;">${t('ml.frozenCandidate')}</span>
             </h3>
 
             <div class="ml-sidebar-meter">
               <div class="ml-sidebar-meter-label">
-                <span>Input completion</span>
+                <span>${t('ml.inputCompletion')}</span>
                 <strong id="sidebarProgressCount">${quality.completed} / 30</strong>
               </div>
               <div class="ml-sidebar-progress-bar">
@@ -252,7 +250,7 @@ function render() {
             </div>
 
             <p style="font-size:0.78rem;color:#64748b;line-height:1.4;margin:12px 0 16px;">
-              Requires all 30 nuclear morphology parameters. Prediction is governed strictly by the frozen raw malignant cutoff <strong>≥ 0.36</strong>.
+              ${t('ml.executionNote')}
             </p>
 
             <button
@@ -261,31 +259,31 @@ function render() {
               id="btnRunModel"
               ${quality.completed < 30 ? 'disabled' : ''}
             >
-              Run Frozen Model
+              ${t('ml.runModelBtn')}
             </button>
           </div>
 
           <!-- Live Input Quality Review -->
           <div class="ml-side-panel">
             <h3>
-              <span>📊 Development Data Fit</span>
-              <span style="font-size:0.72rem;color:#64748b;">455 Dev Cohort</span>
+              <span>📊 ${t('ml.devDataFit')}</span>
+              <span style="font-size:0.72rem;color:#64748b;">${t('ml.devCohort')}</span>
             </h3>
             <ul class="ml-quality-list">
               <li class="ml-quality-item">
-                <span>Common range (P5–P95)</span>
+                <span>${t('ml.rangeCommon')}</span>
                 <span class="ml-quality-tag" style="background:#dcfce7;color:#15803d;">${quality.common}</span>
               </li>
               <li class="ml-quality-item">
-                <span>Unusual in cohort (P1–P99)</span>
+                <span>${t('ml.rangeUnusual')}</span>
                 <span class="ml-quality-tag" style="background:#fef3c7;color:#b45309;">${quality.unusual}</span>
               </li>
               <li class="ml-quality-item">
-                <span>Extreme in cohort (&lt;P1 or &gt;P99)</span>
+                <span>${t('ml.rangeExtreme')}</span>
                 <span class="ml-quality-tag" style="background:#fed7aa;color:#c2410c;">${quality.extreme}</span>
               </li>
               <li class="ml-quality-item">
-                <span>Outside observed min–max</span>
+                <span>${t('ml.rangeOutside')}</span>
                 <span class="ml-quality-tag" style="background:#fee2e2;color:#b91c1c;">${quality.outside}</span>
               </li>
             </ul>
@@ -293,10 +291,10 @@ function render() {
             ${quality.outliers.length > 0 ? `
               <div style="margin-top:14px;padding:10px;background:#fff5f5;border:1px solid #fecaca;border-radius:6px;">
                 <div style="font-size:0.78rem;font-weight:700;color:#b91c1c;margin-bottom:4px;">
-                  ⚠️ ${quality.outliers.length} Value(s) Outside Observed Data
+                  ${t('ml.outliersWarning', { count: quality.outliers.length })}
                 </div>
                 <div style="font-size:0.72rem;color:#7f1d1d;line-height:1.3;">
-                  Review confirmation required prior to model execution to guard against typos.
+                  ${t('ml.outliersNote')}
                 </div>
               </div>
             ` : ''}
@@ -305,10 +303,10 @@ function render() {
           <!-- Scientific Cytology Scope -->
           <div class="ml-side-panel" style="background:#f8fafc;">
             <h4 style="font-size:0.82rem;font-weight:700;color:#334155;margin:0 0 8px;">
-              ℹ️ FNA Nuclear Cytology
+              ℹ️ ${t('ml.cytologyScopeTitle')}
             </h4>
             <p style="font-size:0.74rem;color:#64748b;line-height:1.4;margin:0;">
-              Features measure cell nucleus contour, area, perimeter, and texture from digitized FNA biopsies. They do not represent blood tests, hormone panels, or systemic biomarkers.
+              ${t('ml.cytologyScopeDesc')}
             </p>
           </div>
         </aside>
@@ -432,16 +430,16 @@ function renderResultWorkspace(r) {
       <!-- Section A: Classification Banner -->
       <div class="ml-result-header">
         <span class="ml-hero-eyebrow" style="color:#0f766e;margin-bottom:12px;">
-          ✓ Frozen Model Execution Complete
+          ${t('ml.executionComplete')}
         </span>
 
         <div class="ml-classification-banner ${isMalignant ? 'malignant' : 'benign'}">
           <div>
             <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;color:#475569;margin-bottom:6px;">
-              Model Classification
+              ${t('ml.modelClassification')}
             </div>
             <span class="ml-class-badge ${isMalignant ? 'malignant' : 'benign'}">
-              ${esc(r.diagnosis)}
+              ${isMalignant ? t('common.malignant') : t('common.benign')}
             </span>
           </div>
 
@@ -450,31 +448,28 @@ function renderResultWorkspace(r) {
               ${(prob * 100).toFixed(1)}%
             </div>
             <div class="ml-prob-sub">
-              Raw malignant probability · Cutoff: <strong>36.0%</strong> (0.36 raw) (${distanceSign} pp)
+              ${t('ml.rawMalignantProb')} (${distanceSign} pp)
             </div>
           </div>
         </div>
 
         <p style="font-size:0.82rem;color:#64748b;margin:0;line-height:1.4;">
-          <strong>Research Disclaimer:</strong> This prediction was generated by a frozen logistic regression model trained on the WDBC dataset.
-          It does NOT constitute a clinical diagnosis or replace a biopsy pathology report.
+          ${t('ml.researchDisclaimer')}
         </p>
       </div>
 
       <!-- Section B: Why Did the Model Return This? -->
       <section class="ml-contrib-section">
-        <h3>Why Did the Model Respond This Way?</h3>
+        <h3>${t('ml.whyModelResponded')}</h3>
         <p class="ml-contrib-note">
-          Exact log-odds contributions from <code>StandardScaler → LogisticRegression</code>:
-          <code>contribution = standardized_value × coefficient</code>.
-          Positive values push toward Malignant; negative values push toward Benign.
+          ${t('ml.contribFormula')}
         </p>
 
         <div class="ml-contrib-columns">
           <!-- Pushing Toward Benign -->
           <div class="ml-contrib-card benign">
-            <h4><span>⬅️</span> Pushing Toward Benign (${benignContributors.length})</h4>
-            ${benignContributors.length === 0 ? '<p style="font-size:0.84rem;color:#64748b;">No strong benign contributors.</p>' : ''}
+            <h4><span>⬅️</span> ${t('ml.pushingBenign')} (${benignContributors.length})</h4>
+            ${benignContributors.length === 0 ? `<p style="font-size:0.84rem;color:#64748b;">${t('ml.noStrongBenign')}</p>` : ''}
             ${benignContributors.map((feat) => {
               const maxVal = 5.0; // visual cap
               const fillPct = Math.min(100, Math.round((Math.abs(feat.log_odds_contribution) / maxVal) * 100));
@@ -494,8 +489,8 @@ function renderResultWorkspace(r) {
 
           <!-- Pushing Toward Malignant -->
           <div class="ml-contrib-card malignant">
-            <h4><span>➡️</span> Pushing Toward Malignant (${malignantContributors.length})</h4>
-            ${malignantContributors.length === 0 ? '<p style="font-size:0.84rem;color:#64748b;">No strong malignant contributors.</p>' : ''}
+            <h4><span>➡️</span> ${t('ml.pushingMalignant')} (${malignantContributors.length})</h4>
+            ${malignantContributors.length === 0 ? `<p style="font-size:0.84rem;color:#64748b;">${t('ml.noStrongMalignant')}</p>` : ''}
             ${malignantContributors.map((feat) => {
               const maxVal = 5.0; // visual cap
               const fillPct = Math.min(100, Math.round((Math.abs(feat.log_odds_contribution) / maxVal) * 100));
@@ -518,26 +513,24 @@ function renderResultWorkspace(r) {
       <!-- Section C: Input Quality Review -->
       <section style="margin:24px 0;padding:16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
         <h4 style="font-size:0.95rem;font-weight:700;color:#0f172a;margin:0 0 8px;">
-          Input Quality Review vs. Model Influence
+          ${t('ml.devDataFit')}
         </h4>
         <p style="font-size:0.82rem;color:#475569;margin:0 0 12px;line-height:1.4;">
-          <strong>Dataset unusualness does not equal model contribution:</strong>
-          A feature can have an unusual or extreme value in the WDBC cohort but possess a modest logistic regression coefficient.
-          Conversely, a feature within the common reference range can substantially push the prediction logit.
+          ${t('ml.cytologyScopeDesc')}
         </p>
         <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:0.82rem;">
           <span style="background:#dcfce7;color:#15803d;padding:4px 10px;border-radius:4px;font-weight:600;">
-            ${quality.within_common_range_count ?? quality.common} common development values
+            ${quality.within_common_range_count ?? quality.common} ${t('ml.rangeCommon')}
           </span>
           <span style="background:#fef3c7;color:#b45309;padding:4px 10px;border-radius:4px;font-weight:600;">
-            ${quality.unusual_count ?? quality.unusual} unusual cohort values
+            ${quality.unusual_count ?? quality.unusual} ${t('ml.rangeUnusual')}
           </span>
           <span style="background:#fed7aa;color:#c2410c;padding:4px 10px;border-radius:4px;font-weight:600;">
-            ${quality.extreme_count ?? quality.extreme} extreme cohort values
+            ${quality.extreme_count ?? quality.extreme} ${t('ml.rangeExtreme')}
           </span>
           ${(quality.outside_observed_count ?? quality.outside) > 0 ? `
             <span style="background:#fee2e2;color:#b91c1c;padding:4px 10px;border-radius:4px;font-weight:600;">
-              ${quality.outside_observed_count ?? quality.outside} outside observed development data
+              ${quality.outside_observed_count ?? quality.outside} ${t('ml.rangeOutside')}
             </span>
           ` : ''}
         </div>
@@ -547,23 +540,23 @@ function renderResultWorkspace(r) {
       <section style="margin:32px 0;">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
           <h4 style="font-size:1.1rem;font-weight:700;color:#0f172a;margin:0;">
-            Full 30-Feature Contribution Breakdown
+            ${t('ml.fullContribTitle')}
           </h4>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <button type="button" class="ml-tool-btn ${state.sortBy === 'mag' ? 'primary-sample' : ''}" data-sort="mag">
-              Highest Magnitude
+              ${t('ml.sortMag')}
             </button>
             <button type="button" class="ml-tool-btn ${state.sortBy === 'malignant' ? 'primary-sample' : ''}" data-sort="malignant">
-              Highest Malignant
+              ${t('ml.sortMal')}
             </button>
             <button type="button" class="ml-tool-btn ${state.sortBy === 'benign' ? 'primary-sample' : ''}" data-sort="benign">
-              Highest Benign
+              ${t('ml.sortBen')}
             </button>
             <button type="button" class="ml-tool-btn ${state.sortBy === 'unusual' ? 'primary-sample' : ''}" data-sort="unusual">
-              Most Unusual
+              ${t('ml.sortUnusual')}
             </button>
             <button type="button" class="ml-tool-btn ${state.sortBy === 'default' ? 'primary-sample' : ''}" data-sort="default">
-              Feature Order
+              ${t('ml.sortDefault')}
             </button>
           </div>
         </div>
@@ -572,12 +565,12 @@ function renderResultWorkspace(r) {
           <table class="ml-breakdown-table">
             <thead>
               <tr>
-                <th>Feature</th>
-                <th>Entered Value</th>
+                <th>${t('ml.thFeature')}</th>
+                <th>${t('ml.thRaw')}</th>
                 <th>WDBC P5–P95</th>
-                <th>Reference State</th>
-                <th>Direction</th>
-                <th>Contribution (z)</th>
+                <th>${t('ml.thCohortState')}</th>
+                <th>${t('ml.thVisualImpact')}</th>
+                <th>${t('ml.thContrib')}</th>
               </tr>
             </thead>
             <tbody>
@@ -1217,5 +1210,9 @@ async function init() {
   }
   render();
 }
+
+window.addEventListener('bcai:languageChanged', () => {
+  render();
+});
 
 init();

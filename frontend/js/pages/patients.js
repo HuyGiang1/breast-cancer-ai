@@ -4,6 +4,7 @@ import { auth } from '../core/auth.js';
 import { patientService } from '../services/patient.service.js';
 import { predictionService } from '../services/prediction.service.js';
 import { toast } from '../components/toast.js';
+import { t } from '../core/i18n.js';
 import {
   patientModalHtml,
   deleteConfirmModalHtml,
@@ -18,6 +19,10 @@ if (requireAuth('../login.html?v=auth-v3')) {
   initPatientsPage();
 }
 
+window.addEventListener('bcai:languageChanged', () => {
+  initPatientsPage();
+});
+
 async function initPatientsPage() {
   const app = document.querySelector('#app');
   const user = auth.user();
@@ -26,15 +31,15 @@ async function initPatientsPage() {
     app.innerHTML = `
       <section class="research-main">
         <header class="research-hero">
-          <span class="eyebrow">Doctor Workspace</span>
-          <h1>Doctor Workspace</h1>
-          <p>Multi-patient research workspace and patient-linked analysis registry.</p>
+          <span class="eyebrow">${t('nav.doctorWorkspace')}</span>
+          <h1>${t('nav.doctorWorkspace')}</h1>
+          <p>${t('patients.subtitle')}</p>
         </header>
         ${accessRestrictedHtml({
-          title: 'Doctor Workspace Access Restricted',
-          message: 'The Patient Registry and multi-patient management tools are exclusive to Doctor / Clinician Workspace accounts. Personal accounts are designed for independent self-analysis and direct model exploration.',
+          title: t('patients.title'),
+          message: t('auth.roleUserDesc'),
           returnUrl: 'history.html',
-          returnLabel: 'Go to My Activity',
+          returnLabel: t('nav.myActivity'),
         })}
       </section>
     `;
@@ -47,16 +52,16 @@ async function initPatientsPage() {
       <header class="research-hero">
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
           <div>
-            <span class="eyebrow">Doctor Workspace · Research Registry</span>
-            <h1>Patient Registry</h1>
-            <p>Research patient records, multi-modality analysis history, and cohort tracking. <span style="font-size: 0.8125rem; color: var(--slate-500); display: block; margin-top: 0.25rem;">Prototype Doctor Workspace access does not independently verify professional licensure.</span></p>
+            <span class="eyebrow">${t('nav.doctorWorkspace')} · ${t('patients.registryHero')}</span>
+            <h1>${t('patients.registryHero')}</h1>
+            <p>${t('patients.registryDesc')} <span style="font-size: 0.8125rem; color: var(--slate-500); display: block; margin-top: 0.25rem;">${t('auth.roleImmutableNotice')}</span></p>
           </div>
           <button type="button" class="studio-btn studio-btn-primary" id="openAddPatientBtn" style="display: inline-flex; align-items: center; gap: 0.5rem;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
-            <span>Register Patient</span>
+            <span>${t('patients.addPatientBtn')}</span>
           </button>
         </div>
       </header>
@@ -64,29 +69,29 @@ async function initPatientsPage() {
       <!-- Workspace Summary Metrics -->
       <div class="workspace-metrics-strip" id="workspaceMetrics">
         <div class="workspace-metric-card">
-          <span class="workspace-metric-label">Total Patients</span>
+          <span class="workspace-metric-label">${t('patients.totalPatients')}</span>
           <span class="workspace-metric-value" id="metricTotalPatients">—</span>
-          <span class="workspace-metric-subtext">Active in registry</span>
+          <span class="workspace-metric-subtext">${t('common.status', 'Active')}</span>
         </div>
         <div class="workspace-metric-card">
-          <span class="workspace-metric-label">Analyses Logged</span>
+          <span class="workspace-metric-label">${t('patients.totalAnalyses')}</span>
           <span class="workspace-metric-value" id="metricTotalAnalyses">—</span>
-          <span class="workspace-metric-subtext">Across all patients</span>
+          <span class="workspace-metric-subtext">${t('common.actions', 'Total')}</span>
         </div>
         <div class="workspace-metric-card">
-          <span class="workspace-metric-label">Structured ML</span>
+          <span class="workspace-metric-label">${t('patients.structuredRuns')}</span>
           <span class="workspace-metric-value" id="metricMlAnalyses">—</span>
-          <span class="workspace-metric-subtext">Wisconsin cytology runs</span>
+          <span class="workspace-metric-subtext">WDBC</span>
         </div>
         <div class="workspace-metric-card">
-          <span class="workspace-metric-label">Mammography DL</span>
+          <span class="workspace-metric-label">${t('patients.imagingScans')}</span>
           <span class="workspace-metric-value" id="metricDlAnalyses">—</span>
-          <span class="workspace-metric-subtext">Deep learning scans</span>
+          <span class="workspace-metric-subtext">CBIS-DDSM</span>
         </div>
         <div class="workspace-metric-card">
-          <span class="workspace-metric-label">Multimodal Fusions</span>
+          <span class="workspace-metric-label">${t('patients.multimodalRuns')}</span>
           <span class="workspace-metric-value" id="metricFusionAnalyses">—</span>
-          <span class="workspace-metric-subtext">Combined evaluations</span>
+          <span class="workspace-metric-subtext">40% ML / 60% DL</span>
         </div>
       </div>
 
@@ -98,24 +103,20 @@ async function initPatientsPage() {
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <input type="search" id="patientSearchInput" class="workspace-search-input" placeholder="Search patients by name, ID, or notes...">
+            <input type="search" id="patientSearchInput" class="workspace-search-input" placeholder="${t('patients.searchPlaceholder')}">
           </div>
 
           <select id="modalityFilterSelect" class="workspace-select" aria-label="Filter by analysis modality">
-            <option value="all">All Modalities</option>
-            <option value="ml">Has Structured ML</option>
-            <option value="dl">Has Mammography DL</option>
-            <option value="multimodal">Has Multimodal Fusion</option>
-            <option value="any">Has Any Analyses</option>
-            <option value="none">No Analyses Yet</option>
+            <option value="all">${t('history.filterAll')}</option>
+            <option value="ml">${t('history.filterMl')}</option>
+            <option value="dl">${t('history.filterDl')}</option>
+            <option value="multimodal">${t('history.filterMultimodal')}</option>
           </select>
 
           <select id="patientSortSelect" class="workspace-select" aria-label="Sort patient registry">
-            <option value="updated-desc">Recently Updated</option>
-            <option value="name-asc">Name (A → Z)</option>
-            <option value="name-desc">Name (Z → A)</option>
-            <option value="analyses-desc">Most Analyses</option>
-            <option value="created-asc">Oldest Registered</option>
+            <option value="updated-desc">${t('patients.sortRecent')}</option>
+            <option value="name-asc">${t('patients.sortNameAsc')}</option>
+            <option value="analyses-desc">${t('patients.sortAnalysesDesc')}</option>
           </select>
         </div>
       </div>
@@ -126,7 +127,7 @@ async function initPatientsPage() {
       <!-- Patient Grid -->
       <div id="patientList">
         <div class="studio-card" style="text-align: center; padding: 2.5rem; color: var(--slate-500);">
-          Loading patient workspace...
+          ${t('common.loading')}
         </div>
       </div>
     </section>

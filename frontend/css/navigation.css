@@ -285,6 +285,107 @@
   color: var(--teal-800);
 }
 
+/* Language Switcher */
+.studio-lang-switch {
+  position: relative;
+  display: inline-block;
+}
+
+.studio-lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  background-color: var(--slate-100);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: var(--transition-colors);
+  white-space: nowrap;
+}
+
+.studio-lang-btn:hover,
+.studio-lang-btn:focus-visible,
+.studio-lang-switch.is-open .studio-lang-btn {
+  background-color: var(--slate-200);
+  color: var(--slate-900);
+  border-color: var(--border-default);
+}
+
+.studio-lang-globe {
+  font-size: 0.875rem;
+  line-height: 1;
+}
+
+.studio-lang-btn .chevron {
+  width: 12px;
+  height: 12px;
+  stroke-width: 2.5;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.studio-lang-switch.is-open .studio-lang-btn .chevron {
+  transform: rotate(180deg);
+}
+
+.studio-lang-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 145px;
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-dropdown);
+  padding: 0.25rem;
+  display: none;
+  flex-direction: column;
+  gap: 0.125rem;
+  z-index: 200;
+}
+
+.studio-lang-menu.is-open,
+.studio-lang-switch.is-open .studio-lang-menu {
+  display: flex;
+}
+
+.studio-lang-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.45rem 0.625rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--slate-700);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.studio-lang-option:hover {
+  background-color: var(--slate-100);
+  color: var(--teal-800);
+}
+
+.studio-lang-option.active {
+  background-color: var(--teal-50);
+  color: var(--teal-800);
+  font-weight: 700;
+}
+
+.studio-lang-option .check {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--teal-600);
+}
+
 /* Utilities on Right */
 .studio-topbar-actions {
   display: flex;

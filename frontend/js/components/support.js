@@ -157,8 +157,10 @@ export function addMessage(container, role, content, meta = '') {
   return article;
 }
 
+import { t } from '../core/i18n.js';
+
 export function statusCard(title, data, details) {
   const healthy = data?.status === 'research_demo';
   const verified = data?.artifact_verified === true;
-  return `<article class="studio-card status-card"><header><div><span class="eyebrow">${title}</span><h2>${details.model}</h2></div><span class="status-label ${healthy ? 'healthy' : 'unavailable'}">${healthy ? 'Healthy · Research Demo' : 'Unavailable'}</span></header><dl><div><dt>Dataset</dt><dd>${details.dataset}</dd></div><div><dt>Probability</dt><dd>${details.probability}</dd></div><div><dt>Threshold</dt><dd>${details.threshold}</dd></div><div><dt>Artifact</dt><dd>${verified ? 'Verified' : 'Not verified'}</dd></div><div><dt>Clinical use</dt><dd>${data?.clinical_use === false ? 'false' : 'Unavailable'}</dd></div></dl>${healthy ? '' : '<p>Final research runtime unavailable. No fallback is used.</p>'}</article>`;
+  return `<article class="studio-card status-card"><header><div><span class="eyebrow">${title}</span><h2>${details.model}</h2></div><span class="status-label ${healthy ? 'healthy' : 'unavailable'}">${healthy ? t('modelStatus.healthy', 'Healthy · Research Demo') : t('modelStatus.unavailable', 'Unavailable')}</span></header><dl><div><dt>${t('modelStatus.dataset', 'Dataset')}</dt><dd>${details.dataset}</dd></div><div><dt>${t('modelStatus.probability', 'Probability')}</dt><dd>${details.probability}</dd></div><div><dt>${t('modelStatus.threshold', 'Threshold')}</dt><dd>${details.threshold}</dd></div><div><dt>${t('modelStatus.artifact', 'Artifact')}</dt><dd>${verified ? t('modelStatus.verified', 'Verified') : t('modelStatus.unverified', 'Not verified')}</dd></div><div><dt>${t('modelStatus.clinicalUse', 'Clinical use')}</dt><dd>${data?.clinical_use === false ? 'false' : t('modelStatus.unavailable', 'Unavailable')}</dd></div></dl>${healthy ? '' : '<p>Final research runtime unavailable. No fallback is used.</p>'}</article>`;
 }

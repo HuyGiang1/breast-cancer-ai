@@ -1,6 +1,7 @@
 import { authService } from '../services/auth.service.js';
 import { toast } from '../components/toast.js';
 import { cleanAuthUrl } from '../core/config.js';
+import { renderLanguageSwitcher, bindLanguageSwitcherEvents } from '../core/i18n.js';
 
 cleanAuthUrl();
 
@@ -14,6 +15,16 @@ if (document.readyState !== 'loading') {
 }
 
 function initForgotPasswordPage() {
+  const langSlot = document.getElementById('authLangSlot');
+  function updateLangSlot() {
+    if (langSlot) {
+      langSlot.innerHTML = renderLanguageSwitcher();
+      bindLanguageSwitcherEvents(langSlot);
+    }
+  }
+  updateLangSlot();
+  window.addEventListener('bcai:languageChanged', updateLangSlot);
+
   const form = document.getElementById('forgotForm');
   if (!form || form.dataset.initialized) return;
   form.dataset.initialized = 'true';

@@ -10,14 +10,35 @@
  */
 
 import { auth } from '../core/auth.js';
+import { t, renderLanguageSwitcher, bindLanguageSwitcherEvents, applyDomTranslations } from '../core/i18n.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  initLanguageSwitchers();
   initNavigation();
   initAuthSession();
   initInteractivePreview();
   initLazyVideos();
   initSmoothAnchors();
 });
+
+window.addEventListener('bcai:languageChanged', () => {
+  initLanguageSwitchers();
+  initAuthSession();
+});
+
+function initLanguageSwitchers() {
+  const topSlot = document.getElementById('topbarLangSlot');
+  const mobSlot = document.getElementById('mobileLangSlot');
+  if (topSlot) {
+    topSlot.innerHTML = renderLanguageSwitcher();
+    bindLanguageSwitcherEvents(topSlot);
+  }
+  if (mobSlot) {
+    mobSlot.innerHTML = renderLanguageSwitcher();
+    bindLanguageSwitcherEvents(mobSlot);
+  }
+  applyDomTranslations(document.body);
+}
 
 /**
  * Top Navigation & Mobile Top-Sheet Controller
@@ -143,10 +164,10 @@ function initAuthSession() {
       authQuickStart.style.display = 'block';
     }
     if (quickStartGreeting) {
-      quickStartGreeting.textContent = `Welcome back, ${displayName}`;
+      quickStartGreeting.textContent = `${t('common.welcome', 'Welcome')}, ${displayName}`;
     }
     if (quickStartRoleBadge) {
-      quickStartRoleBadge.textContent = isDoctor ? '👨‍⚕️ Doctor Workspace' : '👤 Personal Account';
+      quickStartRoleBadge.textContent = isDoctor ? `👨‍⚕️ ${t('nav.doctorWorkspace', 'Doctor Workspace')}` : `👤 ${t('nav.myActivity', 'Personal Account')}`;
     }
     if (quickStartDoctorCard) {
       quickStartDoctorCard.style.display = isDoctor ? 'flex' : 'none';
@@ -156,10 +177,10 @@ function initAuthSession() {
     if (headerAuthActions) {
       headerAuthActions.innerHTML = `
         <span style="font-size: 0.8125rem; font-weight: 600; color: var(--slate-700); margin-right: 0.25rem;">
-          Welcome, ${esc(displayName)}
+          ${t('common.welcome', 'Welcome')}, ${esc(displayName)}
         </span>
-        <a class="studio-btn studio-btn-outline studio-btn-sm" href="pages/profile.html">Account</a>
-        <button class="studio-btn studio-btn-ghost studio-btn-sm" id="topbarSignOutBtn" type="button">Sign Out</button>
+        <a class="studio-btn studio-btn-outline studio-btn-sm" href="pages/profile.html">${t('common.profile', 'Account')}</a>
+        <button class="studio-btn studio-btn-ghost studio-btn-sm" id="topbarSignOutBtn" type="button">${t('common.logout', 'Sign Out')}</button>
       `;
       document.getElementById('topbarSignOutBtn')?.addEventListener('click', () => {
         auth.clear();
@@ -170,19 +191,19 @@ function initAuthSession() {
     // Topbar workspace slot
     if (topbarWorkspaceSlot) {
       topbarWorkspaceSlot.innerHTML = isDoctor
-        ? `<a class="studio-nav-link" href="pages/patients.html">Doctor Workspace</a>`
-        : `<a class="studio-nav-link" href="pages/history.html">My Activity</a>`;
+        ? `<a class="studio-nav-link" href="pages/patients.html">${t('nav.doctorWorkspace', 'Doctor Workspace')}</a>`
+        : `<a class="studio-nav-link" href="pages/history.html">${t('nav.myActivity', 'My Activity')}</a>`;
     }
 
     // Mobile sheet slots
     if (mobileWorkspaceSlot) {
       mobileWorkspaceSlot.innerHTML = `
         <div class="mobile-nav-group">
-          <div class="mobile-nav-group-title">${isDoctor ? 'Doctor Workspace' : 'My Activity'}</div>
+          <div class="mobile-nav-group-title">${isDoctor ? t('nav.doctorWorkspace', 'Doctor Workspace') : t('nav.myActivity', 'My Activity')}</div>
           <div class="mobile-nav-links">
-            ${isDoctor ? '<a href="pages/patients.html">Doctor Workspace (Patient Registry)</a>' : ''}
-            <a href="pages/history.html">${isDoctor ? 'Analysis Activity' : 'My Activity'}</a>
-            <a href="pages/reports.html">Analysis Reports</a>
+            ${isDoctor ? `<a href="pages/patients.html">${t('patients.title', 'Doctor Workspace')} (${t('patients.registryHero', 'Patient Registry')})</a>` : ''}
+            <a href="pages/history.html">${isDoctor ? t('history.doctorTitle', 'Analysis Activity') : t('history.title', 'My Activity')}</a>
+            <a href="pages/reports.html">${t('reports.title', 'Analysis Reports')}</a>
           </div>
         </div>
       `;
@@ -191,10 +212,10 @@ function initAuthSession() {
     if (mobileAccountSlot) {
       mobileAccountSlot.innerHTML = `
         <div class="mobile-nav-group">
-          <div class="mobile-nav-group-title">Account (${esc(displayName)})</div>
+          <div class="mobile-nav-group-title">${t('common.profile', 'Account')} (${esc(displayName)})</div>
           <div class="mobile-nav-links">
-            <a href="pages/profile.html">Account &amp; Security</a>
-            <a href="javascript:void(0)" id="mobileSignOutLink" style="color: var(--danger, #ef4444);">Sign Out</a>
+            <a href="pages/profile.html">${t('profile.title', 'Account & Security')}</a>
+            <a href="javascript:void(0)" id="mobileSignOutLink" style="color: var(--danger, #ef4444);">${t('common.logout', 'Sign Out')}</a>
           </div>
         </div>
       `;
@@ -206,7 +227,7 @@ function initAuthSession() {
 
     // Hero secondary CTA
     if (heroSecondaryCta) {
-      heroSecondaryCta.textContent = isDoctor ? 'Doctor Workspace →' : 'Continue Analysis →';
+      heroSecondaryCta.textContent = isDoctor ? `${t('nav.doctorWorkspace', 'Doctor Workspace')} →` : `${t('nav.analyze', 'Continue Analysis')} →`;
       heroSecondaryCta.href = isDoctor ? 'pages/patients.html' : 'pages/ml-analysis.html';
     }
 
@@ -232,10 +253,10 @@ function initAuthSession() {
     if (mobileAccountSlot) {
       mobileAccountSlot.innerHTML = `
         <div class="mobile-nav-group">
-          <div class="mobile-nav-group-title">Account</div>
+          <div class="mobile-nav-group-title">${t('common.profile', 'Account')}</div>
           <div class="mobile-nav-links">
-            <a href="login.html?v=auth-v3">Sign In</a>
-            <a href="register.html?v=auth-v3">Create Account</a>
+            <a href="login.html?v=auth-v3">${t('nav.signIn', 'Sign In')}</a>
+            <a href="register.html?v=auth-v3">${t('nav.createAccount', 'Create Account')}</a>
           </div>
         </div>
       `;

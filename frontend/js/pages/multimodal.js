@@ -8,6 +8,7 @@ import {
   ML_GROUPS,
   ML_FEATURES,
   featureLabel,
+  groupLabel,
   SAMPLES,
   GROUP_DESCRIPTIONS,
   WDBC_DEVELOPMENT_REFERENCE,
@@ -19,6 +20,7 @@ import {
   generateWdbcResearchDemoCsv,
 } from '../utils/clinical-csv.js';
 import { featureSection, resultCard, collectFeatures } from '../components/analysis.js';
+import { t } from '../core/i18n.js';
 
 mountShell('Experimental Research Fusion');
 
@@ -98,19 +100,19 @@ function formatDec(val) {
 // Compute reference state for a single field
 function getFieldReferenceState(feature, rawValue) {
   if (rawValue === '' || rawValue === undefined || rawValue === null) {
-    return { state: 'waiting', label: 'Awaiting input', class: 'status-waiting' };
+    return { state: 'waiting', label: t('fusion.fieldAwaitingInput', { defaultValue: 'Awaiting input' }), class: 'status-waiting' };
   }
   const val = Number(rawValue);
   if (Number.isNaN(val)) {
-    return { state: 'invalid', label: 'Non-numeric', class: 'status-outside' };
+    return { state: 'invalid', label: t('fusion.fieldNonNumeric', { defaultValue: 'Non-numeric' }), class: 'status-outside' };
   }
   if (val < 0) {
-    return { state: 'invalid', label: 'Cannot be negative', class: 'status-outside' };
+    return { state: 'invalid', label: t('fusion.fieldNegative', { defaultValue: 'Cannot be negative' }), class: 'status-outside' };
   }
 
   const ref = WDBC_DEVELOPMENT_REFERENCE[feature];
   if (!ref) {
-    return { state: 'common', label: 'Input set', class: 'status-common' };
+    return { state: 'common', label: t('fusion.fieldInputSet', { defaultValue: 'Input set' }), class: 'status-common' };
   }
 
   if (val < ref.min || val > ref.max) {
@@ -123,12 +125,12 @@ function getFieldReferenceState(feature, rawValue) {
     };
   }
   if (val < ref.p01 || val > ref.p99) {
-    return { state: 'extreme', label: 'Extreme (outside P1–P99)', class: 'status-extreme' };
+    return { state: 'extreme', label: t('fusion.fieldExtreme', { defaultValue: 'Extreme (outside P1–P99)' }), class: 'status-extreme' };
   }
   if (val < ref.p05 || val > ref.p95) {
-    return { state: 'unusual', label: 'Unusual (outside P5–P95)', class: 'status-unusual' };
+    return { state: 'unusual', label: t('fusion.fieldUnusual', { defaultValue: 'Unusual (outside P5–P95)' }), class: 'status-unusual' };
   }
-  return { state: 'common', label: 'Common range (P5–P95)', class: 'status-common' };
+  return { state: 'common', label: t('fusion.fieldCommon', { defaultValue: 'Common range (P5–P95)' }), class: 'status-common' };
 }
 
 // Compute aggregate input quality metrics
@@ -434,13 +436,11 @@ function renderHero() {
   return `
     <header class="fusion-hero">
       <div class="fusion-hero-eyebrow">
-        <span>Dual-Branch Research Workstation</span>
+        <span>${t('fusion.heroEyebrow', { defaultValue: 'Dual-Branch Research Workstation' })}</span>
       </div>
-      <h1>Experimental Research Fusion</h1>
+      <h1>${t('fusion.title', { defaultValue: 'Experimental Research Fusion' })}</h1>
       <p class="fusion-hero-desc">
-        Two independent research branches combined with an unvalidated software heuristic.
-        Branch 1 evaluates nuclear morphology features from FNA cytology (WDBC), and Branch 2 evaluates
-        full mammography images (CBIS-DDSM). The two datasets are entirely unpaired.
+        ${t('fusion.subtitle', { defaultValue: 'Two independent research branches combined with an unvalidated software heuristic. Branch 1 evaluates nuclear morphology features from FNA cytology (WDBC), and Branch 2 evaluates full mammography images (CBIS-DDSM). The two datasets are entirely unpaired.' })}
       </p>
       <div class="fusion-hero-specs">
         <span class="fusion-spec-pill">Branch 1: <strong>WDBC FNA (30 Features)</strong> · 40% Weight</span>
@@ -453,11 +453,9 @@ function renderHero() {
     <aside class="fusion-unpaired-banner" role="note">
       <div class="fusion-unpaired-icon">⚠️</div>
       <div class="fusion-unpaired-body">
-        <h3>Unpaired Dataset Scientific Contract</h3>
+        <h3>${t('fusion.unpairedBannerTitle', { defaultValue: 'Unpaired Dataset Scientific Contract' })}</h3>
         <p>
-          WDBC and CBIS-DDSM observations are not paired from the same individuals. This page demonstrates
-          software-level output combination, not a validated multimodal medical model. If the two models produce
-          conflicting outputs, the weighted combined score cannot resolve the disagreement as a clinical diagnosis.
+          ${t('fusion.unpairedBannerDesc', { defaultValue: 'WDBC and CBIS-DDSM observations are not paired from the same individuals. This page demonstrates software-level output combination, not a validated multimodal medical model. If the two models produce conflicting outputs, the weighted combined score cannot resolve the disagreement as a clinical diagnosis.' })}
         </p>
       </div>
     </aside>
@@ -470,17 +468,17 @@ function renderDoctorPatientBar() {
   const currentPatient = state.patients.find((p) => String(p.id) === String(state.selectedPatientId));
   const patientLabel = currentPatient
     ? `${esc(currentPatient.full_name)} (ID: #${currentPatient.id})`
-    : 'No patient selected (Unassigned research run)';
+    : t('common.noPatientSelected', { defaultValue: 'No patient selected (Unassigned research run)' });
 
   return `
     <section class="doctor-patient-bar" aria-label="Shared Patient Context">
       <div class="doctor-patient-info">
-        <span class="doctor-patient-badge">Analysis Subject</span>
-        <span>Patient: <strong>${patientLabel}</strong></span>
+        <span class="doctor-patient-badge">${t('patients.patientId', { defaultValue: 'Analysis Subject' })}</span>
+        <span>${t('patients.name', { defaultValue: 'Patient' })}: <strong>${patientLabel}</strong></span>
       </div>
       <div style="display:flex;gap:8px;align-items:center;">
         <select id="doctorPatientSelect" class="v2-field" style="padding:6px 12px;font-size:0.85rem;min-width:220px;">
-          <option value="">-- Select Patient --</option>
+          <option value="">-- ${t('common.selectPatient', { defaultValue: 'Select Patient' })} --</option>
           ${state.patients
             .map(
               (p) =>
@@ -492,7 +490,7 @@ function renderDoctorPatientBar() {
         </select>
         ${
           currentPatient
-            ? `<a href="/pages/patient-detail.html?id=${currentPatient.id}" class="v2-button secondary btn-xs" style="text-decoration:none;">View Patient</a>`
+            ? `<a href="/pages/patient-detail.html?id=${currentPatient.id}" class="v2-button secondary btn-xs" style="text-decoration:none;">${t('common.view', { defaultValue: 'View Patient' })}</a>`
             : ''
         }
       </div>
@@ -510,10 +508,10 @@ function renderStructuredBranch() {
     <article class="fusion-branch-card" id="fusionStructuredBranch">
       <header class="fusion-branch-header">
         <div class="fusion-branch-title-group">
-          <span class="fusion-branch-step">Branch 1 · Study A</span>
-          <h2 class="fusion-branch-title">Structured FNA Cytology Branch</h2>
+          <span class="fusion-branch-step">${t('fusion.branch1Step', { defaultValue: 'Branch 1 · Study A' })}</span>
+          <h2 class="fusion-branch-title">${t('fusion.branch1Title', { defaultValue: 'Structured FNA Cytology Branch' })}</h2>
         </div>
-        <span class="fusion-weight-badge weight-40">40% Weight</span>
+        <span class="fusion-weight-badge weight-40">${t('fusion.branch1Weight', { defaultValue: '40% Weight' })}</span>
       </header>
 
       <div class="fusion-branch-meta">
@@ -525,25 +523,25 @@ function renderStructuredBranch() {
       <div class="fusion-toolbar" style="display:flex;flex-direction:column;gap:10px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <span style="font-size:0.82rem;font-weight:700;color:#334155;">Research Demos:</span>
-            <button type="button" class="v2-button secondary btn-xs" id="loadMlBenignBtn" title="Load Benign WDBC Sample (#8510426)">Benign WDBC Sample</button>
-            <button type="button" class="v2-button secondary btn-xs" id="loadMlMalignantBtn" title="Load Malignant WDBC Sample (#842302)">Malignant WDBC Sample</button>
+            <span style="font-size:0.82rem;font-weight:700;color:#334155;">${t('fusion.researchDemos', { defaultValue: 'Research Demos:' })}</span>
+            <button type="button" class="v2-button secondary btn-xs" id="loadMlBenignBtn" title="Load Benign WDBC Sample (#8510426)">${t('fusion.benignWdbcSample', { defaultValue: 'Benign WDBC Sample' })}</button>
+            <button type="button" class="v2-button secondary btn-xs" id="loadMlMalignantBtn" title="Load Malignant WDBC Sample (#842302)">${t('fusion.malignantWdbcSample', { defaultValue: 'Malignant WDBC Sample' })}</button>
           </div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <span style="font-size:0.82rem;font-weight:700;color:#334155;">CSV Demos:</span>
-            <button type="button" class="v2-button ghost btn-xs" id="downloadBenignCsvBtn" title="Download Benign WDBC CSV demo">Download Benign CSV</button>
-            <button type="button" class="v2-button ghost btn-xs" id="downloadMalignantCsvBtn" title="Download Malignant WDBC CSV demo">Download Malignant CSV</button>
+            <span style="font-size:0.82rem;font-weight:700;color:#334155;">${t('fusion.csvDemos', { defaultValue: 'CSV Demos:' })}</span>
+            <button type="button" class="v2-button ghost btn-xs" id="downloadBenignCsvBtn" title="Download Benign WDBC CSV demo">${t('fusion.downloadBenignCsv', { defaultValue: 'Download Benign CSV' })}</button>
+            <button type="button" class="v2-button ghost btn-xs" id="downloadMalignantCsvBtn" title="Download Malignant WDBC CSV demo">${t('fusion.downloadMalignantCsv', { defaultValue: 'Download Malignant CSV' })}</button>
           </div>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:1px solid #edf2f7;padding-top:8px;">
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <span style="font-size:0.82rem;font-weight:700;color:#1e293b;">Input method:</span>
-            <button type="button" class="v2-button ${state.branch1InputMode === 'manual' ? 'primary' : 'secondary'} btn-xs" id="branch1ManualBtn" title="Direct manual entry in 30 feature fields">Manual Entry</button>
-            <button type="button" class="v2-button secondary btn-xs" id="openCsvModalBtn" title="Import 30 WDBC features from CSV">Import WDBC CSV</button>
-            <button type="button" class="v2-button secondary btn-xs" id="openOcrModalBtn" title="Extract features from lab report photo">OCR Report</button>
+            <span style="font-size:0.82rem;font-weight:700;color:#1e293b;">${t('fusion.inputMethod', { defaultValue: 'Input method:' })}</span>
+            <button type="button" class="v2-button ${state.branch1InputMode === 'manual' ? 'primary' : 'secondary'} btn-xs" id="branch1ManualBtn" title="Direct manual entry in 30 feature fields">${t('fusion.manualEntry', { defaultValue: 'Manual Entry' })}</button>
+            <button type="button" class="v2-button secondary btn-xs" id="openCsvModalBtn" title="Import 30 WDBC features from CSV">${t('fusion.importCsv', { defaultValue: 'Import WDBC CSV' })}</button>
+            <button type="button" class="v2-button secondary btn-xs" id="openOcrModalBtn" title="Extract features from lab report photo">${t('fusion.ocrReport', { defaultValue: 'OCR Report' })}</button>
           </div>
           <div>
-            <button type="button" class="v2-button ghost btn-xs" id="clearMlBtn" title="Clear all 30 fields" style="color:#b91c1c;">Clear</button>
+            <button type="button" class="v2-button ghost btn-xs" id="clearMlBtn" title="Clear all 30 fields" style="color:#b91c1c;">${t('common.clear', { defaultValue: 'Clear' })}</button>
           </div>
         </div>
       </div>
@@ -560,19 +558,19 @@ function renderStructuredBranch() {
 
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
         <span class="fusion-quality-pill ${quality.isComplete ? 'complete' : ''}">
-          ${quality.completed} / 30 Features Completed
+          ${t('ml.featuresCompleted', { completed: quality.completed, defaultValue: `${quality.completed} / 30 Features Completed` })}
         </span>
         <div style="font-size:0.78rem;color:#64748b;display:flex;gap:10px;">
-          <span style="color:#15803d;">● ${quality.common} Common</span>
-          <span style="color:#b45309;">● ${quality.unusual} Unusual</span>
-          <span style="color:#c2410c;">● ${quality.extreme} Extreme</span>
-          ${quality.outside > 0 ? `<span style="color:#b91c1c;font-weight:700;">● ${quality.outside} Outside</span>` : ''}
+          <span style="color:#15803d;">● ${quality.common} ${t('ml.referenceStatusCommon', { defaultValue: 'Common' })}</span>
+          <span style="color:#b45309;">● ${quality.unusual} ${t('ml.referenceStatusUnusual', { defaultValue: 'Unusual' })}</span>
+          <span style="color:#c2410c;">● ${quality.extreme} ${t('ml.referenceStatusExtreme', { defaultValue: 'Extreme' })}</span>
+          ${quality.outside > 0 ? `<span style="color:#b91c1c;font-weight:700;">● ${quality.outside} ${t('ml.referenceStatusOutside', { defaultValue: 'Outside' })}</span>` : ''}
         </div>
       </div>
 
       <!-- Feature Group Filter Tabs -->
       <div style="display:flex;gap:6px;border-bottom:1px solid #e2e8f0;padding-bottom:6px;">
-        <button type="button" class="v2-button ${state.activeMlGroupTab === 'all' ? 'primary' : 'ghost'} btn-xs" data-group-tab="all">All (30)</button>
+        <button type="button" class="v2-button ${state.activeMlGroupTab === 'all' ? 'primary' : 'ghost'} btn-xs" data-group-tab="all">${t('common.all', { defaultValue: 'All' })} (30)</button>
         <button type="button" class="v2-button ${state.activeMlGroupTab === 'mean' ? 'primary' : 'ghost'} btn-xs" data-group-tab="mean">Mean (10)</button>
         <button type="button" class="v2-button ${state.activeMlGroupTab === 'se' ? 'primary' : 'ghost'} btn-xs" data-group-tab="se">SE (10)</button>
         <button type="button" class="v2-button ${state.activeMlGroupTab === 'worst' ? 'primary' : 'ghost'} btn-xs" data-group-tab="worst">Worst (10)</button>
@@ -584,7 +582,7 @@ function renderStructuredBranch() {
           .map(([groupTitle, features]) => `
             <div class="fusion-group-box">
               <div class="fusion-group-heading">
-                <span>${esc(groupTitle)}</span>
+                <span>${esc(groupLabel(groupTitle))}</span>
                 <span style="font-size:0.75rem;font-weight:400;color:#64748b;">${GROUP_DESCRIPTIONS[groupTitle] || ''}</span>
               </div>
               <div class="fusion-fields-grid">
@@ -630,10 +628,10 @@ function renderMammographyBranch() {
     <article class="fusion-branch-card" id="fusionMammographyBranch">
       <header class="fusion-branch-header">
         <div class="fusion-branch-title-group">
-          <span class="fusion-branch-step">Branch 2 · Study B</span>
-          <h2 class="fusion-branch-title">Mammography Image Branch</h2>
+          <span class="fusion-branch-step">${t('fusion.branch2Step', { defaultValue: 'Branch 2 · Study B' })}</span>
+          <h2 class="fusion-branch-title">${t('fusion.branch2Title', { defaultValue: 'Mammography Image Branch' })}</h2>
         </div>
-        <span class="fusion-weight-badge weight-60">60% Weight</span>
+        <span class="fusion-weight-badge weight-60">${t('fusion.branch2Weight', { defaultValue: '60% Weight' })}</span>
       </header>
 
       <div class="fusion-branch-meta">
@@ -644,16 +642,16 @@ function renderMammographyBranch() {
 
       <div class="fusion-toolbar" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          <span style="font-size:0.82rem;font-weight:700;color:#334155;">Research Demos:</span>
-          <button type="button" class="v2-button secondary btn-xs" id="loadDlBenignBtn" title="Load Benign Mammogram Demo">Benign Mammogram</button>
-          <button type="button" class="v2-button secondary btn-xs" id="loadDlMalignantBtn" title="Load Malignant Mammogram Demo">Malignant Mammogram</button>
+          <span style="font-size:0.82rem;font-weight:700;color:#334155;">${t('fusion.researchDemos', { defaultValue: 'Research Demos:' })}</span>
+          <button type="button" class="v2-button secondary btn-xs" id="loadDlBenignBtn" title="Load Benign Mammogram Demo">${t('fusion.benignMammogram', { defaultValue: 'Benign Mammogram' })}</button>
+          <button type="button" class="v2-button secondary btn-xs" id="loadDlMalignantBtn" title="Load Malignant Mammogram Demo">${t('fusion.malignantMammogram', { defaultValue: 'Malignant Mammogram' })}</button>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          <span style="font-size:0.82rem;font-weight:700;color:#334155;">Your Image:</span>
-          <button type="button" class="v2-button secondary btn-xs" id="uploadMammogramToolbarBtn" title="Upload custom mammogram image">Upload Mammogram</button>
+          <span style="font-size:0.82rem;font-weight:700;color:#334155;">${t('fusion.yourImage', { defaultValue: 'Your Image:' })}</span>
+          <button type="button" class="v2-button secondary btn-xs" id="uploadMammogramToolbarBtn" title="Upload custom mammogram image">${t('fusion.uploadMammogram', { defaultValue: 'Upload Mammogram' })}</button>
           ${
             hasImage
-              ? `<button type="button" class="v2-button ghost btn-xs" id="removeImageBtn" style="color:#b91c1c;">Remove Image</button>`
+              ? `<button type="button" class="v2-button ghost btn-xs" id="removeImageBtn" style="color:#b91c1c;">${t('fusion.removeImage', { defaultValue: 'Remove Image' })}</button>`
               : ''
           }
         </div>
@@ -662,11 +660,11 @@ function renderMammographyBranch() {
       ${
         !hasImage
           ? `
-            <div class="fusion-dropzone-box" id="mammogramDropzone" tabindex="0" role="button" aria-label="Upload mammogram image">
+            <div class="fusion-dropzone-box" id="mammogramDropzone" tabindex="0" role="button" aria-label="${t('fusion.uploadMammogram', { defaultValue: 'Upload mammogram image' })}">
               <div class="fusion-dropzone-icon">📷</div>
-              <h3 class="fusion-dropzone-title">Drag & drop mammography image here</h3>
-              <p class="fusion-dropzone-sub">Supports JPEG and PNG formats (224×224 normalized for inference, max 20 MB)</p>
-              <button type="button" class="v2-button secondary btn-sm" id="selectImageTriggerBtn">Upload Mammogram</button>
+              <h3 class="fusion-dropzone-title">${t('fusion.dropzoneTitle', { defaultValue: 'Drag & drop mammography image here' })}</h3>
+              <p class="fusion-dropzone-sub">${t('fusion.dropzoneSub', { defaultValue: 'Supports JPEG and PNG formats (224×224 normalized for inference, max 20 MB)' })}</p>
+              <button type="button" class="v2-button secondary btn-sm" id="selectImageTriggerBtn">${t('fusion.uploadMammogram', { defaultValue: 'Upload Mammogram' })}</button>
               <input type="file" id="mammogramFileInput" accept="image/jpeg,image/png" style="display:none;" />
             </div>
           `
@@ -682,8 +680,8 @@ function renderMammographyBranch() {
                   ${meta?.width ? `<span> · ${meta.width} × ${meta.height} px</span>` : ''}
                 </div>
                 <div class="fusion-preview-actions">
-                  <button type="button" class="v2-button secondary btn-xs" id="replaceImageBtn">Replace</button>
-                  <button type="button" class="v2-button ghost btn-xs" id="removeImageBtn2" style="color:#f87171;">Remove</button>
+                  <button type="button" class="v2-button secondary btn-xs" id="replaceImageBtn">${t('fusion.replaceImage', { defaultValue: 'Replace' })}</button>
+                  <button type="button" class="v2-button ghost btn-xs" id="removeImageBtn2" style="color:#f87171;">${t('fusion.removeImage', { defaultValue: 'Remove' })}</button>
                 </div>
               </div>
             </div>
@@ -691,7 +689,7 @@ function renderMammographyBranch() {
       }
 
       <div style="font-size:0.8rem;color:#64748b;background:#f8fafc;padding:10px 12px;border-radius:6px;border:1px solid #f1f5f9;">
-        <strong>Note:</strong> Explainability (Grad-CAM on <code>top_conv</code>) will be generated live during execution.
+        <strong>${t('common.note', { defaultValue: 'Note:' })}</strong> ${t('fusion.explainabilityNote', { defaultValue: 'Explainability (Grad-CAM on top_conv) will be generated live during execution.' })}
       </div>
     </article>
   `;
@@ -705,18 +703,18 @@ function renderExecutionHub() {
   return `
     <section class="fusion-hub-card" aria-label="Execution Convergence Hub">
       <div class="fusion-hub-header">
-        <h2>Converging Combination Hub</h2>
-        <p>Both independent evidence streams must be verified before evaluating the 40/60 software heuristic.</p>
+        <h2>${t('fusion.hubTitle', { defaultValue: 'Converging Combination Hub' })}</h2>
+        <p>${t('fusion.hubDesc', { defaultValue: 'Both independent evidence streams must be verified before evaluating the 40/60 software heuristic.' })}</p>
       </div>
 
       <div class="fusion-precheck-summary">
         <div class="fusion-precheck-item ${quality.isComplete ? 'valid' : 'invalid'}">
           <span>${quality.isComplete ? '✓' : '✗'}</span>
-          <span>Branch 1: ${quality.isComplete ? 'Structured Data Complete (30/30)' : `Incomplete (${quality.completed}/30)`}</span>
+          <span>${quality.isComplete ? t('fusion.branch1Ready', { defaultValue: 'Branch 1: Structured Data Complete (30/30)' }) : t('fusion.branch1Incomplete', { count: quality.completed, defaultValue: `Branch 1: Incomplete (${quality.completed}/30)` })}</span>
         </div>
         <div class="fusion-precheck-item ${hasImage ? 'valid' : 'invalid'}">
           <span>${hasImage ? '✓' : '✗'}</span>
-          <span>Branch 2: ${hasImage ? `Mammogram Selected (${esc(state.file?.name)})` : 'Mammogram Image Required'}</span>
+          <span>${hasImage ? t('fusion.branch2Ready', { name: esc(state.file?.name), defaultValue: `Branch 2: Mammogram Selected (${esc(state.file?.name)})` }) : t('fusion.branch2Required', { defaultValue: 'Branch 2: Mammogram Image Required' })}</span>
         </div>
       </div>
 
@@ -730,7 +728,7 @@ function renderExecutionHub() {
         state.isAnalyzing
           ? `
             <div class="fusion-stages-card" style="width:100%;max-width:720px;">
-              <h3 style="margin:0;font-size:0.95rem;color:#0f172a;">Executing Experimental Fusion Pipeline…</h3>
+              <h3 style="margin:0;font-size:0.95rem;color:#0f172a;">${t('fusion.executingPipeline', { defaultValue: 'Executing Experimental Fusion Pipeline…' })}</h3>
               <div class="fusion-stages-list">
                 ${STAGES.map((s) => {
                   const status = getStageStatus(s.id);
@@ -751,7 +749,7 @@ function renderExecutionHub() {
               class="v2-button primary fusion-run-button"
               ${!isReady ? 'disabled' : ''}
             >
-              Run Experimental Fusion
+              ${t('fusion.runFusionBtn', { defaultValue: 'Run Experimental Fusion' })}
             </button>
           `
       }
@@ -778,6 +776,9 @@ function renderResults() {
   const isMalignantSide = combinedScore >= 0.5;
   const agreement = res.branch_agreement ?? (ml.diagnosis === dl.diagnosis);
 
+  const mlDiagTranslated = ml.diagnosis === 'Malignant' ? t('common.malignant') : t('common.benign');
+  const dlDiagTranslated = dl.diagnosis === 'Malignant' ? t('common.malignant') : t('common.benign');
+
   return `
     <section class="fusion-results-workspace" id="fusionResultsArea" aria-label="Fusion Analysis Results">
       <!-- 1. Prominent Branch Disagreement or Agreement Banner -->
@@ -785,28 +786,25 @@ function renderResults() {
         !agreement
           ? `
             <div class="fusion-disagreement-card">
-              <span class="fusion-disagreement-badge">⚠️ Branch Disagreement</span>
-              <h2>Branch Disagreement: Conflicting Independent Model Outputs</h2>
+              <span class="fusion-disagreement-badge">⚠️ ${t('fusion.disagreementBadge', { defaultValue: 'Branch Disagreement' })}</span>
+              <h2>${t('fusion.disagreementTitle', { defaultValue: 'Branch Disagreement: Conflicting Independent Model Outputs' })}</h2>
               <p>
-                The structured cytology branch and mammography branch produced different model classifications.
-                Because they were trained on separate, unpaired datasets (WDBC and CBIS-DDSM), the experimental
-                weighted score cannot resolve this disagreement as a validated clinical diagnosis.
+                ${t('fusion.disagreementDesc', { defaultValue: 'The structured cytology branch and mammography branch produced different model classifications. Because they were trained on separate, unpaired datasets (WDBC and CBIS-DDSM), the experimental weighted score cannot resolve this disagreement as a validated clinical diagnosis.' })}
               </p>
               <div class="fusion-disagreement-reasons">
-                <strong>Independent Model Classifications:</strong><br>
-                • Structured FNA (WDBC): <strong>${esc(ml.diagnosis)}</strong> (Raw probability: ${formatPct(mlRaw)} vs cutoff 0.36)<br>
-                • Mammography Image (CBIS-DDSM): <strong>${esc(dl.diagnosis)}</strong> (Raw probability: ${formatPct(dlRaw)} vs cutoff 0.515)<br>
-                <em>The combined number below is visually secondary and must not overrule this disagreement.</em>
+                <strong>${t('fusion.independentClassifications', { defaultValue: 'Independent Model Classifications:' })}</strong><br>
+                • Structured FNA (WDBC): <strong>${mlDiagTranslated} (${esc(ml.diagnosis)})</strong> (Raw probability: ${formatPct(mlRaw)} vs cutoff 0.36)<br>
+                • Mammography Image (CBIS-DDSM): <strong>${dlDiagTranslated} (${esc(dl.diagnosis)})</strong> (Raw probability: ${formatPct(dlRaw)} vs cutoff 0.515)<br>
+                <em>${t('fusion.combinedSecondaryNotice', { defaultValue: 'The combined number below is visually secondary and must not overrule this disagreement.' })}</em>
               </div>
             </div>
           `
           : `
             <div class="fusion-agreement-card">
-              <span class="fusion-agreement-badge">✓ Branch Agreement</span>
-              <h2>Both Independent Research Branches Produced ${esc(ml.diagnosis)} Classification</h2>
+              <span class="fusion-agreement-badge">✓ ${t('fusion.agreementBadge', { defaultValue: 'Branch Agreement' })}</span>
+              <h2>${t('fusion.agreementTitle', { diagnosis: `${mlDiagTranslated} (${esc(ml.diagnosis)})`, defaultValue: `Both Independent Research Branches Produced ${esc(ml.diagnosis)} Classification` })}</h2>
               <p>
-                Both independent research branches produced the same model-side class (${esc(ml.diagnosis)}).
-                However, agreement does not validate the combined result as a clinical diagnosis because observations are unpaired.
+                ${t('fusion.agreementDesc', { diagnosis: `${mlDiagTranslated} (${esc(ml.diagnosis)})`, defaultValue: `Both independent research branches produced the same model-side class (${esc(ml.diagnosis)}). However, agreement does not validate the combined result as a clinical diagnosis because observations are unpaired.` })}
               </p>
             </div>
           `
@@ -815,13 +813,13 @@ function renderResults() {
       <!-- 2. Transparent Mathematical Formula Card -->
       <div class="fusion-formula-card">
         <h3>
-          <span>Mathematical Combination Visualizer</span>
-          <span style="font-size:0.75rem;font-weight:500;color:#64748b;">Explicit Raw Probability Inputs</span>
+          <span>${t('fusion.formulaCardTitle', { defaultValue: 'Mathematical Combination Visualizer' })}</span>
+          <span style="font-size:0.75rem;font-weight:500;color:#64748b;">${t('fusion.formulaCardSubtitle', { defaultValue: 'Explicit Raw Probability Inputs' })}</span>
         </h3>
         <div class="fusion-formula-grid">
           <!-- ML Box -->
           <div class="fusion-formula-box">
-            <span class="fusion-formula-label">Structured ML Branch (40%)</span>
+            <span class="fusion-formula-label">${t('fusion.branch1Title', { defaultValue: 'Structured FNA Cytology Branch' })} (40%)</span>
             <span class="fusion-formula-math">${formatDec(mlRaw)} × 0.40</span>
             <span class="fusion-formula-result">= ${formatDec(mlWeighted)}</span>
           </div>
@@ -830,7 +828,7 @@ function renderResults() {
 
           <!-- DL Box -->
           <div class="fusion-formula-box">
-            <span class="fusion-formula-label">Mammography DL Branch (60%)</span>
+            <span class="fusion-formula-label">${t('fusion.branch2Title', { defaultValue: 'Mammography Image Branch' })} (60%)</span>
             <span class="fusion-formula-math">${formatDec(dlRaw)} × 0.60</span>
             <span class="fusion-formula-result">= ${formatDec(dlWeighted)}</span>
           </div>
@@ -839,27 +837,26 @@ function renderResults() {
 
           <!-- Final Combined Box -->
           <div class="fusion-formula-box fusion-formula-final">
-            <span class="fusion-formula-label">Experimental Combined Score</span>
+            <span class="fusion-formula-label">${t('fusion.combinedScore', { defaultValue: 'Experimental Combined Score' })}</span>
             <span class="fusion-formula-math" style="font-size:1.3rem;color:#0369a1;">${formatDec(combinedScore)}</span>
             <span class="fusion-formula-result" style="font-weight:700;">(${formatPct(combinedScore)})</span>
           </div>
         </div>
         <p class="fusion-formula-disclaimer">
-          * Note: These weights (40% ML / 60% DL) are an experimental software choice, not learned multimodal parameters.
-          The formula strictly consumes raw model outputs; the Platt-calibrated DL probability (${formatPct(dlCalibrated)}) is excluded.
+          * ${t('fusion.disclaimerNotice', { defaultValue: 'Note: These weights (40% ML / 60% DL) are an experimental software choice, not learned multimodal parameters. The formula strictly consumes raw model outputs; the Platt-calibrated DL probability is excluded.' })}
         </p>
       </div>
 
       <!-- 3. Combined Score Hero -->
       <div class="fusion-combined-card">
-        <span class="fusion-combined-eyebrow">Experimental Software Demonstration</span>
+        <span class="fusion-combined-eyebrow">${t('fusion.combinedEyebrow', { defaultValue: 'Experimental Software Demonstration' })}</span>
         <div class="fusion-combined-score-num">${formatPct(combinedScore)}</div>
         <div class="fusion-combined-indication ${isMalignantSide ? 'malignant-side' : 'benign-side'}">
-          <span>Experimental heuristic indication:</span>
-          <strong>${isMalignantSide ? 'Malignant-side indication' : 'Benign-side indication'}</strong>
+          <span>${t('fusion.combinedIndicationLabel', { defaultValue: 'Experimental heuristic indication:' })}</span>
+          <strong>${isMalignantSide ? t('fusion.malignantIndication', { defaultValue: 'Malignant-side indication' }) : t('fusion.benignIndication', { defaultValue: 'Benign-side indication' })}</strong>
         </div>
         <p class="fusion-midpoint-disclaimer">
-          0.50 is the software decision midpoint for this experimental combination and has not been validated as a clinical threshold.
+          ${t('fusion.combinedThresholdNotice', { defaultValue: '0.50 is the software decision midpoint for this experimental combination and has not been validated as a clinical threshold.' })}
         </p>
       </div>
 
@@ -869,24 +866,24 @@ function renderResults() {
         <div class="fusion-deepdive-card">
           <div class="fusion-deepdive-header">
             <div>
-              <span class="fusion-branch-step">Branch 1 Evidence</span>
+              <span class="fusion-branch-step">${t('fusion.branch1Evidence', { defaultValue: 'Branch 1 Evidence' })}</span>
               <h3 class="fusion-deepdive-title">Logistic Regression (WDBC)</h3>
             </div>
-            <span class="v2-badge ${ml.diagnosis === 'Malignant' ? 'error' : 'success'}">${esc(ml.diagnosis)}</span>
+            <span class="v2-badge ${ml.diagnosis === 'Malignant' ? 'error' : 'success'}">${mlDiagTranslated} (${esc(ml.diagnosis)})</span>
           </div>
 
           <div class="fusion-deepdive-meta-list">
             <div class="fusion-deepdive-meta-row">
-              <span>Raw Malignant Probability:</span>
+              <span>${t('common.rawProbability', { defaultValue: 'Raw Malignant Probability' })}:</span>
               <span><strong>${formatPct(mlRaw)}</strong> (${formatDec(mlRaw)})</span>
             </div>
             <div class="fusion-deepdive-meta-row">
-              <span>Decision Threshold (Raw):</span>
+              <span>${t('common.threshold', { defaultValue: 'Decision Threshold (Raw)' })}:</span>
               <span>≥ 0.360</span>
             </div>
             <div class="fusion-deepdive-meta-row">
-              <span>Model Classification:</span>
-              <span>${esc(ml.diagnosis)}</span>
+              <span>${t('fusion.modelClassification', { defaultValue: 'Model Classification' })}:</span>
+              <span>${mlDiagTranslated} (${esc(ml.diagnosis)})</span>
             </div>
             <div class="fusion-deepdive-meta-row">
               <span>Feature Modality:</span>
@@ -898,7 +895,7 @@ function renderResults() {
             ml.top_features && ml.top_features.length > 0
               ? `
                 <div style="margin-top:8px;">
-                  <strong style="font-size:0.82rem;color:#334155;">Key Influential Features:</strong>
+                  <strong style="font-size:0.82rem;color:#334155;">${t('fusion.keyFeatures', { defaultValue: 'Key Influential Features:' })}</strong>
                   <div class="fusion-top-features" style="margin-top:6px;">
                     ${ml.top_features.slice(0, 5).map((f) => `
                       <div class="fusion-feature-row">
@@ -917,27 +914,27 @@ function renderResults() {
         <div class="fusion-deepdive-card">
           <div class="fusion-deepdive-header">
             <div>
-              <span class="fusion-branch-step">Branch 2 Evidence</span>
+              <span class="fusion-branch-step">${t('fusion.branch2Evidence', { defaultValue: 'Branch 2 Evidence' })}</span>
               <h3 class="fusion-deepdive-title">EfficientNet-B0 (CBIS-DDSM)</h3>
             </div>
-            <span class="v2-badge ${dl.diagnosis === 'Malignant' ? 'error' : 'success'}">${esc(dl.diagnosis)}</span>
+            <span class="v2-badge ${dl.diagnosis === 'Malignant' ? 'error' : 'success'}">${dlDiagTranslated} (${esc(dl.diagnosis)})</span>
           </div>
 
           <div class="fusion-deepdive-meta-list">
             <div class="fusion-deepdive-meta-row">
-              <span>Raw Malignant Probability:</span>
+              <span>${t('common.rawProbability', { defaultValue: 'Raw Malignant Probability' })}:</span>
               <span><strong>${formatPct(dlRaw)}</strong> (${formatDec(dlRaw)})</span>
             </div>
             <div class="fusion-deepdive-meta-row">
-              <span>Decision Threshold (Raw):</span>
+              <span>${t('common.threshold', { defaultValue: 'Decision Threshold (Raw)' })}:</span>
               <span>≥ 0.515</span>
             </div>
             <div class="fusion-deepdive-meta-row">
-              <span>Calibrated Probability (Platt):</span>
-              <span>${formatPct(dlCalibrated)} <em style="font-size:0.75rem;color:#64748b;">(Display reliability only)</em></span>
+              <span>${t('common.calibratedProbability', { defaultValue: 'Calibrated Probability (Platt)' })}:</span>
+              <span>${formatPct(dlCalibrated)} <em style="font-size:0.75rem;color:#64748b;">(${t('fusion.displayReliabilityOnly', { defaultValue: 'Display reliability only' })})</em></span>
             </div>
             <div class="fusion-deepdive-meta-row">
-              <span>Grad-CAM Attention Status:</span>
+              <span>${t('fusion.gradcamStatus', { defaultValue: 'Grad-CAM Attention Status' })}:</span>
               <span>${dl.explanation_status === 'available' ? '✓ Generated on top_conv' : 'Unavailable'}</span>
             </div>
           </div>
@@ -948,9 +945,9 @@ function renderResults() {
               ? `
                 <div class="fusion-gradcam-box">
                   <div class="fusion-gradcam-switcher">
-                    <button type="button" class="v2-button ${state.gradcamViewMode === 'side-by-side' ? 'primary' : 'secondary'} btn-xs" data-cam-mode="side-by-side">Side-by-Side</button>
-                    <button type="button" class="v2-button ${state.gradcamViewMode === 'original' ? 'primary' : 'secondary'} btn-xs" data-cam-mode="original">Original</button>
-                    <button type="button" class="v2-button ${state.gradcamViewMode === 'gradcam' ? 'primary' : 'secondary'} btn-xs" data-cam-mode="gradcam">Heatmap Overlay</button>
+                    <button type="button" class="v2-button ${state.gradcamViewMode === 'side-by-side' ? 'primary' : 'secondary'} btn-xs" data-cam-mode="side-by-side">${t('fusion.sideBySide', { defaultValue: 'Side-by-Side' })}</button>
+                    <button type="button" class="v2-button ${state.gradcamViewMode === 'original' ? 'primary' : 'secondary'} btn-xs" data-cam-mode="original">${t('fusion.original', { defaultValue: 'Original' })}</button>
+                    <button type="button" class="v2-button ${state.gradcamViewMode === 'gradcam' ? 'primary' : 'secondary'} btn-xs" data-cam-mode="gradcam">${t('fusion.heatmapOverlay', { defaultValue: 'Heatmap Overlay' })}</button>
                   </div>
 
                   <div class="fusion-gradcam-display">
@@ -968,7 +965,7 @@ function renderResults() {
                     }
                   </div>
                   <span style="font-size:0.72rem;color:#64748b;text-align:center;">
-                    Grad-CAM highlights broad model-attention regions. It does not establish lesion borders.
+                    ${t('fusion.gradcamNote', { defaultValue: 'Grad-CAM highlights broad model-attention regions. It does not establish lesion borders.' })}
                   </span>
                 </div>
               `
@@ -980,32 +977,27 @@ function renderResults() {
       <!-- 5. Expandable: Why can these results differ? -->
       <div class="fusion-differ-box">
         <div class="fusion-differ-toggle" id="toggleDiffersBtn">
-          <span>Why can these results differ?</span>
-          <span>${state.differsExpanded ? '▲ Collapse' : '▼ Expand'}</span>
+          <span>${t('fusion.differsTitle', { defaultValue: 'Why can these results differ?' })}</span>
+          <span>${state.differsExpanded ? `▲ ${t('common.collapse', { defaultValue: 'Collapse' })}` : `▼ ${t('common.expand', { defaultValue: 'Expand' })}`}</span>
         </div>
         ${
           state.differsExpanded
             ? `
               <div class="fusion-differ-content">
                 <p>
-                  It is scientifically expected that the Structured ML and Mammography DL branches may occasionally arrive at
-                  different classifications:
+                  ${t('fusion.differsIntro', { defaultValue: 'It is scientifically expected that the Structured ML and Mammography DL branches may occasionally arrive at different classifications:' })}
                 </p>
                 <div class="fusion-differ-grid">
                   <div class="fusion-differ-col">
-                    <h4>1. Distinct Biological Modalities</h4>
+                    <h4>${t('fusion.differsModalityTitle', { defaultValue: '1. Distinct Biological Modalities' })}</h4>
                     <p>
-                      The Structured branch inspects microscopic nuclear morphology parameters (e.g., radius, concavity, texture)
-                      extracted from fine-needle aspirates (FNA). The Mammography branch inspects macroscopic tissue density patterns,
-                      calcifications, and masses on 2D digital projection radiographs.
+                      ${t('fusion.differsModalityDesc', { defaultValue: 'The Structured branch inspects microscopic nuclear morphology parameters (e.g., radius, concavity, texture) extracted from fine-needle aspirates (FNA). The Mammography branch inspects macroscopic tissue density patterns, calcifications, and masses on 2D digital projection radiographs.' })}
                     </p>
                   </div>
                   <div class="fusion-differ-col">
-                    <h4>2. Unpaired Patient Populations</h4>
+                    <h4>${t('fusion.differsCohortTitle', { defaultValue: '2. Unpaired Patient Populations' })}</h4>
                     <p>
-                      The WDBC dataset (Wisconsin) and CBIS-DDSM dataset (Curated Breast Imaging Subset of DDSM) were collected
-                      from completely different clinical cohorts in different eras with different screening protocols. There was no
-                      joint multimodal training.
+                      ${t('fusion.differsCohortDesc', { defaultValue: 'The WDBC dataset (Wisconsin) and CBIS-DDSM dataset (Curated Breast Imaging Subset of DDSM) were collected from completely different clinical cohorts in different eras with different screening protocols. There was no joint multimodal training.' })}
                     </p>
                   </div>
                 </div>
@@ -1019,26 +1011,26 @@ function renderResults() {
       <div class="fusion-ai-card">
         <div class="fusion-ai-header">
           <h3 class="fusion-ai-title">
-            <span>AI Educational Guidance</span>
+            <span>${t('fusion.aiTitle', { defaultValue: 'AI Educational Guidance' })}</span>
           </h3>
           <div style="font-size:0.75rem;color:#64748b;">
             <span>Provider: <strong>${esc(res.advice_provider || 'local')}</strong></span>
             ${res.advice_model ? `<span> · Model: <strong>${esc(res.advice_model)}</strong></span>` : ''}
           </div>
         </div>
-        <div class="fusion-ai-body">${esc(res.advice || 'No automated advice returned for this run.')}</div>
+        <div class="fusion-ai-body">${esc(res.advice || t('fusion.noAdvice', { defaultValue: 'No automated advice returned for this run.' }))}</div>
       </div>
 
       <!-- 7. Result Action Bar -->
       <div class="fusion-action-bar">
         ${
           res.id
-            ? `<a href="/predictions/${res.id}/report/" target="_blank" class="v2-button secondary" id="btnViewReport" data-prediction-id="${res.id}">View Analysis Report</a>`
+            ? `<a href="/predictions/${res.id}/report/" target="_blank" class="v2-button secondary" id="btnViewReport" data-prediction-id="${res.id}">${t('fusion.viewReport', { defaultValue: 'View Analysis Report' })}</a>`
             : ''
         }
-        <button type="button" class="v2-button secondary" id="askAdvisorBtn">Ask AI Guide About This Fusion Result</button>
-        <a href="/pages/history.html" class="v2-button ghost">View History</a>
-        <button type="button" class="v2-button ghost" id="resetFusionBtn">Reset Fusion</button>
+        <button type="button" class="v2-button secondary" id="askAdvisorBtn">${t('fusion.askAdvisor', { defaultValue: 'Ask AI Guide About This Fusion Result' })}</button>
+        <a href="/pages/history.html" class="v2-button ghost">${t('nav.activity', { defaultValue: 'View History' })}</a>
+        <button type="button" class="v2-button ghost" id="resetFusionBtn">${t('fusion.resetFusion', { defaultValue: 'Reset Fusion' })}</button>
       </div>
     </section>
   `;
@@ -1053,18 +1045,17 @@ function renderModals() {
     return `
       <div class="v2-modal-backdrop" id="modalBackdrop">
         <div class="v2-modal-card">
-          <h3 class="v2-modal-title" style="color:#b91c1c;">⚠️ Outlier Review Required Before Fusion</h3>
+          <h3 class="v2-modal-title" style="color:#b91c1c;">⚠️ ${t('fusion.outlierModalTitle', { defaultValue: 'Outlier Review Required Before Fusion' })}</h3>
           <p class="v2-modal-desc">
-            One or more structured features lie outside observed min/max development bounds.
-            Please review these values before proceeding with the experimental combination.
+            ${t('fusion.outlierModalDesc', { defaultValue: 'One or more structured features lie outside observed min/max development bounds. Please review these values before proceeding with the experimental combination.' })}
           </p>
           <div style="max-height:240px;overflow-y:auto;margin:12px 0;">
             <table class="v2-table" style="width:100%;font-size:0.8rem;">
               <thead>
                 <tr>
-                  <th>Feature</th>
-                  <th>Entered Value</th>
-                  <th>Observed Range</th>
+                  <th>${t('common.feature', { defaultValue: 'Feature' })}</th>
+                  <th>${t('fusion.enteredValue', { defaultValue: 'Entered Value' })}</th>
+                  <th>${t('fusion.observedRange', { defaultValue: 'Observed Range' })}</th>
                 </tr>
               </thead>
               <tbody>
@@ -1079,8 +1070,8 @@ function renderModals() {
             </table>
           </div>
           <div class="v2-modal-actions">
-            <button type="button" class="v2-button ghost" id="cancelModalBtn">Cancel & Edit</button>
-            <button type="button" class="v2-button primary" id="confirmOutlierBtn">Confirm & Run Fusion</button>
+            <button type="button" class="v2-button ghost" id="cancelModalBtn">${t('fusion.cancelAndEdit', { defaultValue: 'Cancel & Edit' })}</button>
+            <button type="button" class="v2-button primary" id="confirmOutlierBtn">${t('fusion.confirmAndRun', { defaultValue: 'Confirm & Run Fusion' })}</button>
           </div>
         </div>
       </div>
@@ -1094,28 +1085,27 @@ function renderModals() {
       return `
         <div class="v2-modal-backdrop" id="modalBackdrop">
           <div class="v2-modal-card" style="max-width:680px;">
-            <h3 class="v2-modal-title">Import WDBC FNA Features CSV</h3>
+            <h3 class="v2-modal-title">${t('fusion.importModalTitle', { defaultValue: 'Import WDBC FNA Features CSV' })}</h3>
             <div style="font-size:0.84rem;font-weight:700;color:#0369a1;margin-bottom:6px;">
-              Multiple WDBC Observations Detected (${rowCount} rows)
+              ${t('fusion.multipleRowsTitle', { count: rowCount, defaultValue: `Multiple WDBC Observations Detected (${rowCount} rows)` })}
             </div>
             <p class="v2-modal-desc" style="margin-bottom:10px;">
-              Experimental Fusion represents exactly <strong>ONE</strong> WDBC structured observation + <strong>ONE</strong> mammography image.
-              Select one valid observation below for this Fusion run:
+              ${t('fusion.multipleRowsDesc', { defaultValue: 'Experimental Fusion represents exactly ONE WDBC structured observation + ONE mammography image. Select one valid observation below for this Fusion run:' })}
             </p>
 
             <div style="font-size:0.75rem;color:#64748b;background:#f8fafc;border:1px solid #e2e8f0;padding:8px 12px;border-radius:6px;margin-bottom:12px;line-height:1.4;">
-              <strong>Unpaired Dataset Notice:</strong> WDBC cytology observations and CBIS-DDSM mammography images are scientifically unpaired datasets. Selecting this observation does not imply clinical association with the selected mammogram.
+              <strong>${t('fusion.unpairedNoticeTitle', { defaultValue: 'Unpaired Dataset Notice:' })}</strong> ${t('fusion.unpairedNoticeModal', { defaultValue: 'WDBC cytology observations and CBIS-DDSM mammography images are scientifically unpaired datasets. Selecting this observation does not imply clinical association with the selected mammogram.' })}
             </div>
 
             <div class="fusion-csv-table-wrap" style="max-height:260px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:6px;margin-bottom:14px;">
               <table class="fusion-csv-table" style="width:100%;border-collapse:collapse;font-size:0.82rem;">
                 <thead style="background:#f1f5f9;position:sticky;top:0;z-index:1;">
                   <tr style="text-align:left;border-bottom:1px solid #cbd5e1;">
-                    <th style="padding:8px 10px;width:54px;text-align:center;">Select</th>
+                    <th style="padding:8px 10px;width:54px;text-align:center;">${t('common.select', { defaultValue: 'Select' })}</th>
                     <th style="padding:8px 10px;">Row #</th>
                     <th style="padding:8px 10px;">Sample ID</th>
-                    <th style="padding:8px 10px;">Features</th>
-                    <th style="padding:8px 10px;">Status</th>
+                    <th style="padding:8px 10px;">${t('fusion.features', { defaultValue: 'Features' })}</th>
+                    <th style="padding:8px 10px;">${t('common.status', { defaultValue: 'Status' })}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1137,7 +1127,7 @@ function renderModals() {
                       <td style="padding:8px 10px;color:#475569;">${row.completedCount} / 30</td>
                       <td style="padding:8px 10px;">
                         ${row.valid
-                          ? '<span style="color:#15803d;font-weight:700;">✓ Valid</span>'
+                          ? `<span style="color:#15803d;font-weight:700;">✓ ${t('fusion.valid', { defaultValue: 'Valid' })}</span>`
                           : `<span style="color:#dc2626;font-size:0.75rem;" title="${esc(row.errors.join('; '))}">✗ ${esc(row.errors[0])}</span>`
                         }
                       </td>
@@ -1148,16 +1138,16 @@ function renderModals() {
             </div>
 
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-              <button type="button" class="v2-button ghost btn-xs" id="csvPickAnotherBtn">Select Different File</button>
+              <button type="button" class="v2-button ghost btn-xs" id="csvPickAnotherBtn">${t('fusion.selectDifferentFile', { defaultValue: 'Select Different File' })}</button>
               <div style="display:flex;gap:8px;">
-                <button type="button" class="v2-button ghost btn-xs" id="cancelModalBtn">Cancel</button>
+                <button type="button" class="v2-button ghost btn-xs" id="cancelModalBtn">${t('common.cancel', { defaultValue: 'Cancel' })}</button>
                 <button
                   type="button"
                   class="v2-button primary btn-xs"
                   id="btnLoadSelectedCsvRow"
                   ${state.selectedCsvRowIndex === null || !rows[state.selectedCsvRowIndex]?.valid ? 'disabled' : ''}
                 >
-                  Import Selected Observation
+                  ${t('fusion.importSelectedObservation', { defaultValue: 'Import Selected Observation' })}
                 </button>
               </div>
             </div>
@@ -1169,20 +1159,20 @@ function renderModals() {
     return `
       <div class="v2-modal-backdrop" id="modalBackdrop">
         <div class="v2-modal-card" style="max-width:580px;">
-          <h3 class="v2-modal-title">Import WDBC FNA Features CSV</h3>
+          <h3 class="v2-modal-title">${t('fusion.importModalTitle', { defaultValue: 'Import WDBC FNA Features CSV' })}</h3>
           <p class="v2-modal-desc">
-            Upload a CSV containing the 30 WDBC nuclear morphology features used by the Structured FNA Cytology branch.
+            ${t('fusion.importModalDesc', { defaultValue: 'Upload a CSV containing the 30 WDBC nuclear morphology features used by the Structured FNA Cytology branch.' })}
           </p>
 
           <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;margin:10px 0;font-size:0.80rem;line-height:1.5;color:#334155;">
-            <div style="font-weight:700;color:#0f172a;margin-bottom:3px;">Accepted CSV Format:</div>
-            <div>• <strong>Required:</strong> 30 WDBC FNA nuclear morphology features (mean_radius ... worst_fractal_dimension)</div>
-            <div>• <strong>Optional:</strong> <code>id</code> column</div>
-            <div>• <strong>Ignored if present:</strong> <code>diagnosis</code>, <code>target</code>, <code>label</code>, unnamed index fields</div>
+            <div style="font-weight:700;color:#0f172a;margin-bottom:3px;">${t('fusion.acceptedCsvFormat', { defaultValue: 'Accepted CSV Format:' })}</div>
+            <div>• ${t('fusion.requiredCols', { defaultValue: 'Required: 30 WDBC FNA nuclear morphology features (mean_radius ... worst_fractal_dimension)' })}</div>
+            <div>• ${t('fusion.optionalIdCol', { defaultValue: 'Optional: id column' })}</div>
+            <div>• ${t('fusion.ignoredCols', { defaultValue: 'Automatically ignored if present: diagnosis, target, label, unnamed index fields' })}</div>
           </div>
 
           <div style="font-size:0.75rem;color:#64748b;margin:0 0 12px;line-height:1.4;">
-            <strong>Unpaired Dataset Notice:</strong> WDBC cytology measurements and CBIS-DDSM mammography images are scientifically independent. A valid imported observation will populate Branch 1 inputs for this experimental fusion run without implying clinical pairing with any mammogram.
+            <strong>${t('fusion.unpairedNoticeTitle', { defaultValue: 'Unpaired Dataset Notice:' })}</strong> ${t('fusion.unpairedNoticeModal', { defaultValue: 'WDBC cytology measurements and CBIS-DDSM mammography images are scientifically independent. A valid imported observation will populate Branch 1 inputs for this experimental fusion run without implying clinical pairing with any mammogram.' })}
           </div>
 
           ${state.csvError ? `
@@ -1194,18 +1184,18 @@ function renderModals() {
 
           <div class="fusion-dropzone-box" id="csvDropzone" style="min-height:130px;margin:12px 0;">
             <div style="font-size:1.6rem;color:#0284c7;margin-bottom:4px;">📄</div>
-            <p style="margin:0 0 8px;font-size:0.88rem;font-weight:600;">Drag CSV here or browse</p>
-            <button type="button" class="v2-button secondary btn-xs" id="csvFileTriggerBtn">Select CSV File</button>
+            <p style="margin:0 0 8px;font-size:0.88rem;font-weight:600;">${t('fusion.dragDropCsv', { defaultValue: 'Drag CSV here or browse' })}</p>
+            <button type="button" class="v2-button secondary btn-xs" id="csvFileTriggerBtn">${t('fusion.selectCsvFile', { defaultValue: 'Select CSV File' })}</button>
             <input type="file" id="csvFileInput" accept=".csv,text/csv" style="display:none;" />
           </div>
 
           <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <button type="button" class="v2-button ghost btn-xs" id="downloadBenignCsvModalBtn">Download Benign CSV</button>
-              <button type="button" class="v2-button ghost btn-xs" id="downloadMalignantCsvModalBtn">Download Malignant CSV</button>
-              <button type="button" class="v2-button ghost btn-xs" id="downloadCsvTemplateBtn">Download Template</button>
+              <button type="button" class="v2-button ghost btn-xs" id="downloadBenignCsvModalBtn">${t('fusion.downloadBenignCsv', { defaultValue: 'Download Benign CSV' })}</button>
+              <button type="button" class="v2-button ghost btn-xs" id="downloadMalignantCsvModalBtn">${t('fusion.downloadMalignantCsv', { defaultValue: 'Download Malignant CSV' })}</button>
+              <button type="button" class="v2-button ghost btn-xs" id="downloadCsvTemplateBtn">${t('fusion.downloadTemplate', { defaultValue: 'Download Template' })}</button>
             </div>
-            <button type="button" class="v2-button ghost btn-xs" id="cancelModalBtn">Close</button>
+            <button type="button" class="v2-button ghost btn-xs" id="cancelModalBtn">${t('common.close', { defaultValue: 'Close' })}</button>
           </div>
         </div>
       </div>
@@ -1741,6 +1731,10 @@ async function init() {
   }
 
   render();
+
+  window.addEventListener('bcai:languageChanged', () => {
+    render();
+  });
 }
 
 init();
